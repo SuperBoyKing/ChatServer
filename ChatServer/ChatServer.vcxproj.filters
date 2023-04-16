@@ -13,24 +13,9 @@
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ClientInfo.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="EchoServer.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPServer.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Packet.h">
-      <Filter>Main</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="ChatServer.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
