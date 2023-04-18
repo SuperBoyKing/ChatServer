@@ -1,5 +1,5 @@
 #pragma once
-
+#include <intrin.h>
 /*--------------------
 		CRASH
 ---------------------*/
@@ -19,3 +19,5 @@
 		__analysis_assume(expr);	\
 	}								\
 }				
+
+//#define ASSERT(x)		if(!(x))	__debugbreak();

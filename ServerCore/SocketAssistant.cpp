@@ -11,7 +11,7 @@ void SocketAssistant::Init()
     SOCKET dummySocket = INVALID_SOCKET;
     ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_ACCEPTEX, OUT reinterpret_cast<LPVOID*>(&acceptEx)));
 
-    closesocket(dummySocket);
+    ::closesocket(dummySocket);
 }
 
 void SocketAssistant::Clear()
@@ -39,6 +39,11 @@ bool SocketAssistant::SetBind(SOCKET socket, SOCKADDR_IN serverAddr)
 bool SocketAssistant::SetListen(SOCKET socket, int backlog)
 {
     return SOCKET_ERROR != ::listen(socket, backlog);
+}
+
+bool SocketAssistant::SetReuseAddress(SOCKET socket, bool flag)
+{
+    return SOCKET_ERROR != ::setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&flag), sizeof(bool));
 }
 
 void SocketAssistant::SocketClose(SOCKET socket)

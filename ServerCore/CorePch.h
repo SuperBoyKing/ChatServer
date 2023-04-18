@@ -13,4 +13,5 @@ using namespace std;
 #include "Defines.h"
 #include "ServerAddress.h"
 #include "SocketAssistant.h"
+#include "ServerGlobal.h"
 
