@@ -59,7 +59,7 @@ void WorkerThread(HANDLE iocpHandle)
 
 		DWORD recvLen = 0;
 		DWORD flags = 0;
-		::WSARecv(clientInfo->m_socket, &wsaBuf, 1, &recvLen, &flags, (OVERLAPPED*)clientInfo, NULL);
+		::WSARecv(clientInfo->m_socket, &wsaBuf, 1, &recvLen, &flags, &overlappedEx->overlapped, NULL);
 	}
 }
 
@@ -68,6 +68,7 @@ int main()
 	ServerAddress serverAddress(L"127.0.0.1", SERVER_PORT);
 	SocketAssistant::Init();
 	SOCKET acceptSocket = SocketAssistant::CreateSocket();
+	SocketAssistant::SetLinger(acceptSocket, 0, 0);
 	SocketAssistant::SetReuseAddress(acceptSocket);
 	SocketAssistant::SetBind(acceptSocket, serverAddress.GetSockAddrIn());
 	SocketAssistant::SetListen(acceptSocket);

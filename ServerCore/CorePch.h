@@ -1,14 +1,34 @@
 #pragma once
+using namespace std;
 
+/*-----------------
+	Network/IO
+-------------------*/
 #include <iostream>
 #include <windows.h>
 #include <winsock2.h>
 #include <mswsock.h>
 #include <ws2tcpip.h>
-#include <thread>
 #pragma comment(lib, "ws2_32.lib")
-using namespace std;
 
+/*-----------------
+	Thread/Async
+-------------------*/
+#include <thread>
+#include <mutex>
+
+/*--------------------
+	Data Structure
+---------------------*/
+#include <vector>
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <unordered_set>
+
+/*--------------------
+	Custom Header
+---------------------*/
 #include "ServerMacro.h"
 #include "Defines.h"
 #include "ServerAddress.h"

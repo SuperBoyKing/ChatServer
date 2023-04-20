@@ -43,7 +43,16 @@ bool SocketAssistant::SetListen(SOCKET socket, int backlog)
 
 bool SocketAssistant::SetReuseAddress(SOCKET socket, bool flag)
 {
-    return SOCKET_ERROR != ::setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&flag), sizeof(bool));
+    return SetSockOpt(socket, SOL_SOCKET, SO_REUSEADDR, flag);
+}
+
+bool SocketAssistant::SetLinger(SOCKET socket, unsigned short onoff, unsigned short linger)
+{
+    LINGER stLinger;
+    stLinger.l_onoff = onoff;
+    stLinger.l_linger = linger;
+
+    return SetSockOpt(socket, SOL_SOCKET, SO_LINGER, stLinger);
 }
 
 void SocketAssistant::SocketClose(SOCKET socket)
