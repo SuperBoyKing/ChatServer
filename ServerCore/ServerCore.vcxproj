@@ -154,7 +154,7 @@
   <ItemGroup>
     <ClInclude Include="CorePch.h" />
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="IOCPSever.h" />
+    <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerAddress.h" />
     <ClInclude Include="ServerGlobal.h" />
@@ -165,7 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp" />
-    <ClCompile Include="IOCPSever.cpp" />
+    <ClCompile Include="IOCPServer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

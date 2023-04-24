@@ -2,6 +2,9 @@
 #include "ThreadManager.h"
 #include "ClientSession.h"
 #include "ClientSessionManager.h"
+#include "IOCPServer.h"
+
+IOCPServer iocpServer;
 
 void getError(const char* reason, int cause)
 {
@@ -53,7 +56,6 @@ void WorkerThread(HANDLE iocpHandle)
 int main()
 {
 	ServerAddress serverAddress(L"127.0.0.1", SERVER_PORT);
-	SocketAssistant::Init();
 	SOCKET listenSocket = SocketAssistant::CreateSocket();
 	SocketAssistant::SetLinger(listenSocket, 0, 0);
 	SocketAssistant::SetReuseAddress(listenSocket);

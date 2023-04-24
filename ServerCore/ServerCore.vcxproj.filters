@@ -39,11 +39,11 @@
     <ClInclude Include="ThreadManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="IOCPSever.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="ServerTLS.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="IOCPServer.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,11 +65,11 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="IOCPSever.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="ServerTLS.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="IOCPServer.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,6 +13,6 @@ public:
 	~ChatServer();
 
 private:
-	
+	ServerState m_state;
 };
 
