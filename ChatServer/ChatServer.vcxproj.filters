@@ -19,9 +19,12 @@
     <ClInclude Include="ClientSessionManager.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="ChatServer.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChatServer.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -31,6 +34,9 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="ClientSessionManager.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatServer.cpp">
       <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,6 +11,8 @@ public:
 	void Remove(ClientSession& session);
 
 private:
-	set<ClientSession&> m_setSessions;
+	set<ClientSession*> m_setSessions;
 };
+
+extern std::unique_ptr<ClientSessionManager> GClientSessionManager;
 

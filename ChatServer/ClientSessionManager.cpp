@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ClientSessionManager.h"
 
+std::unique_ptr<ClientSessionManager> GClientSessionManager = make_unique<ClientSessionManager>();
+
 ClientSessionManager::ClientSessionManager()
 {
 }
@@ -14,12 +16,12 @@ void ClientSessionManager::Add(ClientSession& session)
 {
 	recursive_mutex mutex;
 	scoped_lock<recursive_mutex> lock(mutex);
-	m_setSessions.insert(session);
+	m_setSessions.insert(&session);
 }
 
 void ClientSessionManager::Remove(ClientSession& session)
 {
 	mutex m;
 	lock_guard<mutex> lock(m);
-	m_setSessions.erase(session);
+	m_setSessions.erase(&session);
 }

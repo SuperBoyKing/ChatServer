@@ -1,2 +1,2 @@
 #pragma once
-extern class ServerGlobal;
+extern class ThreadManager* GThreadManager;

@@ -20,6 +20,7 @@ public:
 	static bool SetListen(SOCKET socket, int backlog = SOMAXCONN);
 	static bool SetReuseAddress(SOCKET socket, bool flag = true);
 	static bool SetLinger(SOCKET socket, unsigned short onoff, unsigned short linger);
+	static bool SetUpdateClientSocket(SOCKET socket, SOCKET listenSocket);
 
 	static void SocketClose(SOCKET socket);
 

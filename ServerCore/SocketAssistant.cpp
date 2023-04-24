@@ -55,6 +55,11 @@ bool SocketAssistant::SetLinger(SOCKET socket, unsigned short onoff, unsigned sh
     return SetSockOpt(socket, SOL_SOCKET, SO_LINGER, stLinger);
 }
 
+bool SocketAssistant::SetUpdateClientSocket(SOCKET socket, SOCKET listenSocket)
+{
+    return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, listenSocket);
+}
+
 void SocketAssistant::SocketClose(SOCKET socket)
 {
     if (socket != INVALID_SOCKET)

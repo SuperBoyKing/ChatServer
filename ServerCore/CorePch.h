@@ -16,6 +16,7 @@ using namespace std;
 -------------------*/
 #include <thread>
 #include <mutex>
+#include <functional>
 
 /*--------------------
 	Data Structure
@@ -29,9 +30,11 @@ using namespace std;
 /*--------------------
 	Custom Header
 ---------------------*/
+#include "ServerGlobal.h"
+#include "ServerTLS.h"
 #include "ServerMacro.h"
 #include "Defines.h"
 #include "ServerAddress.h"
 #include "SocketAssistant.h"
-#include "ServerGlobal.h"
+
 

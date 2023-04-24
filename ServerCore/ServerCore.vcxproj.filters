@@ -30,7 +30,6 @@
     <ClInclude Include="ServerMacro.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="IOCPSever.h" />
     <ClInclude Include="ServerAddress.h">
       <Filter>Network</Filter>
     </ClInclude>
@@ -38,6 +37,12 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="ThreadManager.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="IOCPSever.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerTLS.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,7 +56,6 @@
     <ClCompile Include="SocketAssistant.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="IOCPSever.cpp" />
     <ClCompile Include="ServerAddress.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -59,6 +63,12 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="ThreadManager.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="IOCPSever.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerTLS.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
