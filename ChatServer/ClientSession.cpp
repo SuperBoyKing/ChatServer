@@ -21,6 +21,25 @@ ClientSession::~ClientSession()
 	closesocket(m_socket);
 }
 
+void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
+{
+	switch (iocpOperation->GetType())
+	{
+	case IoType::ACCEPT:
+		break;
+	case IoType::CONNECT:
+		break;
+	case IoType::DISCONNECT:
+		break;
+	case IoType::RECV:
+		break;
+	case IoType::SEND:
+		break;
+	default:
+		break;
+	}
+}
+
 void ClientSession::Disconnect()
 {
 	GClientSessionManager->Remove(*this);

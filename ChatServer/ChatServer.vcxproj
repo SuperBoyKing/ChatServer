@@ -157,13 +157,13 @@
     <ClInclude Include="ChatServer.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="ClientSessionManager.h" />
-    <ClInclude Include="IOCPBinder.h" />
+    <ClInclude Include="IOCPOperation.h" />
     <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp" />
-    <ClCompile Include="IOCPBinder.cpp" />
+    <ClCompile Include="IOCPOperation.cpp" />
     <ClCompile Include="IOCPServer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ClientSession.cpp" />

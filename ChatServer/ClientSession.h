@@ -1,21 +1,26 @@
 #pragma once
+#include "IOCPOperation.h"
+#include "IOCPServer.h"
 
-class ClientSession
+class ClientSession : public IOCPBinder
 {
 public:
 	ClientSession();
 	ClientSession(SOCKET clientSocket);
 	~ClientSession();
 
-	SOCKET GetSock() const { return m_socket; }
-	char* GetRecvBuffer() { return m_recvBuffer; }
-	int GetRecvBufferSize() const { return m_recvSize; }
+	// Override Function
+	SOCKET		GetSock() const override	{ return m_socket; }
+	void		ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
 
-	void Disconnect();
+public:
+	char*		GetRecvBuffer()				{ return m_recvBuffer; }
+	int			GetRecvBufferSize() const	{ return m_recvSize; }
+	void		Disconnect();
 
 private:
-	SOCKET m_socket;
-	char m_recvBuffer[MAX_RECV_BUFFER];
-	int m_recvSize;
+	SOCKET		m_socket;
+	char		m_recvBuffer[MAX_RECV_BUFFER];
+	int			m_recvSize;
 };
 

@@ -9,6 +9,7 @@ public:
 
 	void Add(ClientSession& session);
 	void Remove(ClientSession& session);
+	void Broadcast();
 
 private:
 	set<ClientSession*> m_setSessions;

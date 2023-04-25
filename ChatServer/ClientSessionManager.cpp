@@ -9,6 +9,11 @@ ClientSessionManager::ClientSessionManager()
 
 ClientSessionManager::~ClientSessionManager()
 {
+	for (auto client : m_setSessions)
+	{
+		delete client;
+	}
+
 	m_setSessions.clear();
 }
 

@@ -1,13 +1,13 @@
 #pragma once
 #include "pch.h"
-#include "IOCPBinder.h"
+#include "IOCPOperation.h"
 
-IOCPBinder::IOCPBinder(IoOperation ioOperaiton) : m_ioOperation(ioOperaiton)
+IOCPOperation::IOCPOperation(IoType ioOperaiton) : m_ioType(ioOperaiton)
 {
 	Init();
 }
 
-void IOCPBinder::Init()
+void IOCPOperation::Init()
 {
 	OVERLAPPED::hEvent = 0;
 	OVERLAPPED::Internal = 0;

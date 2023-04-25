@@ -3,7 +3,7 @@
 #include "ClientSession.h"
 #include "ClientSessionManager.h"
 #include "IOCPServer.h"
-#include "IOCPBinder.h"
+#include "IOCPOperation.h"
 
 IOCPServer iocpServer;
 
@@ -48,16 +48,15 @@ int main()
 		WSABUF wsaBuf;
 		wsaBuf.buf = clientSession->GetRecvBuffer();
 		wsaBuf.len = MAX_RECV_BUFFER;
-
-		IOCPBinder* iocpBinder = new IOCPBinder(IoOperation::RECV);
+		
+		IOCPOperation* iocpOperation = new IOCPOperation(IoType::RECV);
 		
 		DWORD receivedBytes = 0;
 		DWORD flags = 0;
-		::WSARecv(clientSocket, &wsaBuf, 1, &receivedBytes, &flags, reinterpret_cast<OVERLAPPED*>(iocpBinder), NULL);
+		::WSARecv(clientSocket, &wsaBuf, 1, &receivedBytes, &flags, reinterpret_cast<OVERLAPPED*>(iocpOperation), NULL);
 	}
 
 	GThreadManager->Join();
-	delete clientSession;
 
 	return 0;
 }
