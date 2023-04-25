@@ -1,5 +1,3 @@
-#pragma once
-#include <intrin.h>
 /*--------------------
 		CRASH
 ---------------------*/
@@ -20,4 +18,5 @@
 	}								\
 }				
 
+#define LOG_CALL(msg, code) wcout << L#msg << ": " << code  << "(errorCode)" << endl;
 //#define ASSERT(x)		if(!(x))	__debugbreak();

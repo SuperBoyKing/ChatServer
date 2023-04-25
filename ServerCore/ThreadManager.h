@@ -5,7 +5,7 @@ public:
 	ThreadManager();
 	~ThreadManager();
 
-	void Launch(std::function<void(int)> threadFunction, int args);
+	void Launch(std::function<void(void)> threadFunction);
 
 	void Join();
 

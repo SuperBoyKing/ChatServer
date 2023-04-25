@@ -11,14 +11,14 @@ ThreadManager::~ThreadManager()
 	Join();
 }
 
-void ThreadManager::Launch(std::function<void(int)> threadFunction, int args)
+void ThreadManager::Launch(std::function<void(void)> threadFunction)
 {
 	std::lock_guard<mutex> lock(m_mutex);
 
 	m_vectorThreads.push_back(thread([=]()
 		{
 			SetTLS();
-			threadFunction(args);
+			threadFunction();
 		}));
 }
 

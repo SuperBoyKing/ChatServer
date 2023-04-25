@@ -1,4 +1,6 @@
 #pragma once
+#include "ClientSession.h"
+
 class IOCPServer
 {
 public:

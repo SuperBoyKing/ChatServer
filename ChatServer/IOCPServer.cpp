@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "IOCPServer.h"
 #include "ClientSession.h"
+#include "IOCPBinder.h"
 
 IOCPServer::IOCPServer()
 {
@@ -20,5 +21,38 @@ bool IOCPServer::BindIOCompletionPort(ClientSession& clientSession)
 
 bool IOCPServer::GetIOCompletionPort()
 {
-	return;
+	DWORD bytesTransferred = 0;
+	IOCPBinder* iocpBinder = nullptr;
+	ClientSession* clientSession = nullptr;
+
+	if (::GetQueuedCompletionStatus(m_iocpHandle, &bytesTransferred, (PULONG_PTR)&clientSession, reinterpret_cast<LPOVERLAPPED*>(&iocpBinder), INFINITE))
+	{
+		WSABUF wsaBuf;
+		wsaBuf.buf = clientSession->GetRecvBuffer();
+		wsaBuf.len = MAX_RECV_BUFFER;
+
+		cout << clientSession->GetRecvBuffer() << ", Length : " << bytesTransferred << endl;
+
+		DWORD recvLen = 0;
+		DWORD key = 0;
+		if (iocpBinder->GetType() == IoOperation::RECV)
+		{
+			if (::WSARecv(clientSession->GetSock(), &wsaBuf, 1, &recvLen, &key, iocpBinder, NULL))
+			{
+				int errorCode = ::WSAGetLastError();
+				if (errorCode != WSA_IO_PENDING)
+				{
+					LOG_CALL("Handle Error", errorCode);
+					return false;
+				}
+			}
+		}
+	}
+	else
+	{
+		LOG_CALL("GetQueuedCompletionStatus Error", ::WSAGetLastError());
+		return false;
+	}
+	
+	return true;
 }
