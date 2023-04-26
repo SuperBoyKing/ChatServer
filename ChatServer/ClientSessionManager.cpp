@@ -9,24 +9,17 @@ ClientSessionManager::ClientSessionManager()
 
 ClientSessionManager::~ClientSessionManager()
 {
-	for (auto client : m_setSessions)
-	{
-		delete client;
-	}
-
 	m_setSessions.clear();
 }
 
-void ClientSessionManager::Add(ClientSession& session)
+void ClientSessionManager::Add(shared_ptr<ClientSession> session)
 {
-	recursive_mutex mutex;
-	scoped_lock<recursive_mutex> lock(mutex);
-	m_setSessions.insert(&session);
+	lock_guard<mutex> lock(m_mutex);
+	m_setSessions.insert(session);
 }
 
-void ClientSessionManager::Remove(ClientSession& session)
+void ClientSessionManager::Remove(shared_ptr<ClientSession> session)
 {
-	mutex m;
-	lock_guard<mutex> lock(m);
-	m_setSessions.erase(&session);
+	lock_guard<mutex> lock(m_mutex);
+	m_setSessions.erase(session);
 }

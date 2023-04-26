@@ -4,17 +4,11 @@
 #include "ClientSessionManager.h"
 #include "IOCPServer.h"
 #include "IOCPOperation.h"
-
-IOCPServer iocpServer;
+#include "ClientListener.h"
 
 int main()
 {
-	ServerAddress serverAddress(L"127.0.0.1", SERVER_PORT);
-	SOCKET listenSocket = SocketAssistant::CreateSocket();
-	SocketAssistant::SetLinger(listenSocket, 0, 0);
-	SocketAssistant::SetReuseAddress(listenSocket);
-	SocketAssistant::SetBind(listenSocket, serverAddress.GetSockAddrIn());
-	SocketAssistant::SetListen(listenSocket);
+	ClientListener clientListener(L"127.0.0.1", SERVER_PORT);
 	
 	GThreadManager->Launch(
 		[=]() {
@@ -24,37 +18,7 @@ int main()
 			}
 		});
 
-	ClientSession* clientSession = nullptr;
-
-	while (true)
-	{
-		SOCKADDR_IN clientAddr;
-		int addrLen = sizeof(SOCKADDR_IN);
-		SOCKET clientSocket = ::accept(listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
-		if (clientSocket == INVALID_SOCKET)
-		{
-			cout << "Accept Socket Error" << endl;
-			continue;
-		}
-
-		cout << "Accept Client" << endl;
-
-		clientSession = new ClientSession(clientSocket);
-		SocketAssistant::SetUpdateClientSocket(clientSession->GetSock(), listenSocket);
-		GClientSessionManager->Add(*clientSession);
-
-		iocpServer.BindIOCompletionPort(*clientSession);
-		
-		WSABUF wsaBuf;
-		wsaBuf.buf = clientSession->GetRecvBuffer();
-		wsaBuf.len = MAX_RECV_BUFFER;
-		
-		IOCPOperation* iocpOperation = new IOCPOperation(IoType::RECV);
-		
-		DWORD receivedBytes = 0;
-		DWORD flags = 0;
-		::WSARecv(clientSocket, &wsaBuf, 1, &receivedBytes, &flags, reinterpret_cast<OVERLAPPED*>(iocpOperation), NULL);
-	}
+	clientListener.ProcessAccept();
 
 	GThreadManager->Join();
 

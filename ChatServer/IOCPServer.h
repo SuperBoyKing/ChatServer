@@ -4,11 +4,11 @@ class ClientSession;
 
 class IOCPOperation;
 
-class IOCPBinder
+class IIOCPBinder : public enable_shared_from_this<IIOCPBinder>
 {
 public:
-	virtual SOCKET		GetSock() const abstract;
-	virtual void		ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) abstract;
+	virtual SOCKET		GetSock() const = 0;
+	virtual void		ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) = 0;
 };
 
 class IOCPServer
@@ -19,10 +19,12 @@ public:
 	~IOCPServer();
 
 	HANDLE		GetIocpHandle() const { return m_iocpHandle; }
-	bool		BindIOCompletionPort(ClientSession& clientSession);
+	bool		BindIOCompletionPort(IIOCPBinder& iocpBinder);
 	bool		GetIOCompletionPort();
 
 private:
 	HANDLE		m_iocpHandle;
 };
+
+extern IOCPServer iocpServer; // юс╫ц
 

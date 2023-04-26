@@ -3,7 +3,7 @@
 #include "ClientSessionManager.h"
 
 ClientSession::ClientSession() 
-	: m_socket(INVALID_SOCKET)
+	: m_socket(SocketAssistant::CreateSocket())
 	, m_recvBuffer{0}
 	, m_recvSize(0)
 {
@@ -18,22 +18,23 @@ ClientSession::ClientSession(SOCKET clientSocket)
 
 ClientSession::~ClientSession()
 {
-	closesocket(m_socket);
+	SocketAssistant::SocketClose(m_socket);
 }
 
 void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
 {
+	m_operation.ReleaseOwner();
+
 	switch (iocpOperation->GetType())
 	{
-	case IoType::ACCEPT:
+	case OperationType::SEND:
 		break;
-	case IoType::CONNECT:
+	case OperationType::RECV:
+		ProcessRecv(numberOfBytes);
 		break;
-	case IoType::DISCONNECT:
+	case OperationType::CONNECT:
 		break;
-	case IoType::RECV:
-		break;
-	case IoType::SEND:
+	case OperationType::DISCONNECT:
 		break;
 	default:
 		break;
@@ -42,5 +43,36 @@ void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int 
 
 void ClientSession::Disconnect()
 {
-	GClientSessionManager->Remove(*this);
+	GClientSessionManager->Remove(static_pointer_cast<ClientSession>(shared_from_this()));
+}
+
+void ClientSession::ProcessRecv(unsigned int numberOfBytes)
+{
+	cout << GetRecvBuffer() << ", Length : " << numberOfBytes << endl;
+	RegisterRecv();
+}
+
+void ClientSession::RegisterRecv()
+{
+	ResetRecvBuffer();
+
+	m_operation.Init();
+	m_operation.SetOwner(shared_from_this());
+	m_operation.SetType(OperationType::RECV);
+
+	DWORD recvLen = 0;
+	DWORD key = 0;
+
+	WSABUF wsaBuf;
+	wsaBuf.buf = GetRecvBuffer();
+	wsaBuf.len = MAX_RECV_BUFFER;
+
+	if (::WSARecv(GetSock(), &wsaBuf, 1, &recvLen, &key, &m_operation, NULL))
+	{
+		int errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
+		{
+			PRINT_WSA_ERROR("Handle Error", errorCode);
+		}
+	}
 }

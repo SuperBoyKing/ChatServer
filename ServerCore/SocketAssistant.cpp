@@ -11,7 +11,7 @@ void SocketAssistant::Init()
     SOCKET dummySocket = INVALID_SOCKET;
     ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_ACCEPTEX, OUT reinterpret_cast<LPVOID*>(&acceptEx)));
 
-    ::closesocket(dummySocket);
+    SocketClose(dummySocket);
 }
 
 void SocketAssistant::Clear()
@@ -58,6 +58,11 @@ bool SocketAssistant::SetLinger(SOCKET socket, unsigned short onoff, unsigned sh
 bool SocketAssistant::SetUpdateClientSocket(SOCKET socket, SOCKET listenSocket)
 {
     return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, listenSocket);
+}
+
+bool SocketAssistant::SetTcpNoDelay(SOCKET socket, bool flag)
+{
+    return ::SetSockOpt(socket, SOL_SOCKET, TCP_NODELAY, flag);
 }
 
 void SocketAssistant::SocketClose(SOCKET socket)

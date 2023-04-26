@@ -18,5 +18,5 @@
 	}								\
 }				
 
-#define LOG_CALL(msg, code) wcout << L#msg << ": " << code  << "(errorCode)" << endl;
+#define PRINT_WSA_ERROR(msg, code) wcout << L#msg << ": " << code  << "(errorCode)" << endl
 //#define ASSERT(x)		if(!(x))	__debugbreak();

@@ -10,6 +10,6 @@ public:
 	SOCKADDR_IN GetSockAddrIn() const { return m_serverAddr; }
 
 private:
-	SOCKADDR_IN m_serverAddr;
+	SOCKADDR_IN m_serverAddr = {};
 };
 

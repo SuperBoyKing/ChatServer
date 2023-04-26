@@ -7,12 +7,13 @@ public:
 	ClientSessionManager();
 	~ClientSessionManager();
 
-	void Add(ClientSession& session);
-	void Remove(ClientSession& session);
+	void Add(shared_ptr<ClientSession> session);
+	void Remove(shared_ptr<ClientSession> session);
 	void Broadcast();
 
 private:
-	set<ClientSession*> m_setSessions;
+	set<shared_ptr<ClientSession>> m_setSessions;
+	mutex m_mutex;
 };
 
 extern std::unique_ptr<ClientSessionManager> GClientSessionManager;

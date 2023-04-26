@@ -1,13 +1,12 @@
 #pragma once
 #include "IOCPOperation.h"
-#include "IOCPServer.h"
 
-class ClientSession : public IOCPBinder
+class ClientSession : public IIOCPBinder
 {
 public:
 	ClientSession();
 	ClientSession(SOCKET clientSocket);
-	~ClientSession();
+	virtual ~ClientSession();
 
 	// Override Function
 	SOCKET		GetSock() const override	{ return m_socket; }
@@ -18,9 +17,19 @@ public:
 	int			GetRecvBufferSize() const	{ return m_recvSize; }
 	void		Disconnect();
 
+	inline void	ResetRecvBuffer()			{ memset(m_recvBuffer, 0, MAX_RECV_BUFFER); }
+
+	// Operation 처리
+	void		ProcessRecv(unsigned int numberOfBytes);
+
+	// Operation 등록
+	void		RegisterRecv();
+
+
 private:
-	SOCKET		m_socket;
-	char		m_recvBuffer[MAX_RECV_BUFFER];
-	int			m_recvSize;
+	SOCKET			m_socket;
+	char			m_recvBuffer[MAX_RECV_BUFFER];
+	int				m_recvSize;
+	IOCPOperation	m_operation;
 };
 

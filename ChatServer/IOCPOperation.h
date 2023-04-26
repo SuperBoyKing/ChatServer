@@ -1,7 +1,9 @@
 #pragma once
+#include "IOCPServer.h"
 
-enum class IoType : unsigned __int8
+enum class OperationType : unsigned __int8
 {
+	NONE,
 	ACCEPT,
 	SEND,
 	RECV,
@@ -12,14 +14,21 @@ enum class IoType : unsigned __int8
 class IOCPOperation : public OVERLAPPED
 {
 public:
-	IOCPOperation() = delete;
-	IOCPOperation(IoType ioType);
+	IOCPOperation() = default;
+	IOCPOperation(OperationType OperationType);
 
-	void Init();
+	void				Init();
 
-	inline IoType GetType() const { return m_ioType; }
+	inline void			SetType(OperationType OperationType)					{ m_ioType = OperationType; }
+	inline OperationType		GetType() const							{ return m_ioType; }
+
+	inline void			SetOwner(shared_ptr<IIOCPBinder> ptr)	{ m_owner = ptr; }
+	inline void			ReleaseOwner()							{ m_owner = nullptr; }
+
+	inline shared_ptr<IIOCPBinder> GetOwner() const				{ return m_owner; }
 
 private:
-	IoType m_ioType;
+	OperationType						m_ioType = OperationType::NONE;
+	shared_ptr<IIOCPBinder>		m_owner;
 };
 
