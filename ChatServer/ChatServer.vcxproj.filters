@@ -13,22 +13,7 @@
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ClientSession.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientSessionManager.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="ChatServer.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPServer.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPOperation.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientListener.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
@@ -39,22 +24,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="ClientSession.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientSessionManager.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="ChatServer.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="IOCPServer.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="IOCPOperation.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientListener.cpp">
       <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,9 +1,5 @@
 #include "pch.h"
 #include "ThreadManager.h"
-#include "ClientSession.h"
-#include "ClientSessionManager.h"
-#include "IOCPServer.h"
-#include "IOCPOperation.h"
 #include "ClientListener.h"
 
 int main()
@@ -14,7 +10,7 @@ int main()
 		[=]() {
 			while (true)
 			{ 
-				iocpServer.GetIOCompletionPort();
+				GIOCPServer->CallGQCS();
 			}
 		});
 

@@ -42,7 +42,19 @@
     <ClInclude Include="ServerTLS.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="ClientListener.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSession.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="IOCPOperation.h">
+      <Filter>Network</Filter>
+    </ClInclude>
     <ClInclude Include="IOCPServer.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSessionManager.h">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,7 +80,19 @@
     <ClCompile Include="ServerTLS.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="ClientListener.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSession.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="IOCPOperation.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
     <ClCompile Include="IOCPServer.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSessionManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>

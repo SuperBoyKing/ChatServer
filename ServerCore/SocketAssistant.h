@@ -16,12 +16,15 @@ public:
 	
 	// Create & Set Socket Opt
 	static SOCKET CreateSocket();
-	static bool SetBind(SOCKET socket, SOCKADDR_IN serverAddr);
-	static bool SetListen(SOCKET socket, int backlog = SOMAXCONN);
 	static bool SetReuseAddress(SOCKET socket, bool flag = true);
 	static bool SetLinger(SOCKET socket, unsigned short onoff, unsigned short linger);
 	static bool SetUpdateClientSocket(SOCKET socket, SOCKET listenSocket);
 	static bool SetTcpNoDelay(SOCKET socket, bool flag);
+	
+	// Bind/Listen & Close
+	static bool SetBind(SOCKET socket, SOCKADDR_IN serverAddr);
+	static bool SetListen(SOCKET socket, int backlog = SOMAXCONN);
+	static bool SetBindAnyAddress(SOCKET socket, unsigned short port);
 	static void SocketClose(SOCKET socket);
 
 private:

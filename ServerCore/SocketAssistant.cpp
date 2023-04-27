@@ -65,6 +65,16 @@ bool SocketAssistant::SetTcpNoDelay(SOCKET socket, bool flag)
     return ::SetSockOpt(socket, SOL_SOCKET, TCP_NODELAY, flag);
 }
 
+bool SocketAssistant::SetBindAnyAddress(SOCKET socket, unsigned short port)
+{
+    SOCKADDR_IN sockAddr;
+    sockAddr.sin_family = AF_INET;
+    sockAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
+    sockAddr.sin_port = htons(port);
+
+    return SOCKET_ERROR != ::bind(socket, (sockaddr*)(&sockAddr), sizeof(SOCKADDR_IN));
+}
+
 void SocketAssistant::SocketClose(SOCKET socket)
 {
     if (socket != INVALID_SOCKET)

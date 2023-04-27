@@ -86,7 +86,7 @@ void ClientListener::ProcessAccept()
 
 		shared_ptr<IIOCPBinder> iocpBinder = clientSession;
 
-		iocpServer.BindIOCompletionPort(*iocpBinder.get());
+		GIOCPServer->BindIOCompletionPort(*iocpBinder.get());
 		clientSession->RegisterRecv();
 	}
 }
