@@ -2,10 +2,10 @@
 #include "ServerGlobal.h"
 #include "SocketAssistant.h"
 #include "ThreadManager.h"
-#include "IOCPServer.h"
+#include "IOCPHandler.h"
 
 ThreadManager*	GThreadManager	= nullptr;
-IOCPServer*		GIOCPServer		= nullptr;
+IOCPHandler*	GIOCPHandler	= nullptr;
 
 class ServerGlobal
 {
@@ -13,14 +13,14 @@ public:
 	ServerGlobal()
 	{
 		GThreadManager = new ThreadManager();
-		GIOCPServer = new IOCPServer();
+		GIOCPHandler = new IOCPHandler();
 		SocketAssistant::Init();
 	}
 
 	~ServerGlobal()
 	{
 		delete GThreadManager;
-		delete GIOCPServer;
+		delete GIOCPHandler;
 		SocketAssistant::Clear();
 	}
 } GServerGlobal;

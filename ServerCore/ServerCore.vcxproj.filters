@@ -51,7 +51,7 @@
     <ClInclude Include="IOCPOperation.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="IOCPServer.h">
+    <ClInclude Include="IOCPHandler.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ClientSessionManager.h">
@@ -89,7 +89,7 @@
     <ClCompile Include="IOCPOperation.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="IOCPServer.cpp">
+    <ClCompile Include="IOCPHandler.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="ClientSessionManager.cpp">

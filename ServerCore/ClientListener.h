@@ -1,5 +1,5 @@
 #pragma once
-#include "IOCPServer.h"
+#include "IOCPHandler.h"
 #include "IOCPOperation.h"
 
 class ClientListener : public IIOCPBinder
@@ -12,8 +12,8 @@ public:
 	void		Init();
 
 	// Override Function
-	SOCKET		GetSock() const	override		{ return m_ListenSocket; }
-	void		ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
+	inline SOCKET		GetSock() const	override		{ return m_ListenSocket; }
+	void				ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
 
 	void		ProcessAccept();
 

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "IOCPServer.h"
+#include "IOCPHandler.h"
 #include "ClientListener.h"
 #include "ClientSessionManager.h"
 
@@ -78,7 +78,7 @@ void ClientListener::ProcessAccept()
 		}
 		else
 		{
-			cout << "Accept Client" << endl;
+			cout << "Accept Client : " << clientSocket << endl;
 		}
 
 		shared_ptr<ClientSession> clientSession = make_shared<ClientSession>(clientSocket);
@@ -86,7 +86,7 @@ void ClientListener::ProcessAccept()
 
 		shared_ptr<IIOCPBinder> iocpBinder = clientSession;
 
-		GIOCPServer->BindIOCompletionPort(*iocpBinder.get());
+		GIOCPHandler->BindIOCompletionPort(*iocpBinder.get());
 		clientSession->RegisterRecv();
 	}
 }

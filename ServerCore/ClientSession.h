@@ -9,17 +9,19 @@ public:
 	virtual ~ClientSession();
 
 	// Override Function
-	SOCKET		GetSock() const override	{ return m_socket; }
-	void		ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
+	inline SOCKET		GetSock() const override	{ return m_socket; }
+	void				ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
 
 public:
 
 	bool		Connect();
 	void		Disconnect();
 
-	char*		GetRecvBuffer()				{ return m_recvBuffer; }
-	int			GetRecvBufferSize() const	{ return m_recvSize; }
-	inline void	ResetRecvBuffer()			{ memset(m_recvBuffer, 0, MAX_BUFFER_SIZE); }
+	inline char*	GetRecvBuffer()				{ return m_recvBuffer; }
+	inline int		GetRecvBufferSize() const	{ return m_recvSize; }
+
+	inline char*	GetSendBuffer()				{ return m_sendBuffer; }
+	inline int		GetSendBufferSize() const	{ return m_sendSize; }
 
 	// Operation Ã³¸®
 	void		ProcessSend(unsigned int numberOfBytes);
@@ -35,7 +37,8 @@ public:
 
 private:
 	SOCKET			m_socket;
-	IOCPOperation	m_operation;
+	IOCPOperation	m_sendOperation;
+	IOCPOperation	m_recvOperation;
 
 private:
 	char			m_recvBuffer[MAX_BUFFER_SIZE];

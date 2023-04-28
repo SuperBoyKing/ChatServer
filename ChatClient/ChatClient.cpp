@@ -3,20 +3,28 @@
 
 int main()
 {
-	this_thread::sleep_for(1s);
+	this_thread::sleep_for(500ms);
 
-	ClientSession* clientSession = new ClientSession();
+	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
 	clientSession->Connect();
-	clientSession->RegisterSend();
 
 	GThreadManager->Launch([=]() {
 		while (true)
 		{
-			clientSession->RegisterSend();
+			GIOCPHandler->CallGQCS();
 		}
 	});
+	
+	char recvBuffer[MAX_BUFFER_SIZE] = {};
+
+	while (true)
+	{
+		cin.getline(recvBuffer, sizeof(char) * MAX_BUFFER_SIZE);
+		memcpy(clientSession->GetSendBuffer(), recvBuffer, sizeof(char) * MAX_BUFFER_SIZE);
+		clientSession->RegisterSend();
+	}
 
 	GThreadManager->Join();
-	delete clientSession;
+	clientSession = nullptr;
 	return 0;
 }

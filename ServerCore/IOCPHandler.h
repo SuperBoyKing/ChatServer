@@ -11,12 +11,12 @@ public:
 	virtual void		ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) = 0;
 };
 
-class IOCPServer
+class IOCPHandler
 {
 public:
-	IOCPServer();
+	IOCPHandler();
 
-	~IOCPServer();
+	~IOCPHandler();
 
 	HANDLE		GetIocpHandle() const { return m_iocpHandle; }
 	bool		BindIOCompletionPort(IIOCPBinder& iocpBinder);

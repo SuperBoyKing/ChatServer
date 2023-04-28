@@ -1,3 +1,3 @@
 #pragma once
 extern class ThreadManager* GThreadManager;
-extern class IOCPServer*	GIOCPServer;
+extern class IOCPHandler*	GIOCPHandler;

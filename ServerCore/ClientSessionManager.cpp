@@ -23,3 +23,8 @@ void ClientSessionManager::Remove(shared_ptr<ClientSession> session)
 	lock_guard<mutex> lock(m_mutex);
 	m_setSessions.erase(session);
 }
+
+void ClientSessionManager::Broadcast()
+{
+
+}

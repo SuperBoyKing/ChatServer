@@ -1,25 +1,25 @@
 #include "pch.h"
-#include "IOCPServer.h"
+#include "IOCPHandler.h"
 #include "ClientSession.h"
 #include "IOCPOperation.h"
 
-IOCPServer::IOCPServer()
+IOCPHandler::IOCPHandler()
 {
 	m_iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, NULL);
 	ASSERT_CRASH(m_iocpHandle != INVALID_HANDLE_VALUE);
 }
 
-IOCPServer::~IOCPServer()
+IOCPHandler::~IOCPHandler()
 {
 	::CloseHandle(m_iocpHandle);
 }
 
-bool IOCPServer::BindIOCompletionPort(IIOCPBinder& iocpBinder)
+bool IOCPHandler::BindIOCompletionPort(IIOCPBinder& iocpBinder)
 {
 	return ::CreateIoCompletionPort((HANDLE)iocpBinder.GetSock(), m_iocpHandle, NULL, NULL);
 }
 
-bool IOCPServer::CallGQCS()
+bool IOCPHandler::CallGQCS()
 {
 	DWORD bytesTransferred = 0;
 	IOCPOperation* iocpOperation = nullptr;

@@ -29,8 +29,6 @@ ClientSession::~ClientSession()
 
 void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
 {
-	m_operation.ReleaseOwner();
-
 	switch (iocpOperation->GetType())
 	{
 	case OperationType::SEND:
@@ -80,7 +78,7 @@ void ClientSession::ProcessSend(unsigned int numberOfBytes)
 
 void ClientSession::ProcessRecv(unsigned int numberOfBytes)
 {
-	cout << GetRecvBuffer() << ", Length : " << numberOfBytes << endl;
+	cout << GetRecvBuffer() << ", Sock Number : " << m_socket << endl;
 	RegisterRecv();
 }
 
@@ -94,17 +92,25 @@ void ClientSession::ProcessDisconnect()
 
 void ClientSession::RegisterSend()
 {
-	cout << "send Msg : ";
-	cin.getline(m_sendBuffer, sizeof(m_sendBuffer), '\n');
+	m_sendOperation.ReleaseOwner();
+	m_sendOperation.Init();
+	m_sendOperation.SetOwner(shared_from_this());
+	m_sendOperation.SetType(OperationType::SEND);
 
-	int sendBytes = ::send(m_socket, m_sendBuffer, sizeof(m_sendBuffer), 0);
-	if (sendBytes != SOCKET_ERROR)
+	DWORD bytesTransfered = 0;
+	DWORD flags = 0;
+
+	WSABUF wsaBuf;
+	wsaBuf.buf = m_sendBuffer;
+	wsaBuf.len = MAX_BUFFER_SIZE;
+
+	if (SOCKET_ERROR == ::WSASend(m_socket, &wsaBuf, 1, &bytesTransfered, flags, &m_sendOperation, NULL))
 	{
-		cout << "send bytes : " << sendBytes << endl;
-	}
-	else
-	{
-		PRINT_WSA_ERROR("Send Error", WSAGetLastError());
+		int errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
+		{
+			PRINT_WSA_ERROR("Handle Error", errorCode);
+		}
 	}
 
 	memset(m_sendBuffer, 0, MAX_BUFFER_SIZE);
@@ -112,20 +118,21 @@ void ClientSession::RegisterSend()
 
 void ClientSession::RegisterRecv()
 {
-	ResetRecvBuffer();
+	memset(m_recvBuffer, 0, MAX_BUFFER_SIZE);
 
-	m_operation.Init();
-	m_operation.SetOwner(shared_from_this());
-	m_operation.SetType(OperationType::RECV);
+	m_recvOperation.ReleaseOwner();
+	m_recvOperation.Init();
+	m_recvOperation.SetOwner(shared_from_this());
+	m_recvOperation.SetType(OperationType::RECV);
 
-	DWORD recvLen = 0;
-	DWORD key = 0;
+	DWORD bytesReceived = 0;
+	DWORD flags = 0;
 
 	WSABUF wsaBuf;
-	wsaBuf.buf = GetRecvBuffer();
+	wsaBuf.buf = m_recvBuffer;
 	wsaBuf.len = MAX_BUFFER_SIZE;
 
-	if (::WSARecv(GetSock(), &wsaBuf, 1, &recvLen, &key, &m_operation, NULL))
+	if (SOCKET_ERROR == ::WSARecv(m_socket, &wsaBuf, 1, &bytesReceived, &flags, &m_recvOperation, NULL))
 	{
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
