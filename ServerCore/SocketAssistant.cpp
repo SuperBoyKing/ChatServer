@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "SocketAssistant.h"
 
-LPFN_ACCEPTEX SocketAssistant::AcceptEx;
+LPFN_ACCEPTEX       SocketAssistant::AcceptEx;
+LPFN_CONNECTEX	    SocketAssistant::ConnectEx;
+LPFN_DISCONNECTEX	SocketAssistant::DisConnectEx;
 
 void SocketAssistant::Init()
 {
@@ -10,6 +12,8 @@ void SocketAssistant::Init()
 
     SOCKET dummySocket = CreateSocket();
     ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_ACCEPTEX, reinterpret_cast<LPVOID*>(&AcceptEx)));
+    ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_CONNECTEX, reinterpret_cast<LPVOID*>(&ConnectEx)));
+    ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_DISCONNECTEX, reinterpret_cast<LPVOID*>(&DisConnectEx)));
     SocketClose(dummySocket);
 }
 

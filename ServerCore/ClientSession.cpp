@@ -2,6 +2,8 @@
 #include "ClientSession.h"
 #include "ClientSessionManager.h"
 
+class IOCPOperation;
+
 ClientSession::ClientSession()
 	: m_socket(SocketAssistant::CreateSocket())
 	, m_recvBuffer{ 0 }

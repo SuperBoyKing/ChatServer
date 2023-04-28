@@ -1,5 +1,6 @@
 #pragma once
-#include "IOCPOperation.h"
+
+class IOCPOperation; 
 
 class ClientSession : public IIOCPBinder
 {

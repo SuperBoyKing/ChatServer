@@ -4,8 +4,9 @@
 int main()
 {
 	this_thread::sleep_for(500ms);
+	shared_ptr<ClientSession> clientSession;
 
-	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
+	clientSession = make_shared<ClientSession>();
 	clientSession->Connect();
 
 	GThreadManager->Launch([=]() {

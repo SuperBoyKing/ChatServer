@@ -9,19 +9,19 @@ public:
 	ClientListener(const WCHAR* ip, const unsigned __int16 port);
 	virtual ~ClientListener();
 
-	void		SetUpListener();
+	void		SetUpListener(const unsigned int maxClientSession = 1000);
 
 	// Override Function
-	inline SOCKET		GetSock() const	override		{ return m_ListenSocket; }
-	void				ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
+	inline SOCKET		GetSock() const	override		{ return m_listenSocket; }
+	void				ProcessOperation(IOCPOperation* acceptOperation, unsigned int numberOfBytes = 0) override;
 
-	void		ProcessAccept();
-	void		RegisterAccept();
+	void		ProcessAccept(AcceptOperation* acceptOperation);
+	void		RegisterAccept(AcceptOperation* acceptOperation);
 
 
 private:
-	SOCKET			m_ListenSocket;
-	ServerAddress	m_serverAddress;
-	IOCPOperation	m_acceptOperation;
+	SOCKET						m_listenSocket;
+	ServerAddress				m_serverAddress;
+	vector<AcceptOperation*>	m_vAcceptOperations;
 };
 

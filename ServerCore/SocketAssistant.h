@@ -7,7 +7,9 @@
 class SocketAssistant
 {
 public:
-	static LPFN_ACCEPTEX AcceptEx;
+	static LPFN_ACCEPTEX		AcceptEx;
+	static LPFN_CONNECTEX		ConnectEx;
+	static LPFN_DISCONNECTEX	DisConnectEx;
 
 public:
 	// Init & Clear
@@ -28,7 +30,7 @@ public:
 	static void SocketClose(SOCKET socket);
 
 private:
-	static bool GetExFunctionPointer(SOCKET socket, GUID guid, OUT LPVOID* fn);
+	static bool GetExFunctionPointer(SOCKET socket, GUID guid, LPVOID* fn);
 };
 
 template<typename T>

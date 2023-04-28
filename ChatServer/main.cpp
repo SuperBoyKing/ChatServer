@@ -5,7 +5,7 @@
 int main()
 {
 	shared_ptr<ClientListener> clientListener = make_shared<ClientListener>(L"127.0.0.1", SERVER_PORT);
-	clientListener->SetUpListener();
+	clientListener->SetUpListener(2);
 
 	GThreadManager->Launch(
 		[=]() {
@@ -15,8 +15,7 @@ int main()
 			}
 		});
 
-	clientListener->RegisterAccept();
-
+	cout << "Server Start!" << endl;
 	GThreadManager->Join();
 
 	return 0;
