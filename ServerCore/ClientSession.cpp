@@ -10,7 +10,7 @@ ClientSession::ClientSession()
 	, m_sendSize(0)
 {
 	if (m_socket == INVALID_SOCKET) 
-		PRINT_WSA_ERROR("Create Socket Error", WSAGetLastError());
+		PRINT_WSA_ERROR("Create Socket Error");
 }
 
 ClientSession::ClientSession(SOCKET clientSocket)
@@ -52,13 +52,13 @@ bool ClientSession::Connect()
 {
 	if (SocketAssistant::SetReuseAddress(m_socket) == false)
 	{
-		PRINT_WSA_ERROR("ReuseAddress Set Error", WSAGetLastError());
+		PRINT_WSA_ERROR("ReuseAddress Set Error");
 		return false;
 	}
 
 	if (SocketAssistant::SetBindAnyAddress(m_socket, 0) == false)
 	{
-		PRINT_WSA_ERROR("Any Address Bind Error", WSAGetLastError());
+		PRINT_WSA_ERROR("Any Address Bind Error");
 		return false;
 	}
 
@@ -109,7 +109,7 @@ void ClientSession::RegisterSend()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			PRINT_WSA_ERROR("Handle Error", errorCode);
+			PRINT_WSA_ERROR("Handle Error");
 		}
 	}
 
@@ -137,7 +137,7 @@ void ClientSession::RegisterRecv()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			PRINT_WSA_ERROR("Handle Error", errorCode);
+			PRINT_WSA_ERROR("Handle Error");
 		}
 	}
 }
@@ -163,7 +163,7 @@ void ClientSession::RegisterConnect()
 		}
 		else if (error == SOCKET_ERROR)
 		{
-			PRINT_WSA_ERROR("Connect Error", WSAGetLastError());
+			PRINT_WSA_ERROR("Connect Error");
 			return;
 		}
 		else

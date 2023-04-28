@@ -9,17 +9,19 @@ public:
 	ClientListener(const WCHAR* ip, const unsigned __int16 port);
 	virtual ~ClientListener();
 
-	void		Init();
+	void		SetUpListener();
 
 	// Override Function
 	inline SOCKET		GetSock() const	override		{ return m_ListenSocket; }
 	void				ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes = 0) override;
 
 	void		ProcessAccept();
+	void		RegisterAccept();
 
 
 private:
 	SOCKET			m_ListenSocket;
-	ServerAddress*	m_serverAddress;
+	ServerAddress	m_serverAddress;
+	IOCPOperation	m_acceptOperation;
 };
 

@@ -14,9 +14,9 @@ IOCPHandler::~IOCPHandler()
 	::CloseHandle(m_iocpHandle);
 }
 
-bool IOCPHandler::BindIOCompletionPort(IIOCPBinder& iocpBinder)
+bool IOCPHandler::BindIOCompletionPort(shared_ptr<IIOCPBinder> iocpBinder)
 {
-	return ::CreateIoCompletionPort((HANDLE)iocpBinder.GetSock(), m_iocpHandle, NULL, NULL);
+	return ::CreateIoCompletionPort((HANDLE)iocpBinder->GetSock(), m_iocpHandle, NULL, NULL);
 }
 
 bool IOCPHandler::CallGQCS()
@@ -32,7 +32,7 @@ bool IOCPHandler::CallGQCS()
 	}
 	else
 	{
-		PRINT_WSA_ERROR("GetQueuedCompletionStatus Error", ::WSAGetLastError());
+		PRINT_WSA_ERROR("GetQueuedCompletionStatus Error");
 		return false;
 	}
 	

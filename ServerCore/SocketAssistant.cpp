@@ -1,16 +1,15 @@
 #include "pch.h"
 #include "SocketAssistant.h"
 
-LPFN_ACCEPTEX SocketAssistant::acceptEx;
+LPFN_ACCEPTEX SocketAssistant::AcceptEx;
 
 void SocketAssistant::Init()
 {
     WSAData wsaData;
     ASSERT_CRASH(::WSAStartup(MAKEWORD(2, 2), &wsaData) == 0);
 
-    SOCKET dummySocket = INVALID_SOCKET;
-    ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_ACCEPTEX, OUT reinterpret_cast<LPVOID*>(&acceptEx)));
-
+    SOCKET dummySocket = CreateSocket();
+    ASSERT_CRASH(GetExFunctionPointer(dummySocket, WSAID_ACCEPTEX, reinterpret_cast<LPVOID*>(&AcceptEx)));
     SocketClose(dummySocket);
 }
 
@@ -19,11 +18,11 @@ void SocketAssistant::Clear()
     ::WSACleanup();
 }
 
-bool SocketAssistant::GetExFunctionPointer(SOCKET socket, GUID guid, OUT LPVOID* fn)
+bool SocketAssistant::GetExFunctionPointer(SOCKET socket, GUID guid, LPVOID* fn)
 {
     DWORD bytes;
-    return ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid),
-            reinterpret_cast<LPVOID*>(&acceptEx), sizeof(acceptEx), &bytes, NULL, NULL);
+    return SOCKET_ERROR != ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid),
+        fn, sizeof(*fn), &bytes, NULL, NULL);
 }
 
 SOCKET SocketAssistant::CreateSocket()
@@ -62,7 +61,7 @@ bool SocketAssistant::SetUpdateClientSocket(SOCKET socket, SOCKET listenSocket)
 
 bool SocketAssistant::SetTcpNoDelay(SOCKET socket, bool flag)
 {
-    return ::SetSockOpt(socket, SOL_SOCKET, TCP_NODELAY, flag);
+    return SetSockOpt(socket, SOL_SOCKET, TCP_NODELAY, flag);
 }
 
 bool SocketAssistant::SetBindAnyAddress(SOCKET socket, unsigned short port)

@@ -18,5 +18,5 @@
 	}								\
 }				
 
-#define PRINT_WSA_ERROR(msg, code) wcout << L#msg << ": " << code  << "(errorCode)" << endl
+#define PRINT_WSA_ERROR(msg) wcout << L#msg << ": " << WSAGetLastError() << "(errorCode)" << endl
 //#define ASSERT(x)		if(!(x))	__debugbreak();

@@ -4,8 +4,9 @@
 
 int main()
 {
-	ClientListener clientListener(L"127.0.0.1", SERVER_PORT);
-	
+	shared_ptr<ClientListener> clientListener = make_shared<ClientListener>(L"127.0.0.1", SERVER_PORT);
+	clientListener->SetUpListener();
+
 	GThreadManager->Launch(
 		[=]() {
 			while (true)
@@ -14,7 +15,7 @@ int main()
 			}
 		});
 
-	clientListener.ProcessAccept();
+	clientListener->RegisterAccept();
 
 	GThreadManager->Join();
 

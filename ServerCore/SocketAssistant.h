@@ -7,7 +7,7 @@
 class SocketAssistant
 {
 public:
-	static LPFN_ACCEPTEX acceptEx;
+	static LPFN_ACCEPTEX AcceptEx;
 
 public:
 	// Init & Clear
