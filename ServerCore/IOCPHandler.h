@@ -20,7 +20,7 @@ public:
 
 	HANDLE		GetIocpHandle() const { return m_iocpHandle; }
 	bool		BindIOCompletionPort(shared_ptr<IIOCPBinder> iocpBinder);
-	bool		CallGQCS();
+	void		CallGQCS();
 
 private:
 	HANDLE		m_iocpHandle;

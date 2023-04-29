@@ -4,9 +4,7 @@
 int main()
 {
 	this_thread::sleep_for(500ms);
-	shared_ptr<ClientSession> clientSession;
-
-	clientSession = make_shared<ClientSession>();
+	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
 	clientSession->Connect();
 
 	GThreadManager->Launch([=]() {
@@ -21,11 +19,18 @@ int main()
 	while (true)
 	{
 		cin.getline(recvBuffer, sizeof(char) * MAX_BUFFER_SIZE);
-		memcpy(clientSession->GetSendBuffer(), recvBuffer, sizeof(char) * MAX_BUFFER_SIZE);
+		if (strcmp(recvBuffer, "exit") == 0)
+		{
+			clientSession->RegisterDisconnect();
+			break;
+		}
+		clientSession->SetSendBufferSize(strlen(recvBuffer) + 1);
+
+		memcpy(clientSession->GetSendBuffer(), recvBuffer, sizeof(char) * clientSession->GetSendBufferSize());
 		clientSession->RegisterSend();
 	}
 
-	GThreadManager->Join();
 	clientSession = nullptr;
+	GThreadManager->Join();
 	return 0;
 }

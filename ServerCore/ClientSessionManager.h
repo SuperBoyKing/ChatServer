@@ -11,7 +11,7 @@ public:
 	void						Remove(shared_ptr<ClientSession> session);
 	void						Remove(SOCKET key);
 	shared_ptr<ClientSession>	Search(SOCKET key);
-	void						Broadcast();
+	void						Broadcast(char* sendBuffer);
 
 private:
 	unordered_map<SOCKET, shared_ptr<ClientSession>> m_uMapSessions;

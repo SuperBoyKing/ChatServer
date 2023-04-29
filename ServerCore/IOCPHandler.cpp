@@ -19,7 +19,7 @@ bool IOCPHandler::BindIOCompletionPort(shared_ptr<IIOCPBinder> iocpBinder)
 	return ::CreateIoCompletionPort((HANDLE)iocpBinder->GetSock(), m_iocpHandle, NULL, NULL);
 }
 
-bool IOCPHandler::CallGQCS()
+void IOCPHandler::CallGQCS()
 {
 	DWORD bytesTransferred = 0;
 	IOCPOperation* iocpOperation = nullptr;
@@ -33,8 +33,5 @@ bool IOCPHandler::CallGQCS()
 	else
 	{
 		PRINT_WSA_ERROR("GetQueuedCompletionStatus Error");
-		return false;
 	}
-	
-	return true;
 }

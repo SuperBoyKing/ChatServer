@@ -160,6 +160,8 @@
     <ClInclude Include="IOCPOperation.h" />
     <ClInclude Include="IOCPHandler.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RecvBuffer.h" />
+    <ClInclude Include="SendBuffer.h" />
     <ClInclude Include="ServerAddress.h" />
     <ClInclude Include="ServerGlobal.h" />
     <ClInclude Include="ServerMacro.h" />
@@ -180,6 +182,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp" />
+    <ClCompile Include="SendBuffer.cpp" />
     <ClCompile Include="ServerAddress.cpp" />
     <ClCompile Include="ServerGlobal.cpp" />
     <ClCompile Include="ServerTLS.cpp" />

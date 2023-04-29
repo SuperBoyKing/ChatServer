@@ -47,7 +47,10 @@ shared_ptr<ClientSession> ClientSessionManager::Search(SOCKET key)
 	return itr->second;
 }
 
-void ClientSessionManager::Broadcast()
+void ClientSessionManager::Broadcast(char* sendBuffer)
 {
-
+	for (auto &clients : m_uMapSessions)
+	{
+		clients.second->send(sendBuffer, strnlen_s(sendBuffer, MAX_BUFFER_SIZE));
+	}
 }

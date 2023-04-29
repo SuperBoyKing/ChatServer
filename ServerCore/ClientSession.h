@@ -15,14 +15,16 @@ public:
 
 public:
 
-	bool		Connect();
+	void		Connect();
 	void		Disconnect();
+	void		send(char* sendBuffer, const unsigned int size);
 
 	inline char*	GetRecvBuffer()				{ return m_recvBuffer; }
 	inline int		GetRecvBufferSize() const	{ return m_recvSize; }
 
 	inline char*	GetSendBuffer()				{ return m_sendBuffer; }
 	inline int		GetSendBufferSize() const	{ return m_sendSize; }
+	inline void		SetSendBufferSize(unsigned int size) { m_sendSize = size; } // temp
 
 	// Operation Ã³¸®
 	void		ProcessSend(unsigned int numberOfBytes);
@@ -40,6 +42,10 @@ private:
 	SOCKET			m_socket;
 	IOCPOperation	m_sendOperation;
 	IOCPOperation	m_recvOperation;
+	IOCPOperation	m_connectOperation;
+	IOCPOperation	m_disconnectOperation;
+
+	mutex m_mutex;
 
 private:
 	char			m_recvBuffer[MAX_BUFFER_SIZE];
