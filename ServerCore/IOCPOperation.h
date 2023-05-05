@@ -24,14 +24,44 @@ public:
 	inline void					SetType(OperationType OperationType)	{ m_operationType = OperationType; }
 	inline OperationType		GetType() const							{ return m_operationType; }
 
-	inline void			SetOwner(shared_ptr<IIOCPBinder> ptr)	{ m_owner = ptr; }
+	inline void			SetOwner(const shared_ptr<IIOCPBinder>& ptr)	{
+		m_owner = ptr; 
+	}
 	inline void			ReleaseOwner()							{ m_owner = nullptr; }
 
 	inline shared_ptr<IIOCPBinder> GetOwner() const				{ return m_owner; }
 
-protected:
+public:
 	OperationType				m_operationType = OperationType::NONE;
 	shared_ptr<IIOCPBinder>		m_owner;
+};
+
+
+
+class SendOperation : public IOCPOperation
+{
+public:
+	SendOperation() : IOCPOperation(OperationType::SEND) {}
+
+	vector<BYTE> buffer;
+};
+
+class RecvOperation : public IOCPOperation
+{
+public:
+	RecvOperation() : IOCPOperation(OperationType::RECV) {}
+};
+
+class ConnectOperation : public IOCPOperation
+{
+public:
+	ConnectOperation() : IOCPOperation(OperationType::CONNECT) {}
+};
+
+class DisconnectOperation : public IOCPOperation
+{
+public:
+	DisconnectOperation() : IOCPOperation(OperationType::DISCONNECT) {}
 };
 
 class AcceptOperation : public IOCPOperation

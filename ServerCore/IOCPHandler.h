@@ -1,7 +1,5 @@
 #pragma once
 
-class ClientSession;
-
 class IOCPOperation;
 
 class IIOCPBinder : public enable_shared_from_this<IIOCPBinder>

@@ -31,6 +31,9 @@ void ClientListener::SetUpListener(const unsigned int maxClientSession)
 	if (m_listenSocket == INVALID_SOCKET)
 		return;
 
+	if (GIOCPHandler->BindIOCompletionPort(shared_from_this()) == false)
+		return;
+
 	if (SocketAssistant::SetLinger(m_listenSocket, 0, 0) == false)
 	{
 		PRINT_WSA_ERROR("Linger Set Error");
@@ -61,8 +64,7 @@ void ClientListener::SetUpListener(const unsigned int maxClientSession)
 		return;
 	}
 
-	GIOCPHandler->BindIOCompletionPort(shared_from_this());
-	for (unsigned int i = 0; i < maxClientSession; ++i)
+	for (unsigned int i = 0; i < maxClientSession; ++i)	// accept를 수행할 갯 수
 	{
 		AcceptOperation* acceptOperation = new AcceptOperation();
 		acceptOperation->SetOwner(shared_from_this());
@@ -86,15 +88,16 @@ void ClientListener::ProcessAccept(AcceptOperation* acceptOperation)
 
 	SocketAssistant::SetUpdateClientSocket(clientSession->GetSock(), m_listenSocket);
 
-	clientSession->RegisterRecv();
+	clientSession->ProcessConnect();
 
-	RegisterAccept(acceptOperation);
+	RegisterAccept(acceptOperation);	// 다음 accept를 위해 재등록
 }
 
 void ClientListener::RegisterAccept(AcceptOperation* acceptOperation)
 {
 	// 클라이언트 세션 생성 및 등록
 	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
+
 	GIOCPHandler->BindIOCompletionPort(clientSession);
 
 	acceptOperation->Init();
@@ -102,7 +105,7 @@ void ClientListener::RegisterAccept(AcceptOperation* acceptOperation)
 	acceptOperation->SetSession(clientSession);
 
 	DWORD bytesReceived = 0;
-	if (false == SocketAssistant::AcceptEx(m_listenSocket, clientSession->GetSock(), clientSession->GetRecvBuffer(), 0,
+	if (false == SocketAssistant::AcceptEx(m_listenSocket, clientSession->GetSock(), clientSession->m_recvBuffer.GetWritePos(), 0,
 		sizeof(SOCKADDR) + 16, sizeof(SOCKADDR) + 16, &bytesReceived, static_cast<LPOVERLAPPED>(acceptOperation)))
 	{
 		int errorCode = ::WSAGetLastError();
@@ -111,6 +114,4 @@ void ClientListener::RegisterAccept(AcceptOperation* acceptOperation)
 			PRINT_WSA_ERROR("Accept error");
 		}
 	}
-
-	GClientSessionManager->Add(clientSession);
 }

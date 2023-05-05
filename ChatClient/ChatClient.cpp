@@ -5,6 +5,7 @@ int main()
 {
 	this_thread::sleep_for(500ms);
 	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
+	GIOCPHandler->BindIOCompletionPort(clientSession);
 	clientSession->Connect();
 
 	GThreadManager->Launch([=]() {
@@ -14,20 +15,17 @@ int main()
 		}
 	});
 	
-	char recvBuffer[MAX_BUFFER_SIZE] = {};
-
+	char sendBuffer[100] = {};
 	while (true)
 	{
-		cin.getline(recvBuffer, sizeof(char) * MAX_BUFFER_SIZE);
-		if (strcmp(recvBuffer, "exit") == 0)
+		cin.getline(sendBuffer, 100);
+		if (strcmp(sendBuffer, "exit") == 0)
 		{
 			clientSession->RegisterDisconnect();
 			break;
 		}
-		clientSession->SetSendBufferSize(strlen(recvBuffer) + 1);
-
-		memcpy(clientSession->GetSendBuffer(), recvBuffer, sizeof(char) * clientSession->GetSendBufferSize());
-		clientSession->RegisterSend();
+		clientSession->Send(sendBuffer, strnlen_s(sendBuffer, 100));
+		memset(sendBuffer, 0, 100);
 	}
 
 	clientSession = nullptr;
