@@ -2,11 +2,18 @@
 class SendBuffer
 {
 public:
-	SendBuffer();
+	SendBuffer() = delete;
+	SendBuffer(int bufferSize);
 	~SendBuffer();
 
+	inline BYTE*	GetBuffer()				{ return m_buffer.data(); }
+	inline int		GetWriteSize() const	{ return m_writeSize; }
+	inline int		GetCapacity() const		{ return static_cast<int>(m_buffer.size()); }
+
+	void CopyData(void* data, int len);
+
 private:
-	char*	m_buffer;
-	int		m_writeSize;
+	vector<BYTE>	m_buffer;
+	int				m_writeSize;
 };
 

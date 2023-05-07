@@ -1,5 +1,6 @@
 #pragma once
 #include "IOCPHandler.h"
+#include "SendBuffer.h"
 
 class ClientSession;
 
@@ -24,12 +25,10 @@ public:
 	inline void					SetType(OperationType OperationType)	{ m_operationType = OperationType; }
 	inline OperationType		GetType() const							{ return m_operationType; }
 
-	inline void			SetOwner(const shared_ptr<IIOCPBinder>& ptr)	{
-		m_owner = ptr; 
-	}
-	inline void			ReleaseOwner()							{ m_owner = nullptr; }
+	inline void			SetOwner(const shared_ptr<IIOCPBinder>& ptr)	{ m_owner = ptr; }
+	inline void			ReleaseOwner()									{ m_owner = nullptr; }
 
-	inline shared_ptr<IIOCPBinder> GetOwner() const				{ return m_owner; }
+	inline shared_ptr<IIOCPBinder> GetOwner() const						{ return m_owner; }
 
 public:
 	OperationType				m_operationType = OperationType::NONE;
@@ -41,9 +40,10 @@ public:
 class SendOperation : public IOCPOperation
 {
 public:
-	SendOperation() : IOCPOperation(OperationType::SEND) {}
+	SendOperation() : IOCPOperation(OperationType::SEND) { sendBuffers.reserve(100); }
 
-	vector<BYTE> buffer;
+public:
+	vector<shared_ptr<SendBuffer>> sendBuffers;
 };
 
 class RecvOperation : public IOCPOperation

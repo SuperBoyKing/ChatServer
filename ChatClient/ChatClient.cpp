@@ -9,23 +9,21 @@ int main()
 	clientSession->Connect();
 
 	GThreadManager->Launch([=]() {
-		while (true)
-		{
-			GIOCPHandler->CallGQCS();
-		}
+		for (int i = 0; i < 5; ++i);
+			while (true)
+			{
+				GIOCPHandler->CallGQCS();
+			}
 	});
 	
-	char sendBuffer[100] = {};
+	const char* a = "HelloWorld";
+
 	while (true)
 	{
-		cin.getline(sendBuffer, 100);
-		if (strcmp(sendBuffer, "exit") == 0)
-		{
-			clientSession->RegisterDisconnect();
-			break;
-		}
-		clientSession->Send(sendBuffer, strnlen_s(sendBuffer, 100));
-		memset(sendBuffer, 0, 100);
+		this_thread::sleep_for(250ms);
+		shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(MAX_SEND_BUFFER_SIZE);
+		sendBuf->CopyData((char*)a, sizeof(char) * 11);
+		clientSession->Send(sendBuf);
 	}
 
 	clientSession = nullptr;

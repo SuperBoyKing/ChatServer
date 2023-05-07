@@ -26,6 +26,7 @@ using namespace std;
 #include <unordered_map>
 #include <set>
 #include <unordered_set>
+#include <queue>
 
 /*--------------------
 	Custom Header
@@ -41,5 +42,7 @@ using namespace std;
 #include "ClientListener.h"
 #include "ClientSession.h"
 #include "ClientSessionManager.h"
+#include "RecvBuffer.h"
+#include "SendBuffer.h"
 
 

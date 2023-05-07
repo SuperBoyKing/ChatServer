@@ -51,6 +51,6 @@ void ClientSessionManager::Broadcast(const char* sendBuffer)
 {
 	for (auto &clients : m_uMapSessions)
 	{
-		//clients.second->Send(sendBuffer, strnlen_s(sendBuffer, MAX_BUFFER_SIZE));
+		//clients.second->Send(sendBuffer, strnlen_s(sendBuffer, MAX_RECV_BUFFER_SIZE));
 	}
 }

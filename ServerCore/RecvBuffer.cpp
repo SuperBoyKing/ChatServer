@@ -21,6 +21,7 @@ void RecvBuffer::Clear()
 	
 	if (dataSize == 0)
 	{
+		::memset(m_buffer, 0, m_writePos);
 		m_writePos = 0;
 		m_readPos = 0;
 	}

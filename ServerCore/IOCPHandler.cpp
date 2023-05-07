@@ -32,6 +32,16 @@ void IOCPHandler::CallGQCS()
 	}
 	else
 	{
-		PRINT_WSA_ERROR("GetQueuedCompletionStatus Error");
+		int errorCode = ::WSAGetLastError();
+		switch (errorCode)
+		{
+		case WAIT_TIMEOUT:
+			PRINT_WSA_ERROR("GetQueuedCompletionStatus Error");
+			return;
+		default:
+			shared_ptr<IIOCPBinder> iocpBinder = iocpOperation->GetOwner();
+			iocpBinder->ProcessOperation(iocpOperation, bytesTransferred);
+			break;
+		}
 	}
 }

@@ -6,10 +6,9 @@ class IOCPOperation;
 
 ClientSession::ClientSession()
 	: m_socket(SocketAssistant::CreateSocket())
-	, m_recvBuffer(MAX_BUFFER_SIZE)
-	, m_sendBuffer{ 0 }
-	, m_sendSize(0)
+	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
 	, m_isConnected(false)
+	, m_isRegisteredSend(false)
 {
 	if (m_socket == INVALID_SOCKET)
 		PRINT_WSA_ERROR("Create Socket Error");
@@ -17,17 +16,15 @@ ClientSession::ClientSession()
 
 ClientSession::ClientSession(SOCKET clientSocket)
 	: m_socket(clientSocket)
-	, m_recvBuffer(MAX_BUFFER_SIZE)
-	, m_sendBuffer{ 0 }
-	, m_sendSize(0)
+	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
 	, m_isConnected(false)
+	, m_isRegisteredSend(false)
 {
 }
 
 ClientSession::~ClientSession()
 {
 	SocketAssistant::SocketClose(m_socket);
-	GClientSessionManager->Remove(static_pointer_cast<ClientSession>(shared_from_this()));
 }
 
 void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
@@ -35,7 +32,7 @@ void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int 
 	switch (iocpOperation->GetType())
 	{
 	case OperationType::SEND:
-		ProcessSend(static_cast<SendOperation*>(iocpOperation), numberOfBytes);
+		ProcessSend(numberOfBytes);
 		break;
 	case OperationType::RECV:
 		ProcessRecv(numberOfBytes);
@@ -78,27 +75,42 @@ void ClientSession::Disconnect()
 	RegisterDisconnect();
 }
 
-void ClientSession::Send(const char* sendBuffer, const unsigned int len)
+void ClientSession::Send(shared_ptr<SendBuffer> sendbuffer)
 {
-	SendOperation* sendOperation = new SendOperation();
-	sendOperation->buffer.resize(len);
-	sendOperation->SetOwner(shared_from_this());
-	::memcpy(sendOperation->buffer.data(), sendBuffer, len);
+	m_sendOperation.SetOwner(shared_from_this());
 
-	lock_guard<mutex> lock(m_mutex);
-	RegisterSend(sendOperation);
+	bool registSend = false;
+
+	{
+		lock_guard<recursive_mutex> lock(m_mutex);
+		m_sendQueue.push(sendbuffer);
+
+		if (m_isRegisteredSend.exchange(true) == false)
+			registSend = true;
+	}
+	
+	if (registSend == true)
+		RegisterSend();	
 }
 
-void ClientSession::ProcessSend(SendOperation* sendOperation, unsigned int numberOfBytes)
+void ClientSession::ProcessSend(unsigned int numberOfBytes)
 {
-	sendOperation->ReleaseOwner();
-	delete sendOperation;
+	m_sendOperation.ReleaseOwner();
+	m_sendOperation.sendBuffers.clear();
 
 	if (numberOfBytes == 0)
 	{
 		Disconnect();
 		return;
 	}
+
+	OnSend(numberOfBytes);
+
+	lock_guard<recursive_mutex> lock(m_mutex);
+	if (m_sendQueue.empty())
+		m_isRegisteredSend.store(false);
+	else
+		RegisterSend();
 }
 
 void ClientSession::ProcessRecv(unsigned int numberOfBytes)
@@ -149,26 +161,53 @@ void ClientSession::ProcessDisconnect()
 	GClientSessionManager->Remove(m_socket);
 }
 
-void ClientSession::RegisterSend(SendOperation* sendOperation)
+void ClientSession::RegisterSend()
 {
 	if (IsConnected() == false)
 		return;
 
+	m_sendOperation.Init();
+	m_sendOperation.SetOwner(shared_from_this());
+
 	DWORD bytesTransfered = 0;
 	DWORD flags = 0;
 
-	WSABUF wsaBuf;
-	wsaBuf.buf = (char*)sendOperation->buffer.data();
-	wsaBuf.len = (ULONG)sendOperation->buffer.size();
+	// SendQueue에 있는 버퍼공유포인터를 Operation에 vector로 복사
+	{
+		lock_guard<recursive_mutex> lock(m_mutex);
+		int	writeSize = 0;
+		while (m_sendQueue.empty() == false)
+		{
+			shared_ptr<SendBuffer> sendBuffer = m_sendQueue.front();
+			writeSize = sendBuffer->GetWriteSize();
+			ASSERT_CRASH(writeSize < MAX_SEND_BUFFER_SIZE);
 
-	if (SOCKET_ERROR == ::WSASend(m_socket, &wsaBuf, 1, &bytesTransfered, flags, sendOperation, NULL))
+			m_sendQueue.pop();
+			m_sendOperation.sendBuffers.push_back(sendBuffer);
+		}
+	}
+
+	// Scattered-gathered I/O (vecterd I/O)
+	vector<WSABUF> wsaBufs;
+	wsaBufs.reserve(m_sendOperation.sendBuffers.size());
+
+	for (auto sendBuffer : m_sendOperation.sendBuffers)
+	{
+		WSABUF wsaBuf;
+		wsaBuf.buf = reinterpret_cast<CHAR*>(sendBuffer->GetBuffer());
+		wsaBuf.len = static_cast<ULONG>(sendBuffer->GetWriteSize());
+		wsaBufs.push_back(wsaBuf);
+	}
+
+	if (SOCKET_ERROR == ::WSASend(m_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesTransfered, flags, &m_sendOperation, NULL))
 	{
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			PRINT_WSA_ERROR("Handle Error");
-			sendOperation->ReleaseOwner();
-			delete sendOperation;
+			m_sendOperation.ReleaseOwner();
+			m_sendOperation.sendBuffers.clear();
+			m_isRegisteredSend.store(false);
 		}
 	}
 }
