@@ -16,6 +16,9 @@
     <ClInclude Include="ChatServer.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="ChatSession.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -25,6 +28,9 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ChatServer.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>

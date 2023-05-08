@@ -166,15 +166,16 @@ void ClientSession::RegisterSend()
 	if (IsConnected() == false)
 		return;
 
-	m_sendOperation.Init();
-	m_sendOperation.SetOwner(shared_from_this());
-
 	DWORD bytesTransfered = 0;
 	DWORD flags = 0;
 
 	// SendQueue에 있는 버퍼공유포인터를 Operation에 vector로 복사
 	{
 		lock_guard<recursive_mutex> lock(m_mutex);
+
+		m_sendOperation.Init();
+		m_sendOperation.SetOwner(shared_from_this());
+
 		int	writeSize = 0;
 		while (m_sendQueue.empty() == false)
 		{
@@ -189,14 +190,12 @@ void ClientSession::RegisterSend()
 
 	// Scattered-gathered I/O (vecterd I/O)
 	vector<WSABUF> wsaBufs;
-	wsaBufs.reserve(m_sendOperation.sendBuffers.size());
+	wsaBufs.resize(m_sendOperation.sendBuffers.size());
 
-	for (auto sendBuffer : m_sendOperation.sendBuffers)
+	for (int i = 0; i < m_sendOperation.sendBuffers.size(); ++i)
 	{
-		WSABUF wsaBuf;
-		wsaBuf.buf = reinterpret_cast<CHAR*>(sendBuffer->GetBuffer());
-		wsaBuf.len = static_cast<ULONG>(sendBuffer->GetWriteSize());
-		wsaBufs.push_back(wsaBuf);
+		wsaBufs[i].buf = reinterpret_cast<CHAR*>(m_sendOperation.sendBuffers[i]->GetBuffer());
+		wsaBufs[i].len = static_cast<ULONG>(m_sendOperation.sendBuffers[i]->GetWriteSize());
 	}
 
 	if (SOCKET_ERROR == ::WSASend(m_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesTransfered, flags, &m_sendOperation, NULL))
