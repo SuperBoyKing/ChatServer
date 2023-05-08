@@ -4,13 +4,8 @@
 #include "ClientSessionManager.h"
 
 ClientListener::ClientListener()
-	: m_listenSocket(INVALID_SOCKET)
-{
-}
-
-ClientListener::ClientListener(const WCHAR* ip, const unsigned __int16 port)
-	: m_listenSocket(INVALID_SOCKET)
-	, m_serverAddress(ip, port)
+	: m_listenSocket(SocketAssistant::CreateSocket())
+	, m_chatServer(nullptr)
 {
 }
 
@@ -25,14 +20,17 @@ ClientListener::~ClientListener()
 	m_vAcceptOperations.clear();
 }
 
-void ClientListener::SetUpListener(const unsigned int maxClientSession)
+void ClientListener::SetUpListener(shared_ptr<ChatServer> chatServer, const unsigned int maxClientSession)
 {
-	m_listenSocket = SocketAssistant::CreateSocket();
+	m_chatServer = chatServer;
 	if (m_listenSocket == INVALID_SOCKET)
 		return;
 
-	if (GIOCPHandler->BindIOCompletionPort(shared_from_this()) == false)
+	if (m_chatServer->GetApplicationType() != ApplicationType::SERVER)
+	{
+		PRINT_ERROR("Invalid Application Type");
 		return;
+	}
 
 	if (SocketAssistant::SetLinger(m_listenSocket, 0, 0) == false)
 	{
@@ -51,8 +49,8 @@ void ClientListener::SetUpListener(const unsigned int maxClientSession)
 		PRINT_WSA_ERROR("TcpNoDelay Set Error");
 		return;
 	}
-
-	if (SocketAssistant::SetBind(m_listenSocket, m_serverAddress.GetSockAddrIn()) == false)
+	
+	if (SocketAssistant::SetBind(m_listenSocket, m_chatServer->GetAddress()->GetSockAddrIn()) == false)
 	{
 		PRINT_WSA_ERROR("Bind Error");
 		return;
@@ -64,7 +62,7 @@ void ClientListener::SetUpListener(const unsigned int maxClientSession)
 		return;
 	}
 
-	for (unsigned int i = 0; i < maxClientSession; ++i)	// accept를 수행할 갯 수
+	for (unsigned int i = 0; i < maxClientSession; ++i)	// accept를 수행할 최대 Operation 갯 수
 	{
 		AcceptOperation* acceptOperation = new AcceptOperation();
 		acceptOperation->SetOwner(shared_from_this());

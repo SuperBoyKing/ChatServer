@@ -9,6 +9,9 @@ public:
 
 	SOCKADDR_IN GetSockAddrIn() const { return m_serverAddr; }
 
+	inline const WCHAR*			GetIP();
+	inline const unsigned short	GetPort();
+
 private:
 	SOCKADDR_IN m_serverAddr = {};
 };

@@ -1,15 +1,15 @@
 #pragma once
 #include "IOCPHandler.h"
 #include "IOCPOperation.h"
+#include "ChatApplication.h"
 
 class ClientListener : public IIOCPBinder
 {
 public:
 	ClientListener();
-	ClientListener(const WCHAR* ip, const unsigned __int16 port);
 	virtual ~ClientListener();
 
-	void		SetUpListener(const unsigned int maxClientSession = 1000);
+	void		SetUpListener(shared_ptr<ChatServer> chatServer, const unsigned int maxClientSession = 1000);
 
 	// Override Function
 	inline SOCKET		GetSock() const	override		{ return m_listenSocket; }
@@ -21,7 +21,8 @@ public:
 
 private:
 	SOCKET						m_listenSocket;
-	ServerAddress				m_serverAddress;
+	//ServerAddress				m_serverAddress;
+	shared_ptr<ChatServer>		m_chatServer;
 	vector<AcceptOperation*>	m_vAcceptOperations;
 };
 

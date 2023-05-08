@@ -2,7 +2,7 @@
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
 
-class IOCPOperation; 
+//class IOCPOperation; 
 
 class ClientSession : public IIOCPBinder
 {

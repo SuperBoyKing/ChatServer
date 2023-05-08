@@ -1,17 +1,18 @@
 #include "pch.h"
 #include "ThreadManager.h"
-#include "ClientListener.h"
 
 int main()
 {
-	shared_ptr<ClientListener> clientListener = make_shared<ClientListener>(L"127.0.0.1", SERVER_PORT);
-	clientListener->SetUpListener(1);
+	shared_ptr<ChatServer> chatServer = make_shared<ChatServer>(make_shared<ServerAddress>(L"127.0.0.1", SERVER_PORT),
+		make_shared<IOCPHandler>(), 100);
+
+	ASSERT_CRASH(chatServer->Start());
 
 	GThreadManager->Launch(
 		[=]() {
 			while (true)
 			{
-				GIOCPHandler->CallGQCS();
+				chatServer->GetIOCPHandler()->CallGQCS();
 			}
 		});
 

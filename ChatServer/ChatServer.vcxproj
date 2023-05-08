@@ -154,12 +154,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ChatServer.h" />
     <ClInclude Include="ChatSession.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChatServer.cpp" />
     <ClCompile Include="ChatSession.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
