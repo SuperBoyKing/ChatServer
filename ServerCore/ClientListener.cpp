@@ -2,10 +2,11 @@
 #include "IOCPHandler.h"
 #include "ClientListener.h"
 #include "ClientSessionManager.h"
+#include "ChatApplication.h"
 
-ClientListener::ClientListener()
+ClientListener::ClientListener(shared_ptr<ChatApplication> chatApp)
 	: m_listenSocket(SocketAssistant::CreateSocket())
-	, m_chatServer(nullptr)
+	, m_chatApp(chatApp)
 {
 }
 
@@ -20,55 +21,65 @@ ClientListener::~ClientListener()
 	m_vAcceptOperations.clear();
 }
 
-void ClientListener::SetUpListener(shared_ptr<ChatServer> chatServer, const unsigned int maxClientSession)
+bool ClientListener::SetUpListener()
 {
-	m_chatServer = chatServer;
-	if (m_listenSocket == INVALID_SOCKET)
-		return;
+	if (m_chatApp.lock() == nullptr)
+	{
+		PRINT_ERROR("ChatApp nullptr");
+		return false;
+	}
 
-	if (m_chatServer->GetApplicationType() != ApplicationType::SERVER)
+	if (m_listenSocket == INVALID_SOCKET)
+	{
+		PRINT_ERROR("Invalid listenSocket");
+		return false;
+	}
+
+	if (CHAT_APPLICATION_TYPE != ApplicationType::SERVER)
 	{
 		PRINT_ERROR("Invalid Application Type");
-		return;
+		return false;
 	}
 
 	if (SocketAssistant::SetLinger(m_listenSocket, 0, 0) == false)
 	{
 		PRINT_WSA_ERROR("Linger Set Error");
-		return;
+		return false;
 	}
 
 	if (SocketAssistant::SetReuseAddress(m_listenSocket) == false)
 	{
 		PRINT_WSA_ERROR("ReuseAddress Set Error");
-		return;
+		return false;
 	}
 
 	if (SocketAssistant::SetTcpNoDelay(m_listenSocket, true) == false)
 	{
 		PRINT_WSA_ERROR("TcpNoDelay Set Error");
-		return;
+		return false;
 	}
 	
-	if (SocketAssistant::SetBind(m_listenSocket, m_chatServer->GetAddress()->GetSockAddrIn()) == false)
+	if (SocketAssistant::SetBind(m_listenSocket, CHAT_ADDRESS->GetSockAddrIn()) == false)
 	{
 		PRINT_WSA_ERROR("Bind Error");
-		return;
+		return false;
 	}
 
 	if (SocketAssistant::SetListen(m_listenSocket) == false)
 	{
 		PRINT_WSA_ERROR("Listen Error");
-		return;
+		return false;
 	}
 
-	for (unsigned int i = 0; i < maxClientSession; ++i)	// accept를 수행할 최대 Operation 갯 수
+	for (int i = 0; i < CHAT_MAX_SESSION_COUNT; ++i)	// accept를 수행할 최대 Operation 갯 수(최대 동접자 수 제한)
 	{
 		AcceptOperation* acceptOperation = new AcceptOperation();
 		acceptOperation->SetOwner(shared_from_this());
 		m_vAcceptOperations.push_back(acceptOperation);
 		RegisterAccept(acceptOperation);
 	}
+
+	return true;
 }
 
 void ClientListener::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
@@ -96,7 +107,7 @@ void ClientListener::RegisterAccept(AcceptOperation* acceptOperation)
 	// 클라이언트 세션 생성 및 등록
 	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
 
-	GIOCPHandler->BindIOCompletionPort(clientSession);
+	CHAT_IOCP_HANDLER->BindIOCompletionPort(clientSession);
 
 	acceptOperation->Init();
 	acceptOperation->SetType(OperationType::ACCEPT);

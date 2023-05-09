@@ -9,16 +9,30 @@ ClientSession::ClientSession()
 	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
 	, m_isConnected(false)
 	, m_isRegisteredSend(false)
+	, m_chatApp(shared_ptr<ChatApplication>(nullptr))
 {
 	if (m_socket == INVALID_SOCKET)
 		PRINT_WSA_ERROR("Create Socket Error");
 }
 
-ClientSession::ClientSession(SOCKET clientSocket)
+
+ClientSession::ClientSession(weak_ptr<ChatApplication> chatApp)
+	: m_socket(SocketAssistant::CreateSocket())
+	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
+	, m_isConnected(false)
+	, m_isRegisteredSend(false)
+	, m_chatApp(chatApp)
+{
+	if (m_socket == INVALID_SOCKET)
+		PRINT_WSA_ERROR("Create Socket Error");
+}
+
+ClientSession::ClientSession(weak_ptr<ChatApplication> chatApp, SOCKET clientSocket)
 	: m_socket(clientSocket)
 	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
 	, m_isConnected(false)
 	, m_isRegisteredSend(false)
+	, m_chatApp(chatApp)
 {
 }
 
@@ -48,21 +62,33 @@ void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int 
 	}
 }
 
-void ClientSession::Connect()
+bool ClientSession::Connect()
 {
+	if (IsConnected())
+	{
+		PRINT_ERROR("Client already connected");
+		return false;
+	}
+
+	if (CHAT_APPLICATION_TYPE != ApplicationType::CLIENT)
+	{
+		PRINT_ERROR("Invalid Application Type");
+		return false;
+	}
+
 	if (SocketAssistant::SetReuseAddress(m_socket) == false)
 	{
 		PRINT_WSA_ERROR("ReuseAddress Set Error");
-		return;
+		return false;
 	}
 
 	if (SocketAssistant::SetBindAnyAddress(m_socket, 0) == false)
 	{
 		PRINT_WSA_ERROR("Any Address Bind Error");
-		return;
+		return false;
 	}
 
-	RegisterConnect();
+	return RegisterConnect();
 }
 
 void ClientSession::Disconnect()
@@ -237,23 +263,13 @@ void ClientSession::RegisterRecv()
 	}
 }
 
-void ClientSession::RegisterConnect()
+bool ClientSession::RegisterConnect()
 {
-	// 서버 주소 및 포트 정의
-	SOCKADDR_IN serverAddr;
-	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(SERVER_PORT);
-
-	if (inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr) <= 0)
-	{
-		cout << "Invalid Server address" << endl;
-		return;
-	}
-
 	m_connectOperation.Init();
 	m_connectOperation.SetOwner(shared_from_this());
 
 	DWORD sendBytes = 0;
+	sockaddr_in serverAddr = CHAT_ADDRESS->GetSockAddrIn();
 	if (false == SocketAssistant::ConnectEx(m_socket, (sockaddr*)(&serverAddr), sizeof(sockaddr), 
 		nullptr, 0, &sendBytes, &m_connectOperation))
 	{
@@ -262,10 +278,12 @@ void ClientSession::RegisterConnect()
 		{
 			m_connectOperation.ReleaseOwner();
 			PRINT_WSA_ERROR("Connection Error");
-			return;
+			return false;
 		}
 	}
+
 	cout << "Connect Success!" << endl;
+	return true;
 }
 
 void ClientSession::RegisterDisconnect()

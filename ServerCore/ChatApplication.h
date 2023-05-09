@@ -1,4 +1,5 @@
 #pragma once
+class ClientSession;
 class ClientListener;
 
 enum class ApplicationType : unsigned __int8

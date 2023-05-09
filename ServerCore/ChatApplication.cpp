@@ -26,14 +26,18 @@ ChatServer::~ChatServer()
 
 bool ChatServer::Start()
 {
-	m_clientListener = make_shared<ClientListener>();
+	m_clientListener = make_shared<ClientListener>(shared_from_this());
 	if (m_clientListener == nullptr)
 	{
 		PRINT_ERROR("Create Listener Error");
 		return false;
 	}
-	shared_ptr<ChatServer> chatServer = static_pointer_cast<ChatServer>(shared_from_this());
-	m_clientListener->SetUpListener(static_pointer_cast<ChatServer>(shared_from_this()), GetMaxSessionCount());
+	else
+	{
+		if (m_clientListener->SetUpListener() == false)
+			return false;
+	}
+
 	if (GetIOCPHandler()->BindIOCompletionPort(m_clientListener) == false)
 	{
 		PRINT_ERROR("IOCP Bind Error");
@@ -55,5 +59,28 @@ ChatClient::~ChatClient()
 
 bool ChatClient::Start()
 {
+	int maxSessionCount = GetMaxSessionCount();
+
+	for (int i = 0; i < maxSessionCount; ++i)
+	{
+		shared_ptr<ClientSession> session = make_shared<ClientSession>(shared_from_this());
+		if (session == nullptr)
+		{
+			PRINT_ERROR("Create Session Error");
+			return false;
+		}
+
+		if (GetIOCPHandler()->BindIOCompletionPort(session) == false)
+		{
+			PRINT_ERROR("IOCP Bind Error");
+			return false;
+		}
+
+		if (session->Connect() == false)
+			return false;
+
+		GClientSessionManager->Add(session);	//temp
+	}
+
 	return true;
 }

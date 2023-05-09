@@ -38,7 +38,7 @@ shared_ptr<ClientSession> ClientSessionManager::Search(SOCKET key)
 		return shared_ptr<ClientSession>();
 	}
 	
-	if (itr->second.use_count() == 0)	// 참조 카운트가 0일 경우 해당 댕글링 포인터를 해쉬에서 삭제
+	if (itr->second.use_count() == 0)	// 참조 카운트가 0일 경우 해쉬에서 삭제
 	{
 		Remove(key);
 		return shared_ptr<ClientSession>();

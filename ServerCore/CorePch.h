@@ -44,5 +44,7 @@ using namespace std;
 #include "ClientSessionManager.h"
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
+#include "ChatApplication.h"
+#include "ThreadManager.h"
 
 

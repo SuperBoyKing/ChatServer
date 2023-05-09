@@ -2,7 +2,7 @@
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
 
-//class IOCPOperation; 
+class ChatApplication;
 
 class ClientSession : public IIOCPBinder
 {
@@ -10,7 +10,8 @@ class ClientSession : public IIOCPBinder
 
 public:
 	ClientSession();
-	ClientSession(SOCKET clientSocket);
+	ClientSession(weak_ptr<ChatApplication> chatApp);
+	ClientSession(weak_ptr<ChatApplication> chatApp, SOCKET clientSocket);
 	virtual ~ClientSession();
 
 	// Override Function
@@ -19,7 +20,7 @@ public:
 
 public:
 
-	void		Connect();
+	bool		Connect();
 	void		Disconnect();
 	void		Send(shared_ptr<SendBuffer> sendbuffer);
 
@@ -34,7 +35,7 @@ public:
 	// Operation 등록
 	void		RegisterSend();
 	void		RegisterRecv();
-	void		RegisterConnect();
+	bool		RegisterConnect();
 	void		RegisterDisconnect();
 
 	// Operation 재정의
@@ -58,5 +59,7 @@ private:
 	queue<shared_ptr<SendBuffer>>	m_sendQueue;
 	atomic<bool>					m_isRegisteredSend;
 	atomic<bool>					m_isConnected;
+
+	weak_ptr<ChatApplication>		m_chatApp;
 };
 
