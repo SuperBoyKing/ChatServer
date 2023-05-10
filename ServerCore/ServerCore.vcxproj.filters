@@ -63,7 +63,10 @@
     <ClInclude Include="SendBuffer.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ChatApplication.h" />
+    <ClInclude Include="ChatApplication.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -108,6 +111,9 @@
     <ClCompile Include="SendBuffer.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="ChatApplication.cpp" />
+    <ClCompile Include="ChatApplication.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp" />
   </ItemGroup>
 </Project>

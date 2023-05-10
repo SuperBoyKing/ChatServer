@@ -13,9 +13,6 @@
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ChatSession.h">
-      <Filter>Main</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -23,9 +20,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="ChatSession.cpp">
-      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
