@@ -70,7 +70,7 @@ public:
 	AcceptOperation() : IOCPOperation(OperationType::ACCEPT) {}
 
 	inline void							SetSession(shared_ptr<ChatSession> session)	{ m_acceptedClientSession = session; }
-	inline shared_ptr<ChatSession>	GetSession() const								{ return m_acceptedClientSession; }
+	inline shared_ptr<ChatSession>		GetSession() const								{ return m_acceptedClientSession; }
 
 private:
 	shared_ptr<ChatSession> m_acceptedClientSession = nullptr;

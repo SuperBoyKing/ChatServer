@@ -105,7 +105,7 @@ void ClientListener::ProcessAccept(AcceptOperation* acceptOperation)
 void ClientListener::RegisterAccept(AcceptOperation* acceptOperation)
 {
 	// 클라이언트 세션 생성 및 등록
-	shared_ptr<ChatSession> clientSession = make_shared<ChatSession>();
+	shared_ptr<ChatSession> clientSession = CHAT_SESSION;
 
 	CHAT_IOCP_HANDLER->BindIOCompletionPort(clientSession);
 

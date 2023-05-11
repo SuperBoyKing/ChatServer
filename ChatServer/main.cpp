@@ -3,7 +3,7 @@
 
 int main()
 {
-	function<shared_ptr<ChatSession>(void)> p = make_shared<ClientSession>;
+	function<shared_ptr<ClientSession>(void)> p = make_shared<ClientSession>;
 
 	shared_ptr<ChatServer> chatServer = make_shared<ChatServer>(
 		make_shared<ServerAddress>(L"127.0.0.1", SERVER_PORT),
