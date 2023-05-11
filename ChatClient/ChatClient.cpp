@@ -2,10 +2,13 @@
 
 int main()
 {
+	function<shared_ptr<ChatSession>(void)> p = make_shared<ChatSession>;
+
 	this_thread::sleep_for(500ms);
 	shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
 		make_shared<ServerAddress>(L"127.0.0.1", SERVER_PORT),
 		make_shared<IOCPHandler>(), 
+		p,
 		100);
 
 	ASSERT_CRASH(chatClient->Start());

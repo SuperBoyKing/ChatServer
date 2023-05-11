@@ -10,3 +10,4 @@
 #define CHAT_APPLICATION_TYPE	m_chatApp.lock()->GetApplicationType()
 #define CHAT_ADDRESS			m_chatApp.lock()->GetAddress()
 #define CHAT_MAX_SESSION_COUNT	m_chatApp.lock()->GetMaxSessionCount()
+#define CHAT_SESSION			m_chatApp.lock()->GetSession()()

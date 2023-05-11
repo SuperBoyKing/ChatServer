@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "IOCPHandler.h"
-#include "ClientSession.h"
+#include "ChatSession.h"
 #include "IOCPOperation.h"
 
 IOCPHandler::IOCPHandler()
@@ -23,7 +23,7 @@ void IOCPHandler::CallGQCS()
 {
 	DWORD bytesTransferred = 0;
 	IOCPOperation* iocpOperation = nullptr;
-	ClientSession* clientSession = nullptr;
+	ChatSession* clientSession = nullptr;
 
 	if (::GetQueuedCompletionStatus(m_iocpHandle, &bytesTransferred, (PULONG_PTR)&clientSession, reinterpret_cast<LPOVERLAPPED*>(&iocpOperation), INFINITE))
 	{

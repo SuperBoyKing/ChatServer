@@ -91,7 +91,7 @@ void ClientListener::ProcessOperation(IOCPOperation* iocpOperation, unsigned int
 
 void ClientListener::ProcessAccept(AcceptOperation* acceptOperation)
 {
-	shared_ptr<ClientSession> clientSession = acceptOperation->GetSession();
+	shared_ptr<ChatSession> clientSession = acceptOperation->GetSession();
 
 	cout << "Accept Complete : " << clientSession->GetSock() << "(Socket Number)" << endl;
 
@@ -105,7 +105,7 @@ void ClientListener::ProcessAccept(AcceptOperation* acceptOperation)
 void ClientListener::RegisterAccept(AcceptOperation* acceptOperation)
 {
 	// 클라이언트 세션 생성 및 등록
-	shared_ptr<ClientSession> clientSession = make_shared<ClientSession>();
+	shared_ptr<ChatSession> clientSession = make_shared<ChatSession>();
 
 	CHAT_IOCP_HANDLER->BindIOCompletionPort(clientSession);
 

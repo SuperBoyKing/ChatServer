@@ -1,5 +1,5 @@
 #pragma once
-#include "ClientSession.h"
+#include "ChatSession.h"
 
 class ClientSessionManager
 {
@@ -7,14 +7,14 @@ public:
 	ClientSessionManager();
 	~ClientSessionManager();
 
-	void						Add(shared_ptr<ClientSession> session);
-	void						Remove(shared_ptr<ClientSession> session);
+	void						Add(shared_ptr<ChatSession> session);
+	void						Remove(shared_ptr<ChatSession> session);
 	void						Remove(SOCKET key);
-	shared_ptr<ClientSession>	Search(SOCKET key);
+	shared_ptr<ChatSession>		Search(SOCKET key);
 	void						Broadcast(shared_ptr<SendBuffer> sendBuffer);
 
 private:
-	unordered_map<SOCKET, shared_ptr<ClientSession>> m_uMapSessions;
+	unordered_map<SOCKET, shared_ptr<ChatSession>> m_uMapSessions;
 	mutex m_mutex;
 };
 

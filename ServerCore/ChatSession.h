@@ -4,15 +4,13 @@
 
 class ChatApplication;
 
-class ClientSession : public IIOCPBinder
+class ChatSession : public IIOCPBinder
 {
 	friend class ClientListener;
 
 public:
-	ClientSession();
-	ClientSession(weak_ptr<ChatApplication> chatApp);
-	ClientSession(weak_ptr<ChatApplication> chatApp, SOCKET clientSocket);
-	virtual ~ClientSession();
+	ChatSession();
+	virtual ~ChatSession();
 
 	// Override Function
 	inline SOCKET		GetSock() const override	{ return m_socket; }
@@ -23,6 +21,7 @@ public:
 	bool		Connect();
 	void		Disconnect();
 	void		Send(shared_ptr<SendBuffer> sendbuffer);
+	inline void	SetApp(weak_ptr<ChatApplication> chatApp) { m_chatApp = chatApp; }
 
 	inline bool		IsConnected() const			{ return m_isConnected; }
 

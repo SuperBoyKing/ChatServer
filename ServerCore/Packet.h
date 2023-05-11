@@ -63,5 +63,5 @@ struct SC_ROOM_LEAVE_REQUEST : public PACKET_HEADER
 	bool result;
 };
 
-#pragma pack(pop)
+#pragma pack()
 

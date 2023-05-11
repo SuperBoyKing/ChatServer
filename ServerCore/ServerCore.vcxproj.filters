@@ -10,7 +10,7 @@
     <Filter Include="Network">
       <UniqueIdentifier>{c820801d-c070-477a-b389-a49174335c24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Memory">
+    <Filter Include="MemoryManagement">
       <UniqueIdentifier>{0b82f0a0-e998-46b1-9caf-073ef00a8c71}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -45,7 +45,7 @@
     <ClInclude Include="ClientListener.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ClientSession.h">
+    <ClInclude Include="ChatSession.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="IOCPOperation.h">
@@ -66,7 +66,10 @@
     <ClInclude Include="ChatApplication.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="Packet.h" />
+    <ClInclude Include="Packet.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -93,7 +96,7 @@
     <ClCompile Include="ClientListener.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="ClientSession.cpp">
+    <ClCompile Include="ChatSession.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="IOCPOperation.cpp">
@@ -114,6 +117,9 @@
     <ClCompile Include="ChatApplication.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="Packet.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHandler.cpp" />
   </ItemGroup>
 </Project>

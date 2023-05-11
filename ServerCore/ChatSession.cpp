@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "ClientSession.h"
+#include "ChatSession.h"
 #include "ClientSessionManager.h"
 
 class IOCPOperation;
 
-ClientSession::ClientSession()
+ChatSession::ChatSession()
 	: m_socket(SocketAssistant::CreateSocket())
 	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
 	, m_isConnected(false)
@@ -15,33 +15,12 @@ ClientSession::ClientSession()
 		PRINT_WSA_ERROR("Create Socket Error");
 }
 
-
-ClientSession::ClientSession(weak_ptr<ChatApplication> chatApp)
-	: m_socket(SocketAssistant::CreateSocket())
-	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
-	, m_isConnected(false)
-	, m_isRegisteredSend(false)
-	, m_chatApp(chatApp)
-{
-	if (m_socket == INVALID_SOCKET)
-		PRINT_WSA_ERROR("Create Socket Error");
-}
-
-ClientSession::ClientSession(weak_ptr<ChatApplication> chatApp, SOCKET clientSocket)
-	: m_socket(clientSocket)
-	, m_recvBuffer(MAX_RECV_BUFFER_SIZE)
-	, m_isConnected(false)
-	, m_isRegisteredSend(false)
-	, m_chatApp(chatApp)
-{
-}
-
-ClientSession::~ClientSession()
+ChatSession::~ChatSession()
 {
 	SocketAssistant::SocketClose(m_socket);
 }
 
-void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
+void ChatSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int numberOfBytes)
 {
 	switch (iocpOperation->GetType())
 	{
@@ -62,7 +41,7 @@ void ClientSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int 
 	}
 }
 
-bool ClientSession::Connect()
+bool ChatSession::Connect()
 {
 	if (IsConnected())
 	{
@@ -91,7 +70,7 @@ bool ClientSession::Connect()
 	return RegisterConnect();
 }
 
-void ClientSession::Disconnect()
+void ChatSession::Disconnect()
 {
 	if (m_isConnected.exchange(false) == false)
 		return;
@@ -101,7 +80,7 @@ void ClientSession::Disconnect()
 	RegisterDisconnect();
 }
 
-void ClientSession::Send(shared_ptr<SendBuffer> sendbuffer)
+void ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
 {
 	m_sendOperation.SetOwner(shared_from_this());
 
@@ -119,7 +98,7 @@ void ClientSession::Send(shared_ptr<SendBuffer> sendbuffer)
 		RegisterSend();	
 }
 
-void ClientSession::ProcessSend(unsigned int numberOfBytes)
+void ChatSession::ProcessSend(unsigned int numberOfBytes)
 {
 	m_sendOperation.ReleaseOwner();
 	m_sendOperation.sendBuffers.clear();
@@ -139,7 +118,7 @@ void ClientSession::ProcessSend(unsigned int numberOfBytes)
 		RegisterSend();
 }
 
-void ClientSession::ProcessRecv(unsigned int numberOfBytes)
+void ChatSession::ProcessRecv(unsigned int numberOfBytes)
 {
 	m_recvOperation.ReleaseOwner();
 
@@ -169,25 +148,27 @@ void ClientSession::ProcessRecv(unsigned int numberOfBytes)
 	RegisterRecv();
 }
 
-void ClientSession::ProcessConnect()
+void ChatSession::ProcessConnect()
 {
 	m_connectOperation.ReleaseOwner();
 
 	m_isConnected.store(true);
 	
-	GClientSessionManager->Add(static_pointer_cast<ClientSession>(shared_from_this()));	// 연결된 클라이언트 추가
+	OnConnect();	// 연결된 클라이언트 추가
 
 	RegisterRecv();
 }
 
-void ClientSession::ProcessDisconnect()
+void ChatSession::ProcessDisconnect()
 {
 	m_disconnectOperation.ReleaseOwner();
 
-	GClientSessionManager->Remove(m_socket);
+	OnDisconnect(); // 연결 해제된 클라이언트 삭제
+
+	m_isConnected.store(false);
 }
 
-void ClientSession::RegisterSend()
+void ChatSession::RegisterSend()
 {
 	if (IsConnected() == false)
 		return;
@@ -237,7 +218,7 @@ void ClientSession::RegisterSend()
 	}
 }
 
-void ClientSession::RegisterRecv()
+void ChatSession::RegisterRecv()
 {
 	if (IsConnected() == false)
 		return;
@@ -263,7 +244,7 @@ void ClientSession::RegisterRecv()
 	}
 }
 
-bool ClientSession::RegisterConnect()
+bool ChatSession::RegisterConnect()
 {
 	m_connectOperation.Init();
 	m_connectOperation.SetOwner(shared_from_this());
@@ -286,7 +267,7 @@ bool ClientSession::RegisterConnect()
 	return true;
 }
 
-void ClientSession::RegisterDisconnect()
+void ChatSession::RegisterDisconnect()
 {
 	m_disconnectOperation.Init();
 	m_disconnectOperation.SetOwner(shared_from_this());

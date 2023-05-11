@@ -2,7 +2,7 @@
 #include "IOCPHandler.h"
 #include "SendBuffer.h"
 
-class ClientSession;
+class ChatSession;
 
 enum class OperationType : unsigned __int8
 {
@@ -69,9 +69,9 @@ class AcceptOperation : public IOCPOperation
 public:
 	AcceptOperation() : IOCPOperation(OperationType::ACCEPT) {}
 
-	inline void							SetSession(shared_ptr<ClientSession> session)	{ m_acceptedClientSession = session; }
-	inline shared_ptr<ClientSession>	GetSession() const								{ return m_acceptedClientSession; }
+	inline void							SetSession(shared_ptr<ChatSession> session)	{ m_acceptedClientSession = session; }
+	inline shared_ptr<ChatSession>	GetSession() const								{ return m_acceptedClientSession; }
 
 private:
-	shared_ptr<ClientSession> m_acceptedClientSession = nullptr;
+	shared_ptr<ChatSession> m_acceptedClientSession = nullptr;
 };

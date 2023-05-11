@@ -40,7 +40,7 @@ using namespace std;
 #include "IOCPHandler.h"
 #include "IOCPOperation.h"
 #include "ClientListener.h"
-#include "ClientSession.h"
+#include "ChatSession.h"
 #include "ClientSessionManager.h"
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
