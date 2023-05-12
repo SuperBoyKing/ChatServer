@@ -14,6 +14,8 @@ enum class PacketID : unsigned __int16
 
 	ROOM_LEAVE_REQUEST,
 	ROOM_LEAVE_RESPONSE,
+
+	SERVER_ANNOUNCEMENT,
 };
 
 struct PACKET_HEADER
@@ -24,43 +26,102 @@ struct PACKET_HEADER
 
 struct CS_LOGIN_REQUEST : public PACKET_HEADER
 {
-	char userID[32 + 1];
-	char userPW[32 + 1];
+	char userID[32 + 1] = {};
+	char userPW[32 + 1] = {};
+
+	CS_LOGIN_REQUEST()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::LOGIN_REQUEST;
+	}
 };
 
 struct SC_LOGIN_RESPONSE : public PACKET_HEADER
 {
-	bool result;
+	bool result = false;
+
+	SC_LOGIN_RESPONSE()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::LOGIN_RESPONSE;
+	}
 };
 
 struct CS_CHAT_REQUEST : public PACKET_HEADER
 {
-	char message[100] = { 0 };
+	char message[256 + 1] = {};
+
+	CS_CHAT_REQUEST()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::CHAT_REQUEST;
+	}
 };
 
 struct SC_CHAT_RESPONSE : public PACKET_HEADER
 {
-	bool result;
+	bool result = false;
+
+	SC_CHAT_RESPONSE()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::CHAT_RESPONSE;
+	}
 };
 
 struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
 {
-	int roomNumber;
+	int roomNumber = 0;
+	
+	CS_ROOM_ENTER_REQUEST()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::CHAT_REQUEST;
+	}
 };
 
 struct SC_ROOM_ENTER_RESPONSE : public PACKET_HEADER
 {
-	bool result;
+	bool result = false;
+
+	SC_ROOM_ENTER_RESPONSE()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::ROOM_ENTER_RESPONSE;
+	}
 };
 
 struct CS_ROOM_LEAVE_REQUEST : public PACKET_HEADER
 {
-	int roomNumber;
+	int roomNumber = 0;
+
+	CS_ROOM_LEAVE_REQUEST()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::ROOM_LEAVE_REQUEST;
+	}
 };
 
-struct SC_ROOM_LEAVE_REQUEST : public PACKET_HEADER
+struct SC_ROOM_LEAVE_RESPONSE : public PACKET_HEADER
 {
-	bool result;
+	bool result = false;
+
+	SC_ROOM_LEAVE_RESPONSE()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::ROOM_LEAVE_RESPONSE;
+	}
+};
+
+struct SC_ANNOUNCEMENT : public PACKET_HEADER
+{
+	char message[256 + 1] = {};
+
+	SC_ANNOUNCEMENT()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::SERVER_ANNOUNCEMENT;
+	}
 };
 
 #pragma pack()

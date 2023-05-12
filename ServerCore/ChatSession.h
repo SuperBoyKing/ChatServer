@@ -39,8 +39,8 @@ public:
 
 	// Operation ¿Á¡§¿«
 public:
-	virtual void		OnSend(unsigned int len) { cout << "Send Complete" << endl; };
-	virtual void		OnRecv(char* buffer, unsigned int len) { cout << buffer << endl; };
+	virtual void		OnSend(unsigned int len) {};
+	virtual void		OnRecv(char* buffer, unsigned int len) {};
 	virtual void		OnConnect() {};
 	virtual void		OnDisconnect() {};
 

@@ -64,8 +64,7 @@ bool ChatClient::Start()
 
 	for (int i = 0; i < maxSessionCount; ++i)
 	{
-		//shared_ptr<ChatSession> session = make_shared<ChatSession>(shared_from_this());
-		shared_ptr<ChatSession> session = GetSession()();
+		shared_ptr<ChatSession> session = m_sessionFactory();
 		session->SetApp(shared_from_this());
 
 		if (session == nullptr)
@@ -87,4 +86,8 @@ bool ChatClient::Start()
 	}
 
 	return true;
+}
+
+void ChatClient::Send(shared_ptr<SendBuffer> sendBuffer)
+{
 }

@@ -51,5 +51,7 @@ public:
 	virtual ~ChatClient();
 
 	bool Start() override;
+
+	void Send(shared_ptr<SendBuffer> sendBuffer);
 };
 

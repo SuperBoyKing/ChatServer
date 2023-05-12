@@ -69,7 +69,9 @@
     <ClInclude Include="Packet.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -120,6 +122,8 @@
     <ClCompile Include="Packet.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="PacketHandler.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

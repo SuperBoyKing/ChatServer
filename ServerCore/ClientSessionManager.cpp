@@ -14,19 +14,19 @@ ClientSessionManager::~ClientSessionManager()
 
 void ClientSessionManager::Add(shared_ptr<ChatSession> session)
 {
-	lock_guard<mutex> lock(m_mutex);
+	lock_guard<recursive_mutex> lock(m_mutex);
 	m_uMapSessions.insert(pair<SOCKET, shared_ptr<ChatSession>>(session->GetSock(), session));
 }
 
 void ClientSessionManager::Remove(shared_ptr<ChatSession> session)
 {
-	lock_guard<mutex> lock(m_mutex);
+	lock_guard<recursive_mutex> lock(m_mutex);
 	m_uMapSessions.erase(session->GetSock());
 }
 
 void ClientSessionManager::Remove(SOCKET key)
 {
-	lock_guard<mutex> lock(m_mutex);
+	lock_guard<recursive_mutex> lock(m_mutex);
 	m_uMapSessions.erase(key);
 }
 
@@ -53,4 +53,21 @@ void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer)
 	{
 		clients.second->Send(sendBuffer);
 	}
+}
+
+bool ClientSessionManager::SendToSession(SOCKET key, shared_ptr<SendBuffer> sendBuffer)
+{
+	shared_ptr<ChatSession> client;
+
+	{
+		lock_guard<recursive_mutex> lock(m_mutex);
+		client = Search(key);
+		if (client.get() != nullptr)
+		{
+			client->Send(sendBuffer);
+			return true;
+		}
+	}
+
+	return false;
 }

@@ -18,7 +18,7 @@
 	}								\
 }				
 
-#define PRINT_ERROR(msg) wcout << "[" << __FILE__ << "]: " << __func__ << "(" << __LINE__ << ")" << L#msg << endl
+#define PRINT_ERROR(msg) wcout << "[" << __FILE__ << "]: " << __func__ << "(" << __LINE__ << ") " << L#msg << endl
 #define PRINT_WSA_ERROR(msg) wcout << L#msg << ": " << WSAGetLastError() << "(errorCode)" << endl
 //#define PRINT_WSA_ERROR(msg) PRINT_ERROR(msg) << WSAGetLastError() << "(errorCode)" << endl
 //#define ASSERT(x)		if(!(x))	__debugbreak();

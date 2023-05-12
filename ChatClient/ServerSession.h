@@ -1,12 +1,10 @@
 #pragma once
-#include "ChatSession.h"
-
-class ClientSession : public ChatSession
+class ServerSession : public ChatSession
 {
 public:
-	ClientSession() = default;
-	~ClientSession() = default;
-	
+	ServerSession() = default;
+	~ServerSession() = default;
+
 	void	OnSend(unsigned int len) override;
 	void	OnRecv(char* buffer, unsigned int len) override;
 	void	OnConnect() override;

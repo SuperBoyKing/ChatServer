@@ -210,7 +210,7 @@ void ChatSession::RegisterSend()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			PRINT_WSA_ERROR("Handle Error");
+			PRINT_ERROR("Handle Error");
 			m_sendOperation.ReleaseOwner();
 			m_sendOperation.sendBuffers.clear();
 			m_isRegisteredSend.store(false);

@@ -1,14 +1,23 @@
 #pragma once
+
 class PacketHandler
 {
 public:
-	PacketHandler();
-	~PacketHandler();
+	PacketHandler() = default;
+	~PacketHandler() = default;
 
-	void Init();
+	void HandlePacket(SOCKET socket, char* packet, int len);
 
-	int PacketRecv(BYTE* buffer, int len);
-private:
+	virtual void ProcessChat(SOCKET socket, char* packetData, int size) abstract;
+	virtual void ProcessLogin(SOCKET socket, char* packetData, int size) abstract;
+	virtual void ProcessRoomEnter(SOCKET socket, char* packetData, int size) abstract;
+	virtual void ProcessRoomLeave(SOCKET socket, char* packetData, int size) abstract;
+	
+	virtual void ProcessAnnouncement(SOCKET socket, char* packetData, int size) {};
 
+	using ProcessPacket = function<void(PacketHandler&, SOCKET, char*, int)>;
+
+protected:
+	unordered_map<PacketID, ProcessPacket> m_uMapProcessPacket;
 };
 

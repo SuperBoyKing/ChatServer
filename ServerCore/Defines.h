@@ -4,6 +4,7 @@
 #define MAX_CLIENT_SESSION		1000
 #define MAX_RECV_BUFFER_SIZE	4096
 #define MAX_SEND_BUFFER_SIZE	4096
+#define PACKET_HEADER_SIZE		6
 
 // Chat Application의 공유포인터를 통한 멤버변수 접근 메크로
 #define CHAT_IOCP_HANDLER		m_chatApp.lock()->GetIOCPHandler()
