@@ -7,14 +7,15 @@ int main()
 	GetSystemInfo(&sysinfo);
 	int numberOfProcessor = sysinfo.dwNumberOfProcessors;
 
-	function<shared_ptr<ServerSession>(void)> chatSession = make_shared<ServerSession>;
+	function<shared_ptr<ServerSession>(void)> serverSession = make_shared<ServerSession>;
 
 	this_thread::sleep_for(500ms);
 	shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
-		make_shared<ServerAddress>(L"127.0.0.1", SERVER_PORT),
+		make_shared<ServerAddress>(),
 		make_shared<IOCPHandler>(), 
-		chatSession,
-		100);
+		serverSession);
+
+	chatClient->Connect(L"127.0.0.1", SERVER_PORT);
 
 	ASSERT_CRASH(chatClient->Start());
 
@@ -27,17 +28,11 @@ int main()
 			}
 		});
 	}
-	
-	CS_CHAT_REQUEST packet;
-	::memcpy(packet.message, "HelloWorld", 11);
-	packet.size = 17;
 
 	while (true)
 	{
 		this_thread::sleep_for(1s);
-		shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
-		sendBuf->CopyData((char*)&packet, packet.size);
-		GClientSessionManager->Broadcast(sendBuf);
+		chatClient->SendChat("HelloWorld", 11);
 	}
 
 	GThreadManager->Join();

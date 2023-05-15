@@ -14,7 +14,7 @@ int main()
 		make_shared<ServerAddress>(L"127.0.0.1", SERVER_PORT),
 		make_shared<IOCPHandler>(),
 		clientSession,
-		1);
+		100);
 
 
 	ASSERT_CRASH(chatServer->Start());

@@ -27,7 +27,7 @@ void ClientPacketHandler::ProcessChat(SOCKET socket, char* packetData, int size)
 
 	if (GClientSessionManager->SendToSession(socket, packet))
 	{
-		SC_ANNOUNCEMENT chatRequestPacket = {};
+		SC_CHAT_REQUEST chatRequestPacket = {};
 		chatRequestPacket.size += size;
 		::memcpy(chatRequestPacket.message, packetData, chatRequestPacket.size - PACKET_HEADER_SIZE);
 

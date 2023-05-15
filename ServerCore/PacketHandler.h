@@ -13,7 +13,7 @@ public:
 	virtual void ProcessRoomEnter(SOCKET socket, char* packetData, int size) abstract;
 	virtual void ProcessRoomLeave(SOCKET socket, char* packetData, int size) abstract;
 	
-	virtual void ProcessAnnouncement(SOCKET socket, char* packetData, int size) {};
+	virtual void ProcessChatResponse(SOCKET socket, char* packetData, int size) {};
 
 	using ProcessPacket = function<void(PacketHandler&, SOCKET, char*, int)>;
 

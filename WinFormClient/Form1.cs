@@ -17,5 +17,19 @@ namespace WinFormClient
             InitializeComponent();
         }
 
+        private void Button_isConnect_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button_login_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button_chat_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

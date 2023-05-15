@@ -16,6 +16,11 @@ ServerAddress::ServerAddress(SOCKADDR_IN serverAddr)
 
 ServerAddress::ServerAddress(const WCHAR* ip, const __int16 port)
 {
+	SetServerAddress(ip, port);
+}
+
+void ServerAddress::SetServerAddress(const WCHAR* ip, const __int16 port)
+{
 	IN_ADDR address;
 	::InetPton(AF_INET, ip, &address);
 
@@ -23,3 +28,12 @@ ServerAddress::ServerAddress(const WCHAR* ip, const __int16 port)
 	m_serverAddr.sin_addr = address;
 	m_serverAddr.sin_port = htons(port);
 }
+
+wstring ServerAddress::GetIP()
+{
+	WCHAR buffer[100];
+	int size = sizeof(buffer) / sizeof(buffer[0]);
+	::InetNtopW(AF_INET, &m_serverAddr.sin_addr, buffer, size);
+	return wstring(buffer);
+}
+

@@ -166,11 +166,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ChatClient.cpp" />
+    <ClCompile Include="PacketManager.cpp" />
     <ClCompile Include="ServerPacketHandler.cpp" />
     <ClCompile Include="ServerSession.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ChatServer\pch.h" />
+    <ClInclude Include="PacketManager.h" />
     <ClInclude Include="ServerPacketHandler.h" />
     <ClInclude Include="ServerSession.h" />
   </ItemGroup>

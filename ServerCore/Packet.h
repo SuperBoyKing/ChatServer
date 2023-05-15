@@ -14,8 +14,6 @@ enum class PacketID : unsigned __int16
 
 	ROOM_LEAVE_REQUEST,
 	ROOM_LEAVE_RESPONSE,
-
-	SERVER_ANNOUNCEMENT,
 };
 
 struct PACKET_HEADER
@@ -52,6 +50,17 @@ struct CS_CHAT_REQUEST : public PACKET_HEADER
 	char message[256 + 1] = {};
 
 	CS_CHAT_REQUEST()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::CHAT_REQUEST;
+	}
+};
+
+struct SC_CHAT_REQUEST : public PACKET_HEADER
+{
+	char message[256 + 1] = {};
+
+	SC_CHAT_REQUEST()
 	{
 		size = PACKET_HEADER_SIZE;
 		id = PacketID::CHAT_REQUEST;
@@ -110,17 +119,6 @@ struct SC_ROOM_LEAVE_RESPONSE : public PACKET_HEADER
 	{
 		size = PACKET_HEADER_SIZE;
 		id = PacketID::ROOM_LEAVE_RESPONSE;
-	}
-};
-
-struct SC_ANNOUNCEMENT : public PACKET_HEADER
-{
-	char message[256 + 1] = {};
-
-	SC_ANNOUNCEMENT()
-	{
-		size = PACKET_HEADER_SIZE;
-		id = PacketID::SERVER_ANNOUNCEMENT;
 	}
 };
 

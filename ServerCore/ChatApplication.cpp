@@ -58,36 +58,57 @@ ChatClient::~ChatClient()
 {
 }
 
+void ChatClient::Connect(const WCHAR* ip, const __int16 port)
+{
+	if (ip != nullptr)
+		m_serverAddress->SetServerAddress(ip, port);
+}
+
 bool ChatClient::Start()
 {
-	int maxSessionCount = GetMaxSessionCount();
-
-	for (int i = 0; i < maxSessionCount; ++i)
+	for (int i = 0; i < m_maxSessionCount; ++i)
 	{
-		shared_ptr<ChatSession> session = m_sessionFactory();
-		session->SetApp(shared_from_this());
+		m_session = m_sessionFactory();
+		m_session->SetApp(shared_from_this());
 
-		if (session == nullptr)
+		if (m_session == nullptr)
 		{
 			PRINT_ERROR("Create Session Error");
 			return false;
 		}
 
-		if (GetIOCPHandler()->BindIOCompletionPort(session) == false)
+		if (GetIOCPHandler()->BindIOCompletionPort(m_session) == false)
 		{
 			PRINT_ERROR("IOCP Bind Error");
 			return false;
 		}
 
-		if (session->Connect() == false)
+		if (m_session->Connect() == false)
 			return false;
-
-		GClientSessionManager->Add(session);	//temp
 	}
 
 	return true;
 }
 
-void ChatClient::Send(shared_ptr<SendBuffer> sendBuffer)
+void ChatClient::SendLogin(const char* id, const char* pwd, const int size)
 {
+	CS_LOGIN_REQUEST packet;
+	::memcpy(packet.userID, id, sizeof(char) * 32);
+	::memcpy(packet.userPW, pwd, sizeof(char) * 32);
+	packet.size += 66;
+
+	shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
+	sendBuf->CopyData((char*)&packet, packet.size);
+	m_session->Send(sendBuf);
+}
+
+void ChatClient::SendChat(const char* str, const int size)
+{
+	CS_CHAT_REQUEST packet;
+	::memcpy(packet.message, str, 11);
+	packet.size += 11;
+
+	shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
+	sendBuf->CopyData((char*)&packet, packet.size);
+	m_session->Send(sendBuf);
 }

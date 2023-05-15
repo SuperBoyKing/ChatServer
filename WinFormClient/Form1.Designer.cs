@@ -35,12 +35,12 @@ namespace WinFormClient
             this.label2 = new System.Windows.Forms.Label();
             this.Button_isConnect = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.TextBox_ID = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.Button_login = new System.Windows.Forms.Button();
             this.TextBox_password = new System.Windows.Forms.TextBox();
             this.pw = new System.Windows.Forms.Label();
-            this.Button_login = new System.Windows.Forms.Button();
+            this.TextBox_ID = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
             this.ListView_user = new System.Windows.Forms.ListView();
             this.ListView_chat = new System.Windows.Forms.ListView();
             this.Button_chat = new System.Windows.Forms.Button();
@@ -88,6 +88,7 @@ namespace WinFormClient
             this.Button_isConnect.TabIndex = 4;
             this.Button_isConnect.Text = "Connect";
             this.Button_isConnect.UseVisualStyleBackColor = true;
+            this.Button_isConnect.Click += new System.EventHandler(this.Button_isConnect_Click);
             // 
             // groupBox1
             // 
@@ -103,28 +104,15 @@ namespace WinFormClient
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Login";
             // 
-            // textBox3
+            // Button_login
             // 
-            this.textBox3.Location = new System.Drawing.Point(42, 31);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 23);
-            this.textBox3.TabIndex = 1;
-            // 
-            // TextBox_ID
-            // 
-            this.TextBox_ID.Location = new System.Drawing.Point(42, 22);
-            this.TextBox_ID.Name = "TextBox_ID";
-            this.TextBox_ID.Size = new System.Drawing.Size(132, 23);
-            this.TextBox_ID.TabIndex = 7;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 25);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(30, 15);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "ID  :";
+            this.Button_login.Location = new System.Drawing.Point(6, 99);
+            this.Button_login.Name = "Button_login";
+            this.Button_login.Size = new System.Drawing.Size(168, 25);
+            this.Button_login.TabIndex = 6;
+            this.Button_login.Text = "Login";
+            this.Button_login.UseVisualStyleBackColor = true;
+            this.Button_login.Click += new System.EventHandler(this.Button_login_Click);
             // 
             // TextBox_password
             // 
@@ -142,14 +130,28 @@ namespace WinFormClient
             this.pw.TabIndex = 8;
             this.pw.Text = "PW :";
             // 
-            // Button_login
+            // TextBox_ID
             // 
-            this.Button_login.Location = new System.Drawing.Point(6, 99);
-            this.Button_login.Name = "Button_login";
-            this.Button_login.Size = new System.Drawing.Size(168, 25);
-            this.Button_login.TabIndex = 6;
-            this.Button_login.Text = "Login";
-            this.Button_login.UseVisualStyleBackColor = true;
+            this.TextBox_ID.Location = new System.Drawing.Point(42, 22);
+            this.TextBox_ID.Name = "TextBox_ID";
+            this.TextBox_ID.Size = new System.Drawing.Size(132, 23);
+            this.TextBox_ID.TabIndex = 7;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 25);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(30, 15);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "ID  :";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(42, 31);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(100, 23);
+            this.textBox3.TabIndex = 1;
             // 
             // ListView_user
             // 
@@ -177,6 +179,7 @@ namespace WinFormClient
             this.Button_chat.TabIndex = 8;
             this.Button_chat.Text = "chat";
             this.Button_chat.UseVisualStyleBackColor = true;
+            this.Button_chat.Click += new System.EventHandler(this.Button_chat_Click);
             // 
             // TextBox_chat
             // 

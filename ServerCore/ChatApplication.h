@@ -47,11 +47,24 @@ private:
 class ChatClient : public ChatApplication
 {
 public:
-	ChatClient(shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount);
+	ChatClient(shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount = 1);
 	virtual ~ChatClient();
+
+	void Connect(const WCHAR* ip, const __int16 port);
 
 	bool Start() override;
 
-	void Send(shared_ptr<SendBuffer> sendBuffer);
+	void SendLogin(const char* id, const char* pwd, const int size);
+
+	void SendChat(const char* str, const int size);
+
+	/*template <typename T>
+	void SetServerSession(T serverSession) 
+	{
+		serverSession = static_cast<T>(m_session.get());
+	}*/
+
+private:
+	shared_ptr<ChatSession> m_session;
 };
 
