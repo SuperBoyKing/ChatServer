@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChatClient", "ChatClient\Ch
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCore", "ServerCore\ServerCore.vcxproj", "{CEB661B4-D84B-4CA2-8625-3382CABC6681}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormClient", "WinFormClient\WinFormClient.csproj", "{D186F659-5B69-4F00-AE1D-CDE36842DDAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormClient", "WinFormClient\WinFormClient.csproj", "{D186F659-5B69-4F00-AE1D-CDE36842DDAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

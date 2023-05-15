@@ -90,7 +90,7 @@ bool ChatClient::Start()
 	return true;
 }
 
-void ChatClient::SendLogin(const char* id, const char* pwd, const int size)
+void ChatClient::SendLogin(const char* id, const char* pwd, const int idSize, const int pwdSize)
 {
 	CS_LOGIN_REQUEST packet;
 	::memcpy(packet.userID, id, sizeof(char) * 32);
@@ -105,8 +105,8 @@ void ChatClient::SendLogin(const char* id, const char* pwd, const int size)
 void ChatClient::SendChat(const char* str, const int size)
 {
 	CS_CHAT_REQUEST packet;
-	::memcpy(packet.message, str, 11);
-	packet.size += 11;
+	::memcpy(packet.message, str, size);
+	packet.size += size;
 
 	shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
 	sendBuf->CopyData((char*)&packet, packet.size);

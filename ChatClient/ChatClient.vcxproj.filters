@@ -10,11 +10,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChatClient.cpp">
+    <ClCompile Include="MainApplication.cpp">
       <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ChatServer\pch.cpp">
-      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ServerSession.cpp">
       <Filter>Main</Filter>
@@ -25,11 +22,11 @@
     <ClCompile Include="PacketManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="..\ChatServer\pch.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ChatServer\pch.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ServerSession.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -38,6 +35,9 @@
     </ClInclude>
     <ClInclude Include="PacketManager.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ChatServer\pch.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

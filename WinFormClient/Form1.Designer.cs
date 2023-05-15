@@ -30,21 +30,21 @@ namespace WinFormClient
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.TextBox_IP = new System.Windows.Forms.TextBox();
-            this.TextBox_port = new System.Windows.Forms.TextBox();
+            this.textBox_IP = new System.Windows.Forms.TextBox();
+            this.textBox_port = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.Button_isConnect = new System.Windows.Forms.Button();
+            this.button_isConnect = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.Button_login = new System.Windows.Forms.Button();
-            this.TextBox_password = new System.Windows.Forms.TextBox();
+            this.button_login = new System.Windows.Forms.Button();
+            this.textBox_password = new System.Windows.Forms.TextBox();
             this.pw = new System.Windows.Forms.Label();
-            this.TextBox_ID = new System.Windows.Forms.TextBox();
+            this.textBox_ID = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.ListView_user = new System.Windows.Forms.ListView();
-            this.ListView_chat = new System.Windows.Forms.ListView();
-            this.Button_chat = new System.Windows.Forms.Button();
-            this.TextBox_chat = new System.Windows.Forms.TextBox();
+            this.button_chat = new System.Windows.Forms.Button();
+            this.textBox_chat = new System.Windows.Forms.TextBox();
+            this.listBox_chat = new System.Windows.Forms.ListBox();
+            this.listBox_user = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,19 +57,19 @@ namespace WinFormClient
             this.label1.TabIndex = 0;
             this.label1.Text = "Server IP : ";
             // 
-            // TextBox_IP
+            // textBox_IP
             // 
-            this.TextBox_IP.Location = new System.Drawing.Point(81, 13);
-            this.TextBox_IP.Name = "TextBox_IP";
-            this.TextBox_IP.Size = new System.Drawing.Size(144, 23);
-            this.TextBox_IP.TabIndex = 1;
+            this.textBox_IP.Location = new System.Drawing.Point(81, 13);
+            this.textBox_IP.Name = "textBox_IP";
+            this.textBox_IP.Size = new System.Drawing.Size(144, 23);
+            this.textBox_IP.TabIndex = 1;
             // 
-            // TextBox_port
+            // textBox_port
             // 
-            this.TextBox_port.Location = new System.Drawing.Point(325, 14);
-            this.TextBox_port.Name = "TextBox_port";
-            this.TextBox_port.Size = new System.Drawing.Size(81, 23);
-            this.TextBox_port.TabIndex = 3;
+            this.textBox_port.Location = new System.Drawing.Point(325, 14);
+            this.textBox_port.Name = "textBox_port";
+            this.textBox_port.Size = new System.Drawing.Size(81, 23);
+            this.textBox_port.TabIndex = 3;
             // 
             // label2
             // 
@@ -80,22 +80,22 @@ namespace WinFormClient
             this.label2.TabIndex = 2;
             this.label2.Text = "Server Port : ";
             // 
-            // Button_isConnect
+            // button_isConnect
             // 
-            this.Button_isConnect.Location = new System.Drawing.Point(426, 14);
-            this.Button_isConnect.Name = "Button_isConnect";
-            this.Button_isConnect.Size = new System.Drawing.Size(263, 23);
-            this.Button_isConnect.TabIndex = 4;
-            this.Button_isConnect.Text = "Connect";
-            this.Button_isConnect.UseVisualStyleBackColor = true;
-            this.Button_isConnect.Click += new System.EventHandler(this.Button_isConnect_Click);
+            this.button_isConnect.Location = new System.Drawing.Point(426, 14);
+            this.button_isConnect.Name = "button_isConnect";
+            this.button_isConnect.Size = new System.Drawing.Size(263, 23);
+            this.button_isConnect.TabIndex = 4;
+            this.button_isConnect.Text = "Connect";
+            this.button_isConnect.UseVisualStyleBackColor = true;
+            this.button_isConnect.Click += new System.EventHandler(this.Button_isConnect_Click);
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.Button_login);
-            this.groupBox1.Controls.Add(this.TextBox_password);
+            this.groupBox1.Controls.Add(this.button_login);
+            this.groupBox1.Controls.Add(this.textBox_password);
             this.groupBox1.Controls.Add(this.pw);
-            this.groupBox1.Controls.Add(this.TextBox_ID);
+            this.groupBox1.Controls.Add(this.textBox_ID);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(15, 62);
             this.groupBox1.Name = "groupBox1";
@@ -104,22 +104,22 @@ namespace WinFormClient
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Login";
             // 
-            // Button_login
+            // button_login
             // 
-            this.Button_login.Location = new System.Drawing.Point(6, 99);
-            this.Button_login.Name = "Button_login";
-            this.Button_login.Size = new System.Drawing.Size(168, 25);
-            this.Button_login.TabIndex = 6;
-            this.Button_login.Text = "Login";
-            this.Button_login.UseVisualStyleBackColor = true;
-            this.Button_login.Click += new System.EventHandler(this.Button_login_Click);
+            this.button_login.Location = new System.Drawing.Point(6, 99);
+            this.button_login.Name = "button_login";
+            this.button_login.Size = new System.Drawing.Size(168, 25);
+            this.button_login.TabIndex = 6;
+            this.button_login.Text = "Login";
+            this.button_login.UseVisualStyleBackColor = true;
+            this.button_login.Click += new System.EventHandler(this.Button_login_Click);
             // 
-            // TextBox_password
+            // textBox_password
             // 
-            this.TextBox_password.Location = new System.Drawing.Point(42, 59);
-            this.TextBox_password.Name = "TextBox_password";
-            this.TextBox_password.Size = new System.Drawing.Size(132, 23);
-            this.TextBox_password.TabIndex = 9;
+            this.textBox_password.Location = new System.Drawing.Point(42, 59);
+            this.textBox_password.Name = "textBox_password";
+            this.textBox_password.Size = new System.Drawing.Size(132, 23);
+            this.textBox_password.TabIndex = 9;
             // 
             // pw
             // 
@@ -130,12 +130,12 @@ namespace WinFormClient
             this.pw.TabIndex = 8;
             this.pw.Text = "PW :";
             // 
-            // TextBox_ID
+            // textBox_ID
             // 
-            this.TextBox_ID.Location = new System.Drawing.Point(42, 22);
-            this.TextBox_ID.Name = "TextBox_ID";
-            this.TextBox_ID.Size = new System.Drawing.Size(132, 23);
-            this.TextBox_ID.TabIndex = 7;
+            this.textBox_ID.Location = new System.Drawing.Point(42, 22);
+            this.textBox_ID.Name = "textBox_ID";
+            this.textBox_ID.Size = new System.Drawing.Size(132, 23);
+            this.textBox_ID.TabIndex = 7;
             // 
             // label3
             // 
@@ -153,55 +153,55 @@ namespace WinFormClient
             this.textBox3.Size = new System.Drawing.Size(100, 23);
             this.textBox3.TabIndex = 1;
             // 
-            // ListView_user
+            // button_chat
             // 
-            this.ListView_user.HideSelection = false;
-            this.ListView_user.Location = new System.Drawing.Point(13, 226);
-            this.ListView_user.Name = "ListView_user";
-            this.ListView_user.Size = new System.Drawing.Size(185, 351);
-            this.ListView_user.TabIndex = 6;
-            this.ListView_user.UseCompatibleStateImageBehavior = false;
+            this.button_chat.Location = new System.Drawing.Point(623, 546);
+            this.button_chat.Name = "button_chat";
+            this.button_chat.Size = new System.Drawing.Size(66, 24);
+            this.button_chat.TabIndex = 8;
+            this.button_chat.Text = "chat";
+            this.button_chat.UseVisualStyleBackColor = true;
+            this.button_chat.Click += new System.EventHandler(this.Button_chat_Click);
             // 
-            // ListView_chat
+            // textBox_chat
             // 
-            this.ListView_chat.HideSelection = false;
-            this.ListView_chat.Location = new System.Drawing.Point(204, 226);
-            this.ListView_chat.Name = "ListView_chat";
-            this.ListView_chat.Size = new System.Drawing.Size(485, 322);
-            this.ListView_chat.TabIndex = 7;
-            this.ListView_chat.UseCompatibleStateImageBehavior = false;
+            this.textBox_chat.Location = new System.Drawing.Point(204, 546);
+            this.textBox_chat.Name = "textBox_chat";
+            this.textBox_chat.Size = new System.Drawing.Size(413, 23);
+            this.textBox_chat.TabIndex = 9;
             // 
-            // Button_chat
+            // listBox_chat
             // 
-            this.Button_chat.Location = new System.Drawing.Point(623, 554);
-            this.Button_chat.Name = "Button_chat";
-            this.Button_chat.Size = new System.Drawing.Size(66, 24);
-            this.Button_chat.TabIndex = 8;
-            this.Button_chat.Text = "chat";
-            this.Button_chat.UseVisualStyleBackColor = true;
-            this.Button_chat.Click += new System.EventHandler(this.Button_chat_Click);
+            this.listBox_chat.FormattingEnabled = true;
+            this.listBox_chat.ItemHeight = 15;
+            this.listBox_chat.Location = new System.Drawing.Point(204, 220);
+            this.listBox_chat.Name = "listBox_chat";
+            this.listBox_chat.Size = new System.Drawing.Size(485, 319);
+            this.listBox_chat.TabIndex = 10;
             // 
-            // TextBox_chat
+            // listBox_user
             // 
-            this.TextBox_chat.Location = new System.Drawing.Point(204, 555);
-            this.TextBox_chat.Name = "TextBox_chat";
-            this.TextBox_chat.Size = new System.Drawing.Size(413, 23);
-            this.TextBox_chat.TabIndex = 9;
+            this.listBox_user.FormattingEnabled = true;
+            this.listBox_user.ItemHeight = 15;
+            this.listBox_user.Location = new System.Drawing.Point(12, 220);
+            this.listBox_user.Name = "listBox_user";
+            this.listBox_user.Size = new System.Drawing.Size(185, 349);
+            this.listBox_user.TabIndex = 11;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(701, 588);
-            this.Controls.Add(this.TextBox_chat);
-            this.Controls.Add(this.Button_chat);
-            this.Controls.Add(this.ListView_chat);
-            this.Controls.Add(this.ListView_user);
+            this.Controls.Add(this.listBox_user);
+            this.Controls.Add(this.listBox_chat);
+            this.Controls.Add(this.textBox_chat);
+            this.Controls.Add(this.button_chat);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.Button_isConnect);
-            this.Controls.Add(this.TextBox_port);
+            this.Controls.Add(this.button_isConnect);
+            this.Controls.Add(this.textBox_port);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.TextBox_IP);
+            this.Controls.Add(this.textBox_IP);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -215,21 +215,21 @@ namespace WinFormClient
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox TextBox_IP;
-        private System.Windows.Forms.TextBox TextBox_port;
+        private System.Windows.Forms.TextBox textBox_IP;
+        private System.Windows.Forms.TextBox textBox_port;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button Button_isConnect;
+        private System.Windows.Forms.Button button_isConnect;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox TextBox_password;
+        private System.Windows.Forms.TextBox textBox_password;
         private System.Windows.Forms.Label pw;
-        private System.Windows.Forms.TextBox TextBox_ID;
+        private System.Windows.Forms.TextBox textBox_ID;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.Button Button_login;
-        private System.Windows.Forms.ListView ListView_user;
-        private System.Windows.Forms.ListView ListView_chat;
-        private System.Windows.Forms.Button Button_chat;
-        private System.Windows.Forms.TextBox TextBox_chat;
+        private System.Windows.Forms.Button button_login;
+        private System.Windows.Forms.Button button_chat;
+        private System.Windows.Forms.TextBox textBox_chat;
+        private System.Windows.Forms.ListBox listBox_chat;
+        private System.Windows.Forms.ListBox listBox_user;
     }
 }
 

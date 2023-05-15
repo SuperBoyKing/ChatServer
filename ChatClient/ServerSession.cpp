@@ -10,6 +10,7 @@ void ServerSession::OnSend(unsigned int len)
 void ServerSession::OnRecv(char* buffer, unsigned int len)
 {
 	GServerPacketHandler->HandlePacket(GetSock(), buffer, len);
+	//m_recvPacketQueue.push()
 }
 
 void ServerSession::OnConnect()

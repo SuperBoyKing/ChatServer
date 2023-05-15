@@ -2,6 +2,7 @@
 #include "ServerPacketHandler.h"
 
 unique_ptr<ServerPacketHandler> GServerPacketHandler = make_unique<ServerPacketHandler>();
+queue<PACKET_HEADER> packetQueue;
 
 ServerPacketHandler::ServerPacketHandler()
 {

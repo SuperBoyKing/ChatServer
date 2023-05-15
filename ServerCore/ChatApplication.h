@@ -54,7 +54,7 @@ public:
 
 	bool Start() override;
 
-	void SendLogin(const char* id, const char* pwd, const int size);
+	void SendLogin(const char* id, const char* pwd, const int idSize, const int pwdSize);
 
 	void SendChat(const char* str, const int size);
 

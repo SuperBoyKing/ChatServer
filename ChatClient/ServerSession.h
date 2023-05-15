@@ -9,5 +9,8 @@ public:
 	void	OnRecv(char* buffer, unsigned int len) override;
 	void	OnConnect() override;
 	void	OnDisconnect() override;
+
+private:
+	queue<PACKET_HEADER> m_recvPacketQueue;
 };
 
