@@ -58,11 +58,7 @@ public:
 
 	void SendChat(const char* str, const int size);
 
-	/*template <typename T>
-	void SetServerSession(T serverSession) 
-	{
-		serverSession = static_cast<T>(m_session.get());
-	}*/
+	inline ChatSession* GetChatSession() { return m_session.get(); }
 
 private:
 	shared_ptr<ChatSession> m_session;

@@ -10,7 +10,8 @@ public:
 	void	OnConnect() override;
 	void	OnDisconnect() override;
 
+	void	GetPacketData();
+
 private:
-	queue<PACKET_HEADER> m_recvPacketQueue;
 };
 

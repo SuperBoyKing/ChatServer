@@ -176,7 +176,7 @@ void ChatSession::RegisterSend()
 	DWORD bytesTransfered = 0;
 	DWORD flags = 0;
 
-	// SendQueue에 있는 버퍼공유포인터를 Operation에 vector로 복사
+	// SendQueue에 있는 버퍼공유포인터를 Operation의 vector로 복사
 	{
 		lock_guard<recursive_mutex> lock(m_mutex);
 
