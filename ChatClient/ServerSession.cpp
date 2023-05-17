@@ -2,6 +2,8 @@
 #include "ServerSession.h"
 #include "ServerPacketHandler.h"
 
+queue<vector<char>> GRecvPacketQueue;
+
 void ServerSession::OnSend(unsigned int len)
 {
 	cout << "Client Send complete : " << len << endl;
@@ -9,8 +11,10 @@ void ServerSession::OnSend(unsigned int len)
 
 void ServerSession::OnRecv(char* buffer, unsigned int len)
 {
-	GServerPacketHandler->HandlePacket(GetSock(), buffer, len);
-	//m_recvPacketQueue.push()
+	lock_guard<recursive_mutex> lock(m_mutex);
+	m_buffer.resize(len);
+	::memcpy(&m_buffer[0], buffer, len);
+	GRecvPacketQueue.push(m_buffer);
 }
 
 void ServerSession::OnConnect()

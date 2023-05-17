@@ -56,20 +56,9 @@ struct CS_CHAT_REQUEST : public PACKET_HEADER
 	}
 };
 
-struct SC_CHAT_REQUEST : public PACKET_HEADER
-{
-	char message[256 + 1] = {};
-
-	SC_CHAT_REQUEST()
-	{
-		size = PACKET_HEADER_SIZE;
-		id = PacketID::CHAT_REQUEST;
-	}
-};
-
 struct SC_CHAT_RESPONSE : public PACKET_HEADER
 {
-	bool result = false;
+	char message[256 + 1] = {};
 
 	SC_CHAT_RESPONSE()
 	{
@@ -77,6 +66,17 @@ struct SC_CHAT_RESPONSE : public PACKET_HEADER
 		id = PacketID::CHAT_RESPONSE;
 	}
 };
+
+//struct SC_CHAT_RESPONSE : public PACKET_HEADER
+//{
+//	bool result = false;
+//
+//	SC_CHAT_RESPONSE()
+//	{
+//		size = PACKET_HEADER_SIZE;
+//		id = PacketID::CHAT_RESPONSE;
+//	}
+//};
 
 struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
 {

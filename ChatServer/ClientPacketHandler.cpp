@@ -18,7 +18,7 @@ ClientPacketHandler::~ClientPacketHandler()
 
 void ClientPacketHandler::ProcessChat(SOCKET socket, char* packetData, int size)
 {
-	SC_CHAT_RESPONSE chatResponsePacket = {  };
+	/*SC_CHAT_RESPONSE chatResponsePacket = {  };
 	chatResponsePacket.result = true;
 	chatResponsePacket.size += 1;
 
@@ -27,14 +27,16 @@ void ClientPacketHandler::ProcessChat(SOCKET socket, char* packetData, int size)
 
 	if (GClientSessionManager->SendToSession(socket, packet))
 	{
-		SC_CHAT_REQUEST chatRequestPacket = {};
-		chatRequestPacket.size += size;
-		::memcpy(chatRequestPacket.message, packetData, chatRequestPacket.size - PACKET_HEADER_SIZE);
+	}*/
 
-		shared_ptr<SendBuffer> chatMsg = make_shared<SendBuffer>(chatRequestPacket.size);
-		chatMsg->CopyData((char*)&chatRequestPacket, chatRequestPacket.size);
-		GClientSessionManager->Broadcast(chatMsg);
-	}
+	SC_CHAT_RESPONSE chatRequestPacket = {};
+	chatRequestPacket.size += size;
+	::memcpy(chatRequestPacket.message, packetData, chatRequestPacket.size - PACKET_HEADER_SIZE);
+
+	shared_ptr<SendBuffer> chatMsg = make_shared<SendBuffer>(chatRequestPacket.size);
+	chatMsg->CopyData((char*)&chatRequestPacket, chatRequestPacket.size);
+	GClientSessionManager->SendToSession(socket, chatMsg);
+	//GClientSessionManager->Broadcast(chatMsg);
 }
 
 void ClientPacketHandler::ProcessLogin(SOCKET socket, char* packetData, int size)

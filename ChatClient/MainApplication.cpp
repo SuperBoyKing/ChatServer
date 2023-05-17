@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ServerSession.h"
+#include "ServerPacketHandler.h"
 
 #define	EXPORT	__declspec(dllexport)
 
@@ -9,6 +10,8 @@ shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
 	make_shared<ServerAddress>(),
 	make_shared<IOCPHandler>(),
 	serverSession);
+
+ServerSession* session;
 
 extern "C"
 {
@@ -31,6 +34,8 @@ extern "C"
 				}
 			});
 		}
+
+		session = static_cast<ServerSession*>(chatClient->GetChatSession());
 	}
 
 	EXPORT void ChatLogin(char* id, char* pwd, const int idSize, const int pwdSize)
@@ -43,14 +48,57 @@ extern "C"
 		chatClient->SendChat(str, size);
 	}
 
-	EXPORT int	GetPacketSize()
+	EXPORT void	GetPacketHeader(PACKET_HEADER* packetHeader)
 	{
-
+		if (!GRecvPacketQueue.empty())
+		{
+			vector<char> packet = GRecvPacketQueue.front();
+			::memcpy(packetHeader, &packet[0], PACKET_HEADER_SIZE);
+		}
 	}
 	
-	EXPORT void GetPacketData()
+	EXPORT bool GetChatReqPacket(SC_CHAT_RESPONSE* packetData, int size)
 	{
-		//ServerSession* session = static_cast<ServerSession*>(chatClient->GetChatSession());
-		//session->
+		if (!GRecvPacketQueue.empty())
+		{
+			vector<char> packet = GRecvPacketQueue.front();
+			//GServerPacketHandler->HandlePacket(session->GetSock(), recvPacket);
+			::memcpy(packetData, &packet[0], size);
+			GRecvPacketQueue.pop();
+
+			return true;
+		}
+
+		return false;
 	}
+
+	//EXPORT void GetPacketData(char* res)
+	//{
+	//	if (!GRecvPacketQueue.empty())
+	//	{
+	//		res = GRecvPacketQueue.front();
+	//		GServerPacketHandler->HandlePacket(session->GetSock(), res);
+	//		GRecvPacketQueue.pop();
+	//	}
+	//}
+
+	//EXPORT void GetPacketData(char* res)
+	//{
+	//	if (!GRecvPacketQueue.empty())
+	//	{
+	//		res = GRecvPacketQueue.front();
+	//		GServerPacketHandler->HandlePacket(session->GetSock(), res);
+	//		GRecvPacketQueue.pop();
+	//	}
+	//}
+
+	//EXPORT void GetPacketData(char* res)
+	//{
+	//	if (!GRecvPacketQueue.empty())
+	//	{
+	//		res = GRecvPacketQueue.front();
+	//		GServerPacketHandler->HandlePacket(session->GetSock(), res);
+	//		GRecvPacketQueue.pop();
+	//	}
+	//}
 }

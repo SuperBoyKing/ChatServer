@@ -6,7 +6,7 @@ public:
 	PacketHandler() = default;
 	~PacketHandler() = default;
 
-	void HandlePacket(SOCKET socket, char* packet, int len);
+	void HandlePacket(SOCKET socket, char* packet);
 
 	virtual void ProcessChat(SOCKET socket, char* packetData, int size) abstract;
 	virtual void ProcessLogin(SOCKET socket, char* packetData, int size) abstract;

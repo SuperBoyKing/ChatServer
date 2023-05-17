@@ -9,7 +9,7 @@ void ClientSession::OnSend(unsigned int len)
 
 void ClientSession::OnRecv(char* buffer, unsigned int len)
 {
-	GClientPacketHandler->HandlePacket(GetSock(), buffer, len);
+	GClientPacketHandler->HandlePacket(GetSock(), buffer);
 }
 
 void ClientSession::OnConnect()

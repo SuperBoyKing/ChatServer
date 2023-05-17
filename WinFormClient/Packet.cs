@@ -30,7 +30,7 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_CHAT_REQUEST
     {
-        PACKET_HEADER header;
+        public PACKET_HEADER header;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 257)]
         public string message;
     }

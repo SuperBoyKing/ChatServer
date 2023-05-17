@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PacketHandler.h"
 
-void PacketHandler::HandlePacket(SOCKET socket, char* packet, int len)
+void PacketHandler::HandlePacket(SOCKET socket, char* packet)
 {
 	PACKET_HEADER stPacketHeader = {0,};
 	::memcpy((char*)&stPacketHeader, packet, PACKET_HEADER_SIZE);

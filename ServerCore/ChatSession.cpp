@@ -82,7 +82,8 @@ void ChatSession::Disconnect()
 
 void ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
 {
-	m_sendOperation.SetOwner(shared_from_this());
+	if (IsConnected() == false)
+		return;
 
 	bool registSend = false;
 

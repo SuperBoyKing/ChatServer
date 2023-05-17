@@ -20,6 +20,13 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void ChatMsg([MarshalAs(UnmanagedType.LPStr)] string str, int size);
 
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void GetPacketHeader(ref PACKET_HEADER packetHeader);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern bool GetChatReqPacket(ref SC_CHAT_REQUEST packetData, int size);
+
+
         bool IsActivatedBackGroundThread = false;
 
         Thread BackGroundThread = null;
@@ -54,11 +61,34 @@ namespace WinFormClient
         {
             while (IsActivatedBackGroundThread)
             {
-                unsafe
+                PACKET_HEADER packetHeader;
+                packetHeader.size = 0;
+                packetHeader.id = PacketID.LOGIN_REQUEST;
+                GetPacketHeader(ref packetHeader);
+                if (packetHeader.size != 0)
                 {
-                   
+                    // packet.
+                    int size = packetHeader.size;
+                    PacketID packetType = packetHeader.id;
+
+                    switch(packetType)
+                    {
+                        case PacketID.CHAT_RESPONSE:
+                            SC_CHAT_REQUEST chatPacket;
+                            chatPacket.message = null;
+                            chatPacket.header = packetHeader;
+                            if (GetChatReqPacket(ref chatPacket, size))
+                            {
+                                this.Invoke(new Action(() =>
+                                {
+                                    listBox_chat.Items.Add(chatPacket.message);
+                                }));
+                            }
+                            break;
+                    }
                 }
             }
         }
+
     }
 }

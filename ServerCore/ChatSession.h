@@ -38,7 +38,7 @@ public:
 	void		RegisterDisconnect();
 
 	// Operation ¿Á¡§¿«
-public:
+protected:
 	virtual void		OnSend(unsigned int len) {};
 	virtual void		OnRecv(char* buffer, unsigned int len) {};
 	virtual void		OnConnect() {};
