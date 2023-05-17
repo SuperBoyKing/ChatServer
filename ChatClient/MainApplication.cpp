@@ -52,8 +52,8 @@ extern "C"
 	{
 		if (!GRecvPacketQueue.empty())
 		{
-			vector<char> packet = GRecvPacketQueue.front();
-			::memcpy(packetHeader, &packet[0], PACKET_HEADER_SIZE);
+			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			::memcpy(packetHeader, packet, PACKET_HEADER_SIZE);
 		}
 	}
 	
@@ -61,9 +61,8 @@ extern "C"
 	{
 		if (!GRecvPacketQueue.empty())
 		{
-			vector<char> packet = GRecvPacketQueue.front();
-			//GServerPacketHandler->HandlePacket(session->GetSock(), recvPacket);
-			::memcpy(packetData, &packet[0], size);
+			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			::memcpy(packetData, packet, size);
 			GRecvPacketQueue.pop();
 
 			return true;

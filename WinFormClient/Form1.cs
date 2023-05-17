@@ -37,6 +37,12 @@ namespace WinFormClient
             BackGroundThread = new Thread(BackGroundProcess);
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            IsActivatedBackGroundThread = false;
+            BackGroundThread.Join();
+        }
+
         private void Button_isConnect_Click(object sender, EventArgs e)
         {
             ChatInit(textBox_IP.Text, Int16.Parse(textBox_port.Text));
@@ -54,7 +60,6 @@ namespace WinFormClient
             string chatMsg = textBox_chat.Text;
             ChatMsg(chatMsg, chatMsg.Length);
             listBox_chat.Items.Add(chatMsg);
-            //listBox_chat.SelectedIndex = listBox_chat.Items.Count - 1;
         }
         
         void BackGroundProcess()
