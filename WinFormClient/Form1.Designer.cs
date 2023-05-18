@@ -48,14 +48,14 @@ namespace WinFormClient
             this.label_ConnectStatus = new System.Windows.Forms.Label();
             this.listBox_roomList = new System.Windows.Forms.ListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.Lobby = new System.Windows.Forms.GroupBox();
-            this.button_RoomEnter = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textbox_roomName = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.button_RoomLeave = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textbox_roomName = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.Lobby = new System.Windows.Forms.GroupBox();
             this.button_RoomCreate = new System.Windows.Forms.Button();
+            this.button_RoomLeave = new System.Windows.Forms.Button();
+            this.button_RoomEnter = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Lobby.SuspendLayout();
@@ -76,6 +76,7 @@ namespace WinFormClient
             this.textBox_IP.Name = "textBox_IP";
             this.textBox_IP.Size = new System.Drawing.Size(144, 23);
             this.textBox_IP.TabIndex = 1;
+            this.textBox_IP.Text = "127.0.0.1";
             // 
             // textBox_port
             // 
@@ -83,6 +84,7 @@ namespace WinFormClient
             this.textBox_port.Name = "textBox_port";
             this.textBox_port.Size = new System.Drawing.Size(81, 23);
             this.textBox_port.TabIndex = 3;
+            this.textBox_port.Text = "2023";
             // 
             // label2
             // 
@@ -241,6 +243,42 @@ namespace WinFormClient
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Room";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(356, 25);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(46, 15);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Users : ";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(406, 22);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(49, 23);
+            this.textBox1.TabIndex = 14;
+            this.textBox1.TabStop = false;
+            // 
+            // textbox_roomName
+            // 
+            this.textbox_roomName.Location = new System.Drawing.Point(190, 20);
+            this.textbox_roomName.Name = "textbox_roomName";
+            this.textbox_roomName.ReadOnly = true;
+            this.textbox_roomName.Size = new System.Drawing.Size(100, 23);
+            this.textbox_roomName.TabIndex = 13;
+            this.textbox_roomName.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(98, 25);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(86, 15);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Room Name : ";
+            // 
             // Lobby
             // 
             this.Lobby.Controls.Add(this.button_RoomCreate);
@@ -254,62 +292,6 @@ namespace WinFormClient
             this.Lobby.TabStop = false;
             this.Lobby.Text = "Lobby";
             // 
-            // button_RoomEnter
-            // 
-            this.button_RoomEnter.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomEnter.Location = new System.Drawing.Point(209, 22);
-            this.button_RoomEnter.Name = "button_RoomEnter";
-            this.button_RoomEnter.Size = new System.Drawing.Size(145, 33);
-            this.button_RoomEnter.TabIndex = 10;
-            this.button_RoomEnter.Text = "Enter";
-            this.button_RoomEnter.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(98, 25);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(86, 15);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Room Name : ";
-            // 
-            // textbox_roomName
-            // 
-            this.textbox_roomName.Location = new System.Drawing.Point(190, 20);
-            this.textbox_roomName.Name = "textbox_roomName";
-            this.textbox_roomName.ReadOnly = true;
-            this.textbox_roomName.Size = new System.Drawing.Size(100, 23);
-            this.textbox_roomName.TabIndex = 13;
-            this.textbox_roomName.TabStop = false;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(406, 22);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(49, 23);
-            this.textBox1.TabIndex = 14;
-            this.textBox1.TabStop = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(356, 25);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(46, 15);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "Users : ";
-            // 
-            // button_RoomLeave
-            // 
-            this.button_RoomLeave.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomLeave.Location = new System.Drawing.Point(209, 69);
-            this.button_RoomLeave.Name = "button_RoomLeave";
-            this.button_RoomLeave.Size = new System.Drawing.Size(145, 33);
-            this.button_RoomLeave.TabIndex = 14;
-            this.button_RoomLeave.Text = "Leave";
-            this.button_RoomLeave.UseVisualStyleBackColor = true;
-            // 
             // button_RoomCreate
             // 
             this.button_RoomCreate.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -320,6 +302,27 @@ namespace WinFormClient
             this.button_RoomCreate.Text = "Create";
             this.button_RoomCreate.UseVisualStyleBackColor = true;
             this.button_RoomCreate.UseWaitCursor = true;
+            this.button_RoomCreate.Click += new System.EventHandler(this.button_RoomCreate_Click);
+            // 
+            // button_RoomLeave
+            // 
+            this.button_RoomLeave.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.button_RoomLeave.Location = new System.Drawing.Point(209, 67);
+            this.button_RoomLeave.Name = "button_RoomLeave";
+            this.button_RoomLeave.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomLeave.TabIndex = 14;
+            this.button_RoomLeave.Text = "Leave";
+            this.button_RoomLeave.UseVisualStyleBackColor = true;
+            // 
+            // button_RoomEnter
+            // 
+            this.button_RoomEnter.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.button_RoomEnter.Location = new System.Drawing.Point(209, 22);
+            this.button_RoomEnter.Name = "button_RoomEnter";
+            this.button_RoomEnter.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomEnter.TabIndex = 10;
+            this.button_RoomEnter.Text = "Enter";
+            this.button_RoomEnter.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

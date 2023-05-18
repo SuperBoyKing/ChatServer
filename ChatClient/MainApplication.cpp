@@ -56,48 +56,42 @@ extern "C"
 			::memcpy(packetHeader, packet, PACKET_HEADER_SIZE);
 		}
 	}
-	
-	EXPORT bool GetChatReqPacket(SC_CHAT_RESPONSE* packetData, int size)
+
+	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
 	{
 		if (!GRecvPacketQueue.empty())
 		{
-			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			char* packet;
+			{
+				mutex m;
+				lock_guard<mutex> lock(m);
+				packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+				GRecvPacketQueue.pop();
+			}
 			::memcpy(packetData, packet, size);
-			GRecvPacketQueue.pop();
 
 			return true;
 		}
 
 		return false;
 	}
+	
+	EXPORT bool GetChatReqPacket(SC_CHAT_RESPONSE* packetData, int size)
+	{
+		if (!GRecvPacketQueue.empty())
+		{
+			char* packet;
+			{
+				mutex m;
+				lock_guard<mutex> lock(m);
+				packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+				GRecvPacketQueue.pop();
+			}
+			::memcpy(packetData, packet, size);
 
-	//EXPORT void GetPacketData(char* res)
-	//{
-	//	if (!GRecvPacketQueue.empty())
-	//	{
-	//		res = GRecvPacketQueue.front();
-	//		GServerPacketHandler->HandlePacket(session->GetSock(), res);
-	//		GRecvPacketQueue.pop();
-	//	}
-	//}
+			return true;
+		}
 
-	//EXPORT void GetPacketData(char* res)
-	//{
-	//	if (!GRecvPacketQueue.empty())
-	//	{
-	//		res = GRecvPacketQueue.front();
-	//		GServerPacketHandler->HandlePacket(session->GetSock(), res);
-	//		GRecvPacketQueue.pop();
-	//	}
-	//}
-
-	//EXPORT void GetPacketData(char* res)
-	//{
-	//	if (!GRecvPacketQueue.empty())
-	//	{
-	//		res = GRecvPacketQueue.front();
-	//		GServerPacketHandler->HandlePacket(session->GetSock(), res);
-	//		GRecvPacketQueue.pop();
-	//	}
-	//}
+		return false;
+	}
 }

@@ -95,5 +95,10 @@ namespace WinFormClient
             }
         }
 
+        private void button_RoomCreate_Click(object sender, EventArgs e)
+        {
+            RoomCreator roomCreator = new RoomCreator();
+            roomCreator.ShowDialog();
+        }
     }
 }
