@@ -119,9 +119,6 @@
     <ClCompile Include="ChatApplication.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="Packet.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="PacketHandler.cpp">
       <Filter>Network</Filter>
     </ClCompile>

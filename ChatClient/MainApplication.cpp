@@ -13,9 +13,26 @@ shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
 
 ServerSession* session;
 
+bool GetPacket(void* packetData, int size)
+{
+	mutex m;
+	lock_guard<mutex> lock(m);
+	if (!GRecvPacketQueue.empty())
+	{
+		char* packet;
+		packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+		GRecvPacketQueue.pop();
+		::memcpy(packetData, packet, size);
+
+		return true;
+	}
+
+	return false;
+}
+
 extern "C"
 {
-	EXPORT void ChatInit(WCHAR* ip, __int16 port)
+	EXPORT void ChatClientStart(WCHAR* ip, __int16 port)
 	{
 		chatClient->Connect(ip, port);
 
@@ -38,14 +55,24 @@ extern "C"
 		session = static_cast<ServerSession*>(chatClient->GetChatSession());
 	}
 
-	EXPORT void ChatLogin(char* id, char* pwd, const int idSize, const int pwdSize)
+	EXPORT void SendLoginPacket(char* id, const int idSize, char* pwd, const int pwdSize)
 	{
-		chatClient->SendLogin(id, pwd, idSize, pwdSize);
+		chatClient->SendLogin(id, idSize, pwd, pwdSize);
 	}
 
-	EXPORT void ChatMsg(char* str, int size)
+	EXPORT void SendChatPacket(char* str, int size)
 	{
 		chatClient->SendChat(str, size);
+	}
+
+	EXPORT void	SendRoomOpenPacket(int number, char* title, int titleSize, int userCount)
+	{
+		chatClient->SendRoomOpen(number, title, titleSize, userCount);
+	}
+
+	EXPORT void SendRoomEnterPacket()
+	{
+
 	}
 
 	EXPORT void	GetPacketHeader(PACKET_HEADER* packetHeader)
@@ -59,39 +86,26 @@ extern "C"
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
 	{
-		if (!GRecvPacketQueue.empty())
-		{
-			char* packet;
-			{
-				mutex m;
-				lock_guard<mutex> lock(m);
-				packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-				GRecvPacketQueue.pop();
-			}
-			::memcpy(packetData, packet, size);
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
 
-			return true;
-		}
-
-		return false;
+	EXPORT bool GetChatPacket(SC_CHAT_RESPONSE* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 	
-	EXPORT bool GetChatReqPacket(SC_CHAT_RESPONSE* packetData, int size)
+	EXPORT bool GetChatNotifyPacket(SC_CHAT_NOTIFY* packetData, int size)
 	{
-		if (!GRecvPacketQueue.empty())
-		{
-			char* packet;
-			{
-				mutex m;
-				lock_guard<mutex> lock(m);
-				packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-				GRecvPacketQueue.pop();
-			}
-			::memcpy(packetData, packet, size);
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
 
-			return true;
-		}
+	EXPORT bool GetRoomOpenPacket(SC_ROOM_OPEN_RESPONSE* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
 
-		return false;
+	EXPORT bool GetRoomEnterPacket(SC_ROOM_ENTER_RESPONSE* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 }

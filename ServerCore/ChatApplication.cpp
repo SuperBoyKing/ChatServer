@@ -90,16 +90,14 @@ bool ChatClient::Start()
 	return true;
 }
 
-void ChatClient::SendLogin(const char* id, const char* pwd, const int idSize, const int pwdSize)
+void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize)
 {
 	CS_LOGIN_REQUEST packet;
-	::memcpy(packet.userID, id, sizeof(char) * 32);
-	::memcpy(packet.userPW, pwd, sizeof(char) * 32);
-	packet.size += 66;
+	::memcpy(packet.userID, id, sizeof(char) * idSize);
+	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
+	packet.size += idSize + pwdSize;
 
-	shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
-	sendBuf->CopyData((char*)&packet, packet.size);
-	m_session->Send(sendBuf);
+	SendPacket<CS_LOGIN_REQUEST>(packet);
 }
 
 void ChatClient::SendChat(const char* str, const int size)
@@ -108,7 +106,23 @@ void ChatClient::SendChat(const char* str, const int size)
 	::memcpy(packet.message, str, size);
 	packet.size += size;
 
-	shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
-	sendBuf->CopyData((char*)&packet, packet.size);
-	m_session->Send(sendBuf);
+	SendPacket<CS_CHAT_REQUEST>(packet);
+}
+
+void ChatClient::SendRoomOpen(int number, char* title, int titleSize, int userCount)
+{
+	CS_ROOM_OPEN_REQUEST packet;
+	packet.roomNumber = number;
+	::memcpy(packet.roomTitle, title, titleSize);
+	packet.userCount = userCount;
+
+	SendPacket<CS_ROOM_OPEN_REQUEST>(packet);
+}
+
+void ChatClient::SendRoomEnter(int number)
+{
+	CS_ROOM_ENTER_REQUEST packet;
+	packet.roomNumber = number;
+
+	SendPacket<CS_ROOM_ENTER_REQUEST>(packet);
 }

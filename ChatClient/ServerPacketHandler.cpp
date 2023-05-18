@@ -20,7 +20,7 @@ ServerPacketHandler::~ServerPacketHandler()
 
 void ServerPacketHandler::ProcessChat(SOCKET socket, char* packetData, int size)
 {
-	SC_CHAT_RESPONSE chatResponse = {};
+	SC_CHAT_NOTIFY chatResponse = {};
 	::memcpy((char*)&chatResponse + sizeof(PACKET_HEADER), packetData, size);
 	chatResponse.size += size;
 
