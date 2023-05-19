@@ -65,7 +65,7 @@ public:
 
 	void SendChat(const char* str, const int size);
 
-	void SendRoomOpen(int number, char* title, int titleSize, int userCount);
+	void SendRoomOpen(char* title, int titleSize, int userCount);
 
 	void SendRoomEnter(int number);
 

@@ -109,10 +109,9 @@ void ChatClient::SendChat(const char* str, const int size)
 	SendPacket<CS_CHAT_REQUEST>(packet);
 }
 
-void ChatClient::SendRoomOpen(int number, char* title, int titleSize, int userCount)
+void ChatClient::SendRoomOpen(char* title, int titleSize, int userCount)
 {
 	CS_ROOM_OPEN_REQUEST packet;
-	packet.roomNumber = number;
 	::memcpy(packet.roomTitle, title, titleSize);
 	packet.userCount = userCount;
 

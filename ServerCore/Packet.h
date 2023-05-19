@@ -84,7 +84,6 @@ struct SC_CHAT_NOTIFY : public PACKET_HEADER
 
 struct CS_ROOM_OPEN_REQUEST : public PACKET_HEADER
 {
-	int		roomNumber = 0;
 	char	roomTitle[128 + 1] = {};
 	int		userCount = 0;
 
@@ -97,7 +96,8 @@ struct CS_ROOM_OPEN_REQUEST : public PACKET_HEADER
 
 struct SC_ROOM_OPEN_RESPONSE : public PACKET_HEADER
 {
-	bool result = false;
+	int		roomNumber = 0;
+	bool	result = false;
 
 	SC_ROOM_OPEN_RESPONSE()
 	{

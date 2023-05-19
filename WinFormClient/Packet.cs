@@ -42,7 +42,6 @@ namespace WinFormClient
     public struct CS_ROOM_OPEN_REQUEST
     {
         public PACKET_HEADER header;
-        public int roomNumber;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 129)]
         public string roomTitle;
         public int userCount;
@@ -51,6 +50,7 @@ namespace WinFormClient
     public struct SC_ROOM_OPEN_RESPONSE
     {
         public PACKET_HEADER header;
+        public int roomNumber;
         public bool result;
     }
 
@@ -58,5 +58,11 @@ namespace WinFormClient
     {
         public PACKET_HEADER header;
         public int roomNumber;
+    }
+
+    public struct SC_ROOM_ENTER_RESPONSE
+    {
+        public PACKET_HEADER header;
+        public bool result;
     }
 }

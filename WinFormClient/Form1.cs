@@ -18,33 +18,40 @@ namespace WinFormClient
         static extern void SendChatPacket([MarshalAs(UnmanagedType.LPStr)] string str, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void GetPacketHeader(ref PACKET_HEADER packetHeader);
+        static extern bool GetPacketHeader(ref PACKET_HEADER packetHeader);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetChatNotifyPacket(ref SC_CHAT_NOTIFY packetData, int size);
 
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern bool GetRoomOpenPacket(ref SC_ROOM_OPEN_RESPONSE packetData, int size);
 
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern bool GetRoomEnterPacket(ref SC_ROOM_ENTER_RESPONSE packetData, int size);
+
+        public string roomTitle = null;
+        public int roomUserCount = 0;
         bool IsActivatedBackGroundThread = false;
-
-        Thread BackGroundThread = null;
+        Thread BackGroundRecvThread = null;
+        RoomManager roomManager = new RoomManager();
 
         public Form1()
         {
             InitializeComponent();
-            BackGroundThread = new Thread(BackGroundProcess);
+            BackGroundRecvThread = new Thread(BackGroundRecvProcess);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             IsActivatedBackGroundThread = false;
-            BackGroundThread.Join();
+            BackGroundRecvThread.Join();
         }
 
         private void Button_isConnect_Click(object sender, EventArgs e)
         {
             ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
             IsActivatedBackGroundThread = true;
-            BackGroundThread.Start();
+            BackGroundRecvThread.Start();
         }
 
         private void Button_login_Click(object sender, EventArgs e)
@@ -58,27 +65,55 @@ namespace WinFormClient
             SendChatPacket(chatMsg, chatMsg.Length);
             listBox_chat.Items.Add(chatMsg);
         }
-        
-        void BackGroundProcess()
+
+        private void button_RoomCreate_Click(object sender, EventArgs e)
+        {
+            RoomCreator roomCreator = new RoomCreator();
+            var result = roomCreator.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                roomTitle = roomCreator.returnTitle;
+                roomUserCount = roomCreator.returnUserCount;
+            }
+
+            listBox_roomList.SelectedIndex = listBox_roomList.Items.Count - 1;
+            button_RoomCreate.Enabled = false;
+        }
+
+        private void button_RoomEnter_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button_RoomLeave_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        void BackGroundRecvProcess()
         {
             while (IsActivatedBackGroundThread)
             {
                 PACKET_HEADER packetHeader;
                 packetHeader.size = 0;
                 packetHeader.id = PacketID.LOGIN_REQUEST;
-                GetPacketHeader(ref packetHeader);
-                if (packetHeader.size != 0)
+                if (GetPacketHeader(ref packetHeader))
                 {
                     // packet.
                     int size = packetHeader.size;
                     PacketID packetType = packetHeader.id;
 
-                    switch(packetType)
+                    switch (packetType)
                     {
                         case PacketID.CHAT_RESPONSE:
+                            break;
+
+                        case PacketID.CHAT_NOTIFY:
                             SC_CHAT_NOTIFY chatPacket;
                             chatPacket.message = null;
                             chatPacket.header = packetHeader;
+
                             if (GetChatNotifyPacket(ref chatPacket, size))
                             {
                                 this.Invoke(new Action(() =>
@@ -87,15 +122,45 @@ namespace WinFormClient
                                 }));
                             }
                             break;
+
+                        case PacketID.ROOM_OPEN_RESPONSE:
+                            SC_ROOM_OPEN_RESPONSE roomOpenPacket;
+                            roomOpenPacket.header = packetHeader;
+                            roomOpenPacket.roomNumber = 0;
+                            roomOpenPacket.result = false;
+
+                            if (GetRoomOpenPacket(ref roomOpenPacket, size))
+                            {
+                                this.Invoke(new Action(() =>
+                                {
+                                    listBox_roomList.Items.Add(roomTitle);
+                                }));
+
+                                Room room = new Room(roomOpenPacket.roomNumber,roomTitle, roomUserCount);
+                                roomManager.roomDictionary.Add(listBox_roomList.SelectedIndex, room);
+                            }
+
+                            this.Invoke(new Action(() =>
+                            {
+                                button_RoomCreate.Enabled = true;
+                            }));
+
+                            break;
+
+                        case PacketID.ROOM_ENTER_RESPONSE:
+                            SC_ROOM_ENTER_RESPONSE roomEnterPacket;
+                            roomEnterPacket.header = packetHeader;
+                            roomEnterPacket.result = false;
+
+                            if (GetRoomEnterPacket(ref roomEnterPacket, size))
+                            {
+                                // room UI 처리
+                            }
+                            break;
                     }
                 }
+                else { }
             }
-        }
-
-        private void button_RoomCreate_Click(object sender, EventArgs e)
-        {
-            RoomCreator roomCreator = new RoomCreator();
-            roomCreator.ShowDialog();
         }
     }
 }

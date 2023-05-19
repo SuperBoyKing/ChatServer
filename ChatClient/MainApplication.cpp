@@ -65,23 +65,25 @@ extern "C"
 		chatClient->SendChat(str, size);
 	}
 
-	EXPORT void	SendRoomOpenPacket(int number, char* title, int titleSize, int userCount)
+	EXPORT void	SendRoomOpenPacket(char* title, int titleSize, int userCount)
 	{
-		chatClient->SendRoomOpen(number, title, titleSize, userCount);
+		chatClient->SendRoomOpen(title, titleSize, userCount);
 	}
 
-	EXPORT void SendRoomEnterPacket()
+	EXPORT void SendRoomEnterPacket(int number)
 	{
-
+		chatClient->SendRoomEnter(number);
 	}
 
-	EXPORT void	GetPacketHeader(PACKET_HEADER* packetHeader)
+	EXPORT bool	GetPacketHeader(PACKET_HEADER* packetHeader)
 	{
 		if (!GRecvPacketQueue.empty())
 		{
 			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
 			::memcpy(packetHeader, packet, PACKET_HEADER_SIZE);
+			return true;
 		}
+		return false;
 	}
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)

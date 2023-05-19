@@ -57,16 +57,13 @@ void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer)
 
 bool ClientSessionManager::SendToSession(SOCKET key, shared_ptr<SendBuffer> sendBuffer)
 {
-	shared_ptr<ChatSession> client;
+	shared_ptr<ChatSession> client = Search(key);
 
+	lock_guard<recursive_mutex> lock(m_mutex); 
+	if (client.get() != nullptr)
 	{
-		lock_guard<recursive_mutex> lock(m_mutex);
-		client = Search(key);
-		if (client.get() != nullptr)
-		{
-			client->Send(sendBuffer);
-			return true;
-		}
+		client->Send(sendBuffer);
+		return true;
 	}
 
 	return false;
