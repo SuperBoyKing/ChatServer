@@ -9,6 +9,7 @@ RoomManager::RoomManager()
 	, m_roomPoolIndex(0)
 {
 	m_roomPool.reserve(m_maxRoomCount);
+	Init();
 }
 
 RoomManager::~RoomManager()

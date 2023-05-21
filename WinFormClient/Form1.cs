@@ -18,6 +18,12 @@ namespace WinFormClient
         static extern void SendChatPacket([MarshalAs(UnmanagedType.LPStr)] string str, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendRoomOpenPacket([MarshalAs(UnmanagedType.LPStr)] string str, int titleSize, int userCount);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendRoomEnterPacket(int number);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetPacketHeader(ref PACKET_HEADER packetHeader);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -77,13 +83,18 @@ namespace WinFormClient
                 roomUserCount = roomCreator.returnUserCount;
             }
 
-            listBox_roomList.SelectedIndex = listBox_roomList.Items.Count - 1;
+            SendRoomOpenPacket(roomTitle, roomTitle.Length, roomUserCount);
+
+            //listView_roomList.SelectedIndex = listBox_roomList.Items.Count - 1;
+            //listView_roomList.Items[listView_roomList.Items.Count - 1].Selected = true;
             button_RoomCreate.Enabled = false;
         }
 
         private void button_RoomEnter_Click(object sender, EventArgs e)
         {
-            
+            Room room;
+            roomManager.roomDictionary.TryGetValue(listView_roomList.SelectedIndices.ToString(), out room);
+            //SendRoomEnterPacket()
         }
 
         private void button_RoomLeave_Click(object sender, EventArgs e)
@@ -133,11 +144,11 @@ namespace WinFormClient
                             {
                                 this.Invoke(new Action(() =>
                                 {
-                                    listBox_roomList.Items.Add(roomTitle);
+                                    listView_roomList.Items.Add(roomTitle);
                                 }));
 
-                                Room room = new Room(roomOpenPacket.roomNumber,roomTitle, roomUserCount);
-                                roomManager.roomDictionary.Add(listBox_roomList.SelectedIndex, room);
+                                Room room = new Room(roomOpenPacket.roomNumber, roomTitle, roomUserCount);
+                                roomManager.roomDictionary.Add(listView_roomList.SelectedIndices.ToString(), room);
                             }
 
                             this.Invoke(new Action(() =>
@@ -154,7 +165,10 @@ namespace WinFormClient
 
                             if (GetRoomEnterPacket(ref roomEnterPacket, size))
                             {
-                                // room UI 처리
+                                this.Invoke(new Action(() =>
+                                {
+                                    
+                                }));
                             }
                             break;
                     }

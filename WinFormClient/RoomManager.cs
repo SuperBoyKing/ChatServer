@@ -20,6 +20,6 @@ namespace WinFormClient
 
     class RoomManager
     {
-       public Dictionary<int, Room> roomDictionary = new Dictionary<int, Room>();
+       public Dictionary<string, Room> roomDictionary = new Dictionary<string, Room>();
     }
 }

@@ -29,8 +29,11 @@ namespace WinFormClient
 
             if (returnTitle != null && returnUserCount > 1)
             {
-                SendRoomOpenPacket(returnTitle, returnTitle.Length, returnUserCount);
+                //SendRoomOpenPacket(returnTitle, returnTitle.Length, returnUserCount);
             }
+
+            this.DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void button_cancel_Click(object sender, EventArgs e)

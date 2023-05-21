@@ -46,16 +46,16 @@ namespace WinFormClient
             this.listBox_chat = new System.Windows.Forms.ListBox();
             this.listBox_user = new System.Windows.Forms.ListBox();
             this.label_ConnectStatus = new System.Windows.Forms.Label();
-            this.listBox_roomList = new System.Windows.Forms.ListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textbox_roomName = new System.Windows.Forms.TextBox();
+            this.textBox_userCount = new System.Windows.Forms.TextBox();
+            this.textbox_roomTitle = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.Lobby = new System.Windows.Forms.GroupBox();
             this.button_RoomCreate = new System.Windows.Forms.Button();
             this.button_RoomLeave = new System.Windows.Forms.Button();
             this.button_RoomEnter = new System.Windows.Forms.Button();
+            this.listView_roomList = new System.Windows.Forms.ListView();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Lobby.SuspendLayout();
@@ -233,22 +233,11 @@ namespace WinFormClient
             this.label_ConnectStatus.TabIndex = 12;
             this.label_ConnectStatus.Text = "Connect Status:";
             // 
-            // listBox_roomList
-            // 
-            this.listBox_roomList.FormattingEnabled = true;
-            this.listBox_roomList.ItemHeight = 20;
-            this.listBox_roomList.Location = new System.Drawing.Point(21, 29);
-            this.listBox_roomList.Margin = new System.Windows.Forms.Padding(4);
-            this.listBox_roomList.Name = "listBox_roomList";
-            this.listBox_roomList.Size = new System.Drawing.Size(229, 164);
-            this.listBox_roomList.TabIndex = 13;
-            this.listBox_roomList.TabStop = false;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.textBox1);
-            this.groupBox2.Controls.Add(this.textbox_roomName);
+            this.groupBox2.Controls.Add(this.textBox_userCount);
+            this.groupBox2.Controls.Add(this.textbox_roomTitle);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.listBox_user);
             this.groupBox2.Controls.Add(this.textBox_chat);
@@ -273,25 +262,25 @@ namespace WinFormClient
             this.label5.TabIndex = 15;
             this.label5.Text = "Users : ";
             // 
-            // textBox1
+            // textBox_userCount
             // 
-            this.textBox1.Location = new System.Drawing.Point(522, 33);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(62, 27);
-            this.textBox1.TabIndex = 14;
-            this.textBox1.TabStop = false;
+            this.textBox_userCount.Location = new System.Drawing.Point(522, 33);
+            this.textBox_userCount.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_userCount.Name = "textBox_userCount";
+            this.textBox_userCount.ReadOnly = true;
+            this.textBox_userCount.Size = new System.Drawing.Size(62, 27);
+            this.textBox_userCount.TabIndex = 14;
+            this.textBox_userCount.TabStop = false;
             // 
-            // textbox_roomName
+            // textbox_roomTitle
             // 
-            this.textbox_roomName.Location = new System.Drawing.Point(123, 33);
-            this.textbox_roomName.Margin = new System.Windows.Forms.Padding(4);
-            this.textbox_roomName.Name = "textbox_roomName";
-            this.textbox_roomName.ReadOnly = true;
-            this.textbox_roomName.Size = new System.Drawing.Size(299, 27);
-            this.textbox_roomName.TabIndex = 13;
-            this.textbox_roomName.TabStop = false;
+            this.textbox_roomTitle.Location = new System.Drawing.Point(123, 33);
+            this.textbox_roomTitle.Margin = new System.Windows.Forms.Padding(4);
+            this.textbox_roomTitle.Name = "textbox_roomTitle";
+            this.textbox_roomTitle.ReadOnly = true;
+            this.textbox_roomTitle.Size = new System.Drawing.Size(299, 27);
+            this.textbox_roomTitle.TabIndex = 13;
+            this.textbox_roomTitle.TabStop = false;
             // 
             // label4
             // 
@@ -305,10 +294,10 @@ namespace WinFormClient
             // 
             // Lobby
             // 
+            this.Lobby.Controls.Add(this.listView_roomList);
             this.Lobby.Controls.Add(this.button_RoomCreate);
             this.Lobby.Controls.Add(this.button_RoomLeave);
             this.Lobby.Controls.Add(this.button_RoomEnter);
-            this.Lobby.Controls.Add(this.listBox_roomList);
             this.Lobby.Location = new System.Drawing.Point(273, 73);
             this.Lobby.Margin = new System.Windows.Forms.Padding(4);
             this.Lobby.Name = "Lobby";
@@ -354,6 +343,15 @@ namespace WinFormClient
             this.button_RoomEnter.Text = "Enter";
             this.button_RoomEnter.UseVisualStyleBackColor = true;
             this.button_RoomEnter.Click += new System.EventHandler(this.button_RoomEnter_Click);
+            // 
+            // listView_roomList
+            // 
+            this.listView_roomList.HideSelection = false;
+            this.listView_roomList.Location = new System.Drawing.Point(8, 28);
+            this.listView_roomList.Name = "listView_roomList";
+            this.listView_roomList.Size = new System.Drawing.Size(240, 166);
+            this.listView_roomList.TabIndex = 16;
+            this.listView_roomList.UseCompatibleStateImageBehavior = false;
             // 
             // Form1
             // 
@@ -402,16 +400,16 @@ namespace WinFormClient
         private System.Windows.Forms.ListBox listBox_chat;
         private System.Windows.Forms.ListBox listBox_user;
         private System.Windows.Forms.Label label_ConnectStatus;
-        private System.Windows.Forms.ListBox listBox_roomList;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox Lobby;
         private System.Windows.Forms.Button button_RoomEnter;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textbox_roomName;
+        private System.Windows.Forms.TextBox textBox_userCount;
+        private System.Windows.Forms.TextBox textbox_roomTitle;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button_RoomCreate;
         private System.Windows.Forms.Button button_RoomLeave;
+        private System.Windows.Forms.ListView listView_roomList;
     }
 }
 

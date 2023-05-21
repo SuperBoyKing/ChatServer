@@ -114,6 +114,7 @@ void ChatClient::SendRoomOpen(char* title, int titleSize, int userCount)
 	CS_ROOM_OPEN_REQUEST packet;
 	::memcpy(packet.roomTitle, title, titleSize);
 	packet.userCount = userCount;
+	packet.size += titleSize + sizeof(int);
 
 	SendPacket<CS_ROOM_OPEN_REQUEST>(packet);
 }
@@ -122,6 +123,7 @@ void ChatClient::SendRoomEnter(int number)
 {
 	CS_ROOM_ENTER_REQUEST packet;
 	packet.roomNumber = number;
+	packet.size += sizeof(int);
 
 	SendPacket<CS_ROOM_ENTER_REQUEST>(packet);
 }
