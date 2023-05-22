@@ -2,14 +2,14 @@
 #include "Room.h"
 
 Room::Room(unsigned int roomNumber)
-	:	m_title(nullptr)
+	:	m_title{}
 	,	m_roomNumber(roomNumber)
 	,	m_maxUserCount(0)
 	,	m_currentUserCount(0)
 {
 }
 
-void Room::Init(char* roomTitle, int titleSize, int maxUserCount, int roomNumber)
+void Room::Init(char* roomTitle, const size_t titleSize, const int maxUserCount, const int roomNumber)
 {
 	::memcpy(m_title, roomTitle, titleSize);
 	m_roomNumber = roomNumber;

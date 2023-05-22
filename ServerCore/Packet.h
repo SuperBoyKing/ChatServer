@@ -3,6 +3,9 @@
 #pragma pack(1)
 enum class PacketID : unsigned __int16
 {
+	CONNECT_REQUEST,
+	CONNECT_RESPONSE,
+
 	LOGIN_REQUEST,
 	LOGIN_RESPONSE,
 
@@ -20,10 +23,37 @@ enum class PacketID : unsigned __int16
 	ROOM_LEAVE_RESPONSE,
 };
 
+struct ROOM_INFO
+{
+	int		number = 0;
+	char	title[128 + 1] = { 0 };
+	int		userCount = 0;
+};
+
 struct PACKET_HEADER
 {
 	unsigned int	size;
 	PacketID		id;
+};
+
+struct CS_CONNECT_REQUEST : public PACKET_HEADER
+{
+	CS_CONNECT_REQUEST()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::CONNECT_REQUEST;
+	}
+};
+
+struct SC_CONNECT_RESPONSE : public PACKET_HEADER
+{
+	ROOM_INFO roomInfo;
+
+	SC_CONNECT_RESPONSE()
+	{
+		size = PACKET_HEADER_SIZE;
+		id = PacketID::CONNECT_RESPONSE;
+	}
 };
 
 struct CS_LOGIN_REQUEST : public PACKET_HEADER

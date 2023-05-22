@@ -14,9 +14,6 @@ namespace WinFormClient
         public string returnTitle { get; set; }
         public int  returnUserCount { get; set; }
 
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void SendRoomOpenPacket([MarshalAs(UnmanagedType.LPStr)] string title, int titleSize, int userCount);
-
         public RoomCreator()
         {
             InitializeComponent();
@@ -24,15 +21,17 @@ namespace WinFormClient
 
         private void button_create_Click(object sender, EventArgs e)
         {
-            returnTitle = textBox_title.Text;
-            returnUserCount = Int32.Parse(textBox_userCount.Text);
-
-            if (returnTitle != null && returnUserCount > 1)
+            if (string.IsNullOrEmpty(textBox_userCount.Text) || string.IsNullOrEmpty(textBox_title.Text))
             {
-                //SendRoomOpenPacket(returnTitle, returnTitle.Length, returnUserCount);
+                this.DialogResult = DialogResult.None;
+            }
+            else
+            {
+                returnTitle = textBox_title.Text;
+                returnUserCount = Int32.Parse(textBox_userCount.Text);
+                this.DialogResult = DialogResult.OK;
             }
 
-            this.DialogResult = DialogResult.OK;
             Close();
         }
 

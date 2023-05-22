@@ -7,6 +7,9 @@ namespace WinFormClient
 {
     public enum PacketID : ushort
     {
+        CONNECT_REQUEST,
+        CONNECT_RESPONSE,
+
         LOGIN_REQUEST,
         LOGIN_RESPONSE,
 
@@ -32,6 +35,28 @@ namespace WinFormClient
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ROOM_INFO
+    {
+        public int     number;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 129)]
+        public string  roomTitle;
+        public int     userCount0;
+    };
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CS_CONNECT_REQUEST
+    {
+        public PACKET_HEADER header;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_CONNECT_RESPONSE
+    {
+        public PACKET_HEADER header;
+        public List<ROOM_INFO> RoomInfos;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_CHAT_NOTIFY
     {
         public PACKET_HEADER header;
@@ -39,6 +64,7 @@ namespace WinFormClient
         public string message;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CS_ROOM_OPEN_REQUEST
     {
         public PACKET_HEADER header;
@@ -47,6 +73,7 @@ namespace WinFormClient
         public int userCount;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_OPEN_RESPONSE
     {
         public PACKET_HEADER header;
@@ -54,12 +81,14 @@ namespace WinFormClient
         public bool result;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CS_ROOM_ENTER_REQUEST
     {
         public PACKET_HEADER header;
         public int roomNumber;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_ENTER_RESPONSE
     {
         public PACKET_HEADER header;

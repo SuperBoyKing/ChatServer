@@ -61,6 +61,8 @@ public:
 	bool Start() override;
 
 	// Packet 송신 함수 (Client -> Server)
+	void SendConnect();
+
 	void SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize);
 
 	void SendChat(const char* str, const int size);
@@ -72,8 +74,8 @@ public:
 	inline ChatSession* GetChatSession() { return m_session.get(); }
 
 private:
-	template<typename Packet>
-	void SendPacket(Packet& packet)
+	template<typename PacketType>
+	void SendPacket(PacketType& packet)
 	{
 		shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
 		sendBuf->CopyData((char*)&packet, packet.size);

@@ -90,12 +90,18 @@ bool ChatClient::Start()
 	return true;
 }
 
+void ChatClient::SendConnect()
+{
+	CS_CONNECT_REQUEST packet;
+	SendPacket<CS_CONNECT_REQUEST>(packet);
+}
+
 void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize)
 {
 	CS_LOGIN_REQUEST packet;
 	::memcpy(packet.userID, id, sizeof(char) * idSize);
 	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
-	packet.size += idSize + pwdSize;
+	packet.size = sizeof(CS_LOGIN_REQUEST);
 
 	SendPacket<CS_LOGIN_REQUEST>(packet);
 }
@@ -112,9 +118,9 @@ void ChatClient::SendChat(const char* str, const int size)
 void ChatClient::SendRoomOpen(char* title, int titleSize, int userCount)
 {
 	CS_ROOM_OPEN_REQUEST packet;
-	::memcpy(packet.roomTitle, title, titleSize);
+	::memcpy(&packet.roomTitle, title, titleSize);
 	packet.userCount = userCount;
-	packet.size += titleSize + sizeof(int);
+	packet.size = sizeof(CS_ROOM_OPEN_REQUEST);
 
 	SendPacket<CS_ROOM_OPEN_REQUEST>(packet);
 }
@@ -123,7 +129,7 @@ void ChatClient::SendRoomEnter(int number)
 {
 	CS_ROOM_ENTER_REQUEST packet;
 	packet.roomNumber = number;
-	packet.size += sizeof(int);
+	packet.size = sizeof(CS_ROOM_ENTER_REQUEST);
 
 	SendPacket<CS_ROOM_ENTER_REQUEST>(packet);
 }

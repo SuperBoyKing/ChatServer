@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Room.h"
 #include "RoomManager.h"
 #include "ClientPacketHandler.h"
 
@@ -6,6 +7,7 @@ unique_ptr<ClientPacketHandler> GClientPacketHandler = make_unique<ClientPacketH
 
 ClientPacketHandler::ClientPacketHandler()
 {
+	m_uMapProcessPacket[PacketID::CONNECT_REQUEST] = &ClientPacketHandler::ProcessConnect;
 	m_uMapProcessPacket[PacketID::LOGIN_REQUEST] = &ClientPacketHandler::ProcessLogin;
 	m_uMapProcessPacket[PacketID::CHAT_REQUEST] = &ClientPacketHandler::ProcessChat;
 	m_uMapProcessPacket[PacketID::ROOM_OPEN_REQUEST] = &ClientPacketHandler::ProcessRoomOpen;
@@ -26,8 +28,35 @@ void ClientPacketHandler::HandlePacket(SOCKET socket, char* packet)
 	auto itr = m_uMapProcessPacket.find(stPacketHeader.id);
 	if (itr != m_uMapProcessPacket.end())
 	{
-		itr->second(*this, socket, packet + PACKET_HEADER_SIZE, stPacketHeader.size - PACKET_HEADER_SIZE);	// 해당 패킷 ID 함수 호출
+		itr->second(*this, socket, packet, stPacketHeader.size);	// 해당 패킷 ID 함수 호출
 	}
+}
+
+void ClientPacketHandler::ProcessConnect(SOCKET socket, char* packetData, int size)
+{
+	int i = 0;
+	SC_CONNECT_RESPONSE sendPacket = {};
+	char title[6] = { "Hello" };
+	GRoomManager->OpenRoom(title, 6, 10);
+	ROOM_INFO roomInfo;
+
+	for (auto& room : GRoomManager->GetRoomPool())
+	{
+		if (room->GetRoomNumber() != 0)
+		{
+			roomInfo.number = room->GetRoomNumber();
+			memcpy(roomInfo.title, room->GetTitle(), strlen(room->GetTitle()));
+			roomInfo.userCount = room->GetMaxUserCount();
+
+			sendPacket.roomInfos.push_back(roomInfo);
+
+			if (GRoomManager->GetOpenRoomCount() == ++i)
+				break;
+		}
+	}
+	sendPacket.size += (unsigned int)(sizeof(ROOM_INFO) * sendPacket.roomInfos.size());
+
+	SendProcessedPacket<SC_CONNECT_RESPONSE>(socket, sendPacket);
 }
 
 void ClientPacketHandler::ProcessChat(SOCKET socket, char* packetData, int size)
@@ -58,21 +87,19 @@ void ClientPacketHandler::ProcessLogin(SOCKET socket, char* packetData, int size
 void ClientPacketHandler::ProcessRoomOpen(SOCKET socket, char* packetData, int size)
 {
 	CS_ROOM_OPEN_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_OPEN_REQUEST*>(packetData);
-	bool isOpenSuccess = GRoomManager->OpenRoom(recvPacket->roomTitle, (int)strlen(recvPacket->roomTitle), recvPacket->userCount);
+	bool isOpenSuccess = GRoomManager->OpenRoom(recvPacket->roomTitle, strlen(recvPacket->roomTitle), recvPacket->userCount);
 	
-	SC_ROOM_OPEN_RESPONSE packet;
-	packet.result = isOpenSuccess;
+	SC_ROOM_OPEN_RESPONSE sendPacket;
+	sendPacket.result = isOpenSuccess;
+	sendPacket.size = sizeof(SC_ROOM_OPEN_RESPONSE);
 	
-	shared_ptr<SendBuffer> sendBuffer = make_shared<SendBuffer>(packet.size);
-	sendBuffer->CopyData(&packet, packet.size);
-	GClientSessionManager->SendToSession(socket, sendBuffer);
+	SendProcessedPacket<SC_ROOM_OPEN_RESPONSE>(socket, sendPacket);
 }
 
 void ClientPacketHandler::ProcessRoomEnter(SOCKET socket, char* packetData, int size)
 {
 	CS_ROOM_ENTER_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_ENTER_REQUEST*>(packetData);
 	SC_ROOM_ENTER_RESPONSE sendPacket;
-	shared_ptr<SendBuffer> sendBuffer = nullptr;
 
 	if (recvPacket->roomNumber > 0)
 	{
@@ -82,10 +109,9 @@ void ClientPacketHandler::ProcessRoomEnter(SOCKET socket, char* packetData, int 
 	{
 		sendPacket.result = false;
 	}
+	sendPacket.size = sizeof(SC_ROOM_ENTER_RESPONSE);
 
-	sendBuffer = make_shared<SendBuffer>(sendPacket.size);
-	sendBuffer->CopyData(&sendPacket, sendPacket.size);
-	GClientSessionManager->SendToSession(socket, sendBuffer);
+	SendProcessedPacket<SC_ROOM_ENTER_RESPONSE>(socket, sendPacket);
 }
 
 void ClientPacketHandler::ProcessRoomLeave(SOCKET socket, char* packetData, int size)

@@ -2,8 +2,6 @@
 #include "ServerSession.h"
 #include "ServerPacketHandler.h"
 
-#define	EXPORT	__declspec(dllexport)
-
 function<shared_ptr<ServerSession>(void)> serverSession = make_shared<ServerSession>;
 
 shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
@@ -55,6 +53,11 @@ extern "C"
 		session = static_cast<ServerSession*>(chatClient->GetChatSession());
 	}
 
+	EXPORT void SendConnectPacket()
+	{
+		chatClient->SendConnect();
+	}
+
 	EXPORT void SendLoginPacket(char* id, const int idSize, char* pwd, const int pwdSize)
 	{
 		chatClient->SendLogin(id, idSize, pwd, pwdSize);
@@ -84,6 +87,11 @@ extern "C"
 			return true;
 		}
 		return false;
+	}
+
+	EXPORT bool GetConnectPacket(SC_CONNECT_RESPONSE* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)

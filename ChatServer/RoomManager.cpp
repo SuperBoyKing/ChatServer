@@ -25,7 +25,7 @@ void RoomManager::Init()
 	}
 }
 
-bool RoomManager::OpenRoom(char* roomTitle, int titleSize, int maxUserCount)
+bool RoomManager::OpenRoom(char* roomTitle, const size_t titleSize, const int maxUserCount)
 {
 	bool bResult = false;
 	shared_ptr<Room> room = nullptr;
@@ -45,6 +45,7 @@ bool RoomManager::OpenRoom(char* roomTitle, int titleSize, int maxUserCount)
 		{
 			room->Init(roomTitle, titleSize, maxUserCount, m_roomPoolIndex);
 			bResult = true;
+			m_currentOpenRoomCount.fetch_add(1);
 			break;
 		}
 	}
