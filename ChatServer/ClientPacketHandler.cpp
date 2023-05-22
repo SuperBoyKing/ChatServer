@@ -38,23 +38,20 @@ void ClientPacketHandler::ProcessConnect(SOCKET socket, char* packetData, int si
 	SC_CONNECT_RESPONSE sendPacket = {};
 	char title[6] = { "Hello" };
 	GRoomManager->OpenRoom(title, 6, 10);
-	ROOM_INFO roomInfo;
 
 	for (auto& room : GRoomManager->GetRoomPool())
 	{
 		if (room->GetRoomNumber() != 0)
 		{
-			roomInfo.number = room->GetRoomNumber();
-			memcpy(roomInfo.title, room->GetTitle(), strlen(room->GetTitle()));
-			roomInfo.userCount = room->GetMaxUserCount();
-
-			sendPacket.roomInfos.push_back(roomInfo);
+			sendPacket.roomInfo[i].number = room->GetRoomNumber();
+			memcpy(sendPacket.roomInfo[i].title, room->GetTitle(), strlen(room->GetTitle()));
+			sendPacket.roomInfo[i].userCount = room->GetMaxUserCount();
 
 			if (GRoomManager->GetOpenRoomCount() == ++i)
 				break;
 		}
 	}
-	sendPacket.size += (unsigned int)(sizeof(ROOM_INFO) * sendPacket.roomInfos.size());
+	sendPacket.size += (unsigned int)(sizeof(ROOM_INFO)) * i;
 
 	SendProcessedPacket<SC_CONNECT_RESPONSE>(socket, sendPacket);
 }

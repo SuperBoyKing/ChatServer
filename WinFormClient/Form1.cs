@@ -128,11 +128,17 @@ namespace WinFormClient
                         case PacketID.CONNECT_RESPONSE:
                             SC_CONNECT_RESPONSE connectResponsePacket;
                             connectResponsePacket.header = packetHeader;
-                            connectResponsePacket.RoomInfos = new List<ROOM_INFO>();
+                            connectResponsePacket.roomInfo.userCount = 0;
+                            connectResponsePacket.roomInfo.number = 0;
+                            connectResponsePacket.roomInfo.title = null;
 
                             if (GetConnectPacket(ref connectResponsePacket, size))
-                            { 
-
+                            {
+                                roomManager.roomDictionary.Add(connectResponsePacket.roomInfo.title, connectResponsePacket.roomInfo);
+                                this.Invoke(new Action(() =>
+                                {
+                                    listBox_room.Items.Add(connectResponsePacket.roomInfo.title);
+                                }));
                             }
                             break;
 

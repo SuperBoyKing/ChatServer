@@ -19,8 +19,8 @@ bool GetPacket(void* packetData, int size)
 	{
 		char* packet;
 		packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-		GRecvPacketQueue.pop();
 		::memcpy(packetData, packet, size);
+		GRecvPacketQueue.pop();
 
 		return true;
 	}

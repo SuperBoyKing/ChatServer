@@ -35,15 +35,6 @@ namespace WinFormClient
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ROOM_INFO
-    {
-        public int     number;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 129)]
-        public string  roomTitle;
-        public int     userCount0;
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CS_CONNECT_REQUEST
     {
         public PACKET_HEADER header;
@@ -53,7 +44,7 @@ namespace WinFormClient
     public struct SC_CONNECT_RESPONSE
     {
         public PACKET_HEADER header;
-        public List<ROOM_INFO> RoomInfos;
+        public Room roomInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -68,7 +59,7 @@ namespace WinFormClient
     public struct CS_ROOM_OPEN_REQUEST
     {
         public PACKET_HEADER header;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 129)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
         public string roomTitle;
         public int userCount;
     }

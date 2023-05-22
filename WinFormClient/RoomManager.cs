@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace WinFormClient
 {
-    class Room
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Room
     {
         public Room(int number, string title, int userCount)
         {
@@ -13,9 +15,10 @@ namespace WinFormClient
             this.userCount = userCount;
         }
 
-        public int number { get; set; }
-        public string title { get; set; }
-        public int userCount { get; set; }
+        public int number;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
+        public string title;
+        public int userCount;
     }
 
     class RoomManager

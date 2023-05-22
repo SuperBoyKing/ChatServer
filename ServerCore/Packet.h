@@ -26,7 +26,7 @@ enum class PacketID : unsigned __int16
 struct ROOM_INFO
 {
 	int		number = 0;
-	char	title[128 + 1] = { 0 };
+	char	title[50+1] = { 0 };
 	int		userCount = 0;
 };
 
@@ -47,7 +47,7 @@ struct CS_CONNECT_REQUEST : public PACKET_HEADER
 
 struct SC_CONNECT_RESPONSE : public PACKET_HEADER
 {
-	ROOM_INFO roomInfo;
+	ROOM_INFO roomInfo[10];
 
 	SC_CONNECT_RESPONSE()
 	{
@@ -114,7 +114,7 @@ struct SC_CHAT_NOTIFY : public PACKET_HEADER
 
 struct CS_ROOM_OPEN_REQUEST : public PACKET_HEADER
 {
-	char	roomTitle[128 + 1] = {};
+	char	roomTitle[50 + 1] = {};
 	int		userCount = 0;
 
 	CS_ROOM_OPEN_REQUEST()

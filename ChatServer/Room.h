@@ -22,7 +22,7 @@ public:
 
 private:
 	unsigned int		m_roomNumber;
-	char				m_title[128 + 1];
+	char				m_title[50 + 1];
 	int					m_maxUserCount;
 	int					m_currentUserCount;
 	recursive_mutex		m_mutex;
