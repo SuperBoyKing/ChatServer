@@ -6,7 +6,7 @@ public:
 	Room(unsigned int roomNumber);
 	~Room() = default;
 
-	void			Init(char* roomTitle, const size_t titleSize, const int maxUserCount, const int roomNumber);
+	void			Init(const char* roomTitle, const size_t titleSize, const int maxUserCount, const int roomNumber);
 
 	void			Enter(shared_ptr<ChatSession> userSession);
 
@@ -21,7 +21,7 @@ public:
 	inline int		GetMaxUserCount() const	{ return m_maxUserCount; }
 
 private:
-	unsigned int		m_roomNumber;
+	int					m_roomNumber;
 	char				m_title[50 + 1];
 	int					m_maxUserCount;
 	int					m_currentUserCount;

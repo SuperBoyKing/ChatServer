@@ -28,7 +28,8 @@ namespace WinFormClient
         static extern void SendRoomEnterPacket(int number);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetConnectPacket(ref SC_CONNECT_RESPONSE packetData, int size);
+        static extern bool GetConnectPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStruct, SizeParamIndex = 1)]
+        ref Room[] packetData, ref int arrayLength, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetPacketHeader(ref PACKET_HEADER packetHeader);
@@ -38,6 +39,9 @@ namespace WinFormClient
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetRoomOpenPacket(ref SC_ROOM_OPEN_RESPONSE packetData, int size);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern bool GetRoomOpenNotifyPacket(ref SC_ROOM_OPEN_NOTIFY packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetRoomEnterPacket(ref SC_ROOM_ENTER_RESPONSE packetData, int size);
@@ -56,6 +60,7 @@ namespace WinFormClient
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            roomManager.roomDictionary.Clear();
             IsActivatedBackGroundThread = false;
             BackGroundRecvThread.Join();
         }
@@ -65,7 +70,6 @@ namespace WinFormClient
             ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
             IsActivatedBackGroundThread = true;
             BackGroundRecvThread.Start();
-
             SendConnectPacket();
         }
 
@@ -90,12 +94,12 @@ namespace WinFormClient
             {
                 roomTitle = roomCreator.returnTitle;
                 roomUserCount = roomCreator.returnUserCount;
-                SendRoomOpenPacket(roomTitle, roomTitle.Length, roomUserCount);
-                button_RoomCreate.Enabled = false;
+                if (!roomManager.roomDictionary.ContainsKey(roomTitle))
+                {
+                    SendRoomOpenPacket(roomTitle, roomTitle.Length, roomUserCount);
+                    button_RoomCreate.Enabled = false;
+                }
             }
-
-            //listView_roomList.SelectedIndex = listBox_roomList.Items.Count - 1;
-            //listView_roomList.Items[listView_roomList.Items.Count - 1].Selected = true;
         }
 
         private void button_RoomEnter_Click(object sender, EventArgs e)
@@ -128,17 +132,18 @@ namespace WinFormClient
                         case PacketID.CONNECT_RESPONSE:
                             SC_CONNECT_RESPONSE connectResponsePacket;
                             connectResponsePacket.header = packetHeader;
-                            connectResponsePacket.roomInfo.userCount = 0;
-                            connectResponsePacket.roomInfo.number = 0;
-                            connectResponsePacket.roomInfo.title = null;
-
-                            if (GetConnectPacket(ref connectResponsePacket, size))
+                            connectResponsePacket.roomInfo = new Room[10];
+                            int length = 0;
+                            if (GetConnectPacket(ref connectResponsePacket.roomInfo, ref length, size))
                             {
-                                roomManager.roomDictionary.Add(connectResponsePacket.roomInfo.title, connectResponsePacket.roomInfo);
-                                this.Invoke(new Action(() =>
+                                for (int i = 0; i < length; ++i) 
                                 {
-                                    listBox_room.Items.Add(connectResponsePacket.roomInfo.title);
-                                }));
+                                    roomManager.roomDictionary.Add(connectResponsePacket.roomInfo[i].title, connectResponsePacket.roomInfo[i]);
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        listBox_room.Items.Add(connectResponsePacket.roomInfo[i].title);
+                                    }));
+                                }
                             }
                             break;
 
@@ -173,7 +178,7 @@ namespace WinFormClient
                                 }));
 
                                 Room room = new Room(roomOpenPacket.roomNumber, roomTitle, roomUserCount);
-                                roomManager.roomDictionary.Add(listBox_room.SelectedIndices.ToString(), room);
+                                roomManager.roomDictionary.Add(roomTitle, room);
                             }
 
                             this.Invoke(new Action(() =>
@@ -181,6 +186,24 @@ namespace WinFormClient
                                 button_RoomCreate.Enabled = true;
                             }));
 
+                            break;
+
+                        case PacketID.ROOM_OPEN_NOTIFY:
+                            SC_ROOM_OPEN_NOTIFY roomNotify;
+                            roomNotify.roomInfo.number = 0;
+                            roomNotify.roomInfo.title = null;
+                            roomNotify.roomInfo.userCount = 0;
+
+                            if (GetRoomOpenNotifyPacket(ref roomNotify, size))
+                            {
+                                this.Invoke(new Action(() =>
+                                {
+                                    listBox_room.Items.Add(roomNotify.roomInfo.title);
+                                }));
+
+                                Room room = new Room(roomNotify.roomInfo.number, roomNotify.roomInfo.title, roomNotify.roomInfo.userCount);
+                                roomManager.roomDictionary.Add(roomNotify.roomInfo.title, room);
+                            }
                             break;
 
                         case PacketID.ROOM_ENTER_RESPONSE:

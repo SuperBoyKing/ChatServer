@@ -19,6 +19,7 @@ namespace WinFormClient
 
         ROOM_OPEN_REQUEST,
         ROOM_OPEN_RESPONSE,
+        ROOM_OPEN_NOTIFY,
 
         ROOM_ENTER_REQUEST,
         ROOM_ENTER_RESPONSE,
@@ -44,7 +45,7 @@ namespace WinFormClient
     public struct SC_CONNECT_RESPONSE
     {
         public PACKET_HEADER header;
-        public Room roomInfo;
+        public Room[] roomInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -70,6 +71,12 @@ namespace WinFormClient
         public PACKET_HEADER header;
         public int roomNumber;
         public bool result;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_ROOM_OPEN_NOTIFY
+    {
+        public Room roomInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

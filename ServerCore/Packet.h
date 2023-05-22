@@ -15,6 +15,7 @@ enum class PacketID : unsigned __int16
 
 	ROOM_OPEN_REQUEST,
 	ROOM_OPEN_RESPONSE,
+	ROOM_OPEN_NOTIFY,
 
 	ROOM_ENTER_REQUEST,
 	ROOM_ENTER_RESPONSE,
@@ -47,7 +48,7 @@ struct CS_CONNECT_REQUEST : public PACKET_HEADER
 
 struct SC_CONNECT_RESPONSE : public PACKET_HEADER
 {
-	ROOM_INFO roomInfo[10];
+	int packetCount = 0;
 
 	SC_CONNECT_RESPONSE()
 	{
@@ -134,6 +135,11 @@ struct SC_ROOM_OPEN_RESPONSE : public PACKET_HEADER
 		size = PACKET_HEADER_SIZE;
 		id = PacketID::ROOM_OPEN_RESPONSE;
 	}
+};
+
+struct SC_ROOM_OPEN_NOTIFY
+{
+	ROOM_INFO roomInfo;
 };
 
 struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER

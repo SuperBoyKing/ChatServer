@@ -9,7 +9,7 @@ public:
 	
 	void	Init();
 
-	bool	OpenRoom(char* roomTitle, const size_t titleSize, const int maxUserCount);
+	bool	OpenRoom(const char* roomTitle, const size_t titleSize, const int maxUserCount, OUT int* roomNumber);
 
 	inline  vector<shared_ptr<Room>>& GetRoomPool() { return m_roomPool; }
 

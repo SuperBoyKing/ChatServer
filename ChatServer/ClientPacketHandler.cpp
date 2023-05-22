@@ -35,25 +35,33 @@ void ClientPacketHandler::HandlePacket(SOCKET socket, char* packet)
 void ClientPacketHandler::ProcessConnect(SOCKET socket, char* packetData, int size)
 {
 	int i = 0;
-	SC_CONNECT_RESPONSE sendPacket = {};
-	char title[6] = { "Hello" };
-	GRoomManager->OpenRoom(title, 6, 10);
+	SC_CONNECT_RESPONSE sendPacket;
+	void* basePacketAddress = ::VirtualAlloc(NULL, sizeof(SC_CONNECT_RESPONSE) + sizeof(ROOM_INFO) * (SIZE_T)GRoomManager->GetOpenRoomCount(), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	
+	sendPacket.packetCount = GRoomManager->GetOpenRoomCount();
+
+	unique_ptr<ROOM_INFO[]> roomInfos = make_unique<ROOM_INFO[]>(sendPacket.packetCount);
 
 	for (auto& room : GRoomManager->GetRoomPool())
 	{
 		if (room->GetRoomNumber() != 0)
 		{
-			sendPacket.roomInfo[i].number = room->GetRoomNumber();
-			memcpy(sendPacket.roomInfo[i].title, room->GetTitle(), strlen(room->GetTitle()));
-			sendPacket.roomInfo[i].userCount = room->GetMaxUserCount();
+			roomInfos[i].number = room->GetRoomNumber();
+			::memcpy(roomInfos[i].title, room->GetTitle(), strlen(room->GetTitle()));
+			roomInfos[i].userCount = room->GetMaxUserCount();
 
 			if (GRoomManager->GetOpenRoomCount() == ++i)
 				break;
 		}
 	}
-	sendPacket.size += (unsigned int)(sizeof(ROOM_INFO)) * i;
 
-	SendProcessedPacket<SC_CONNECT_RESPONSE>(socket, sendPacket);
+	sendPacket.size += static_cast<unsigned int>(((sizeof(ROOM_INFO)) * sendPacket.packetCount)) + sizeof(sendPacket.packetCount);
+
+	::memcpy(basePacketAddress, &sendPacket, sizeof(SC_CONNECT_RESPONSE));
+	::memcpy(static_cast<char*>(basePacketAddress) + sizeof(SC_CONNECT_RESPONSE), roomInfos.get(), sizeof(ROOM_INFO) * sendPacket.packetCount);
+
+	SendProcessedPacket(socket, reinterpret_cast<SC_CONNECT_RESPONSE*>(basePacketAddress));
+	::VirtualFree(reinterpret_cast<void*>(basePacketAddress), 0, MEM_RELEASE);
 }
 
 void ClientPacketHandler::ProcessChat(SOCKET socket, char* packetData, int size)
@@ -83,14 +91,29 @@ void ClientPacketHandler::ProcessLogin(SOCKET socket, char* packetData, int size
 
 void ClientPacketHandler::ProcessRoomOpen(SOCKET socket, char* packetData, int size)
 {
+	int roomNumber = 0;
 	CS_ROOM_OPEN_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_OPEN_REQUEST*>(packetData);
-	bool isOpenSuccess = GRoomManager->OpenRoom(recvPacket->roomTitle, strlen(recvPacket->roomTitle), recvPacket->userCount);
+	bool isOpenSuccess = GRoomManager->OpenRoom(recvPacket->roomTitle, strlen(recvPacket->roomTitle), recvPacket->userCount, &roomNumber);
 	
 	SC_ROOM_OPEN_RESPONSE sendPacket;
 	sendPacket.result = isOpenSuccess;
+	sendPacket.roomNumber = roomNumber;
 	sendPacket.size = sizeof(SC_ROOM_OPEN_RESPONSE);
-	
-	SendProcessedPacket<SC_ROOM_OPEN_RESPONSE>(socket, sendPacket);
+	SendProcessedPacket(socket, &sendPacket);
+
+	SC_ROOM_OPEN_NOTIFY broadcastPacket;
+	broadcastPacket.roomInfo.number = roomNumber;
+	memcpy(broadcastPacket.roomInfo.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
+	broadcastPacket.roomInfo.userCount = recvPacket->userCount;
+
+	PACKET_HEADER packetHeader;
+	packetHeader.id = PacketID::ROOM_OPEN_NOTIFY;
+	packetHeader.size = sizeof(SC_ROOM_OPEN_NOTIFY) + PACKET_HEADER_SIZE;
+
+	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY));
+	::memcpy(baseAddress, &packetHeader, sizeof(PACKET_HEADER));
+	::memcpy(static_cast<char*>(baseAddress) + sizeof(PACKET_HEADER), &broadcastPacket, sizeof(SC_ROOM_OPEN_NOTIFY));
+	SendBroadcastPacket(socket, reinterpret_cast<PACKET_HEADER*>(baseAddress));
 }
 
 void ClientPacketHandler::ProcessRoomEnter(SOCKET socket, char* packetData, int size)
@@ -108,7 +131,7 @@ void ClientPacketHandler::ProcessRoomEnter(SOCKET socket, char* packetData, int 
 	}
 	sendPacket.size = sizeof(SC_ROOM_ENTER_RESPONSE);
 
-	SendProcessedPacket<SC_ROOM_ENTER_RESPONSE>(socket, sendPacket);
+	SendProcessedPacket(socket, &sendPacket);
 }
 
 void ClientPacketHandler::ProcessRoomLeave(SOCKET socket, char* packetData, int size)

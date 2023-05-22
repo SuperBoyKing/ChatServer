@@ -47,11 +47,12 @@ shared_ptr<ChatSession> ClientSessionManager::Search(SOCKET key)
 	return itr->second;
 }
 
-void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer)
+void ClientSessionManager::Broadcast(SOCKET exceptSocket, shared_ptr<SendBuffer> sendBuffer)
 {
 	for (auto &clients : m_uMapSessions)
 	{
-		clients.second->Send(sendBuffer);
+		if (exceptSocket != clients.second->GetSock())
+			clients.second->Send(sendBuffer);
 	}
 }
 

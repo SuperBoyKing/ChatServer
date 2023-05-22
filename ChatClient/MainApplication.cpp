@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ServerSession.h"
 #include "ServerPacketHandler.h"
+#include <ObjBase.h>
 
 function<shared_ptr<ServerSession>(void)> serverSession = make_shared<ServerSession>;
 
@@ -89,9 +90,30 @@ extern "C"
 		return false;
 	}
 
-	EXPORT bool GetConnectPacket(SC_CONNECT_RESPONSE* packetData, int size)
+	EXPORT bool GetConnectPacket(ROOM_INFO** packetData, int* arrayLength, int size)
 	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
+		int roomInfoSize = size - sizeof(SC_CONNECT_RESPONSE);
+		ROOM_INFO* newArray = reinterpret_cast<ROOM_INFO*>(CoTaskMemAlloc(roomInfoSize));
+		mutex m;
+		{
+			lock_guard<mutex> lock(m);
+			if (!GRecvPacketQueue.empty())
+			{
+				char* packet;
+				packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+				if (newArray != nullptr)
+				{
+					::memcpy(arrayLength, packet + sizeof(PACKET_HEADER), sizeof(int));
+					::memcpy(newArray, packet + sizeof(SC_CONNECT_RESPONSE), roomInfoSize);
+				}
+				GRecvPacketQueue.pop();
+
+				*packetData = newArray;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
@@ -112,6 +134,23 @@ extern "C"
 	EXPORT bool GetRoomOpenPacket(SC_ROOM_OPEN_RESPONSE* packetData, int size)
 	{
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
+
+	EXPORT bool GetRoomOpenNotifyPacket(SC_ROOM_OPEN_NOTIFY* packetData, int size)
+	{
+		mutex m;
+		lock_guard<mutex> lock(m);
+		if (!GRecvPacketQueue.empty())
+		{
+			char* packet;
+			packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
+			GRecvPacketQueue.pop();
+
+			return true;
+		}
+
+		return false;
 	}
 
 	EXPORT bool GetRoomEnterPacket(SC_ROOM_ENTER_RESPONSE* packetData, int size)

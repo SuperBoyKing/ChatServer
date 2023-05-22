@@ -49,7 +49,7 @@ bool ChatSession::Connect()
 		return false;
 	}
 
-	if (CHAT_APPLICATION_TYPE != ApplicationType::CLIENT)
+	if (CHAT_SESSION_TYPE != SessionType::CLIENT)
 	{
 		PRINT_ERROR("Invalid Application Type");
 		return false;

@@ -2,7 +2,7 @@
 #include "ChatApplication.h"
 #include "ClientListener.h"
 
-ChatApplication::ChatApplication(ApplicationType appType, shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount)
+ChatApplication::ChatApplication(SessionType appType, shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount)
 	: m_appType(appType)
 	, m_serverAddress(serverAddress)
 	, m_iocpHandler(iocpHandler)
@@ -16,7 +16,7 @@ ChatApplication::~ChatApplication()
 }
 
 ChatServer::ChatServer(shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount)
-	: ChatApplication(ApplicationType::SERVER, serverAddress, iocpHandler, session, maxSessionCount)
+	: ChatApplication(SessionType::SERVER, serverAddress, iocpHandler, session, maxSessionCount)
 	, m_clientListener(nullptr)
 {
 }
@@ -49,7 +49,7 @@ bool ChatServer::Start()
 }
 
 ChatClient::ChatClient(shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount)
-	: ChatApplication(ApplicationType::CLIENT, serverAddress, iocpHandler, session, maxSessionCount)
+	: ChatApplication(SessionType::CLIENT, serverAddress, iocpHandler, session, maxSessionCount)
 {
 
 }

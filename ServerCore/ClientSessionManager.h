@@ -11,7 +11,7 @@ public:
 	void						Remove(shared_ptr<ChatSession> session);
 	void						Remove(SOCKET key);
 	shared_ptr<ChatSession>		Search(SOCKET key);
-	void						Broadcast(shared_ptr<SendBuffer> sendBuffer);
+	void						Broadcast(SOCKET exceptSocket, shared_ptr<SendBuffer> sendBuffer);
 	bool						SendToSession(SOCKET key, shared_ptr<SendBuffer> sendBuffer);
 
 private:

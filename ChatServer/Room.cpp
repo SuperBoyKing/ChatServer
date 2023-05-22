@@ -9,7 +9,7 @@ Room::Room(unsigned int roomNumber)
 {
 }
 
-void Room::Init(char* roomTitle, const size_t titleSize, const int maxUserCount, const int roomNumber)
+void Room::Init(const char* roomTitle, const size_t titleSize, const int maxUserCount, const int roomNumber)
 {
 	::memcpy(m_title, roomTitle, titleSize);
 	m_roomNumber = roomNumber;

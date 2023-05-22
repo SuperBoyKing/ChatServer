@@ -35,7 +35,7 @@ bool ClientListener::SetUpListener()
 		return false;
 	}
 
-	if (CHAT_APPLICATION_TYPE != ApplicationType::SERVER)
+	if (CHAT_SESSION_TYPE != SessionType::SERVER)
 	{
 		PRINT_ERROR("Invalid Application Type");
 		return false;
