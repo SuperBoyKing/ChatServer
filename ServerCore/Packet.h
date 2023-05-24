@@ -28,13 +28,6 @@ enum class PacketID : unsigned __int16
 	ROOM_LEAVE_NOTIFY,
 };
 
-struct ROOM_INFO
-{
-	int		number = 0;
-	char	title[50+1] = { 0 };
-	int		userCount = 0;
-};
-
 struct PACKET_HEADER
 {
 	int				size = PACKET_HEADER_SIZE;		// header + packetData
@@ -148,7 +141,9 @@ struct SC_ROOM_OPEN_RESPONSE : public PACKET_HEADER
 
 struct SC_ROOM_OPEN_NOTIFY
 {
-	ROOM_INFO roomInfo;	// 추후 수정
+	int		number = 0;
+	char	title[50 + 1] = { 0 };
+	int		userCount = 0;
 };
 
 struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
@@ -213,6 +208,19 @@ struct SC_ROOM_LEAVE_RESPONSE : public PACKET_HEADER
 		size = PACKET_HEADER_SIZE;
 		packetCount = 1;
 		id = PacketID::ROOM_LEAVE_RESPONSE;
+	}
+};
+
+struct SC_ROOM_LEAVE_NOTIFY : public PACKET_HEADER
+{
+	char roomTitle[50 + 1] = {};
+	char userID[32 + 1] = {};
+
+	SC_ROOM_LEAVE_NOTIFY()
+	{
+		size = PACKET_HEADER_SIZE;
+		packetCount = 1;
+		id = PacketID::ROOM_LEAVE_NOTIFY;
 	}
 };
 

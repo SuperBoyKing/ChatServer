@@ -44,7 +44,10 @@ namespace WinFormClient
             PacketFuncDictionary.Add(PacketID.ROOM_OPEN_RESPONSE, ProcessRoomOpenResponse);
             PacketFuncDictionary.Add(PacketID.ROOM_OPEN_NOTIFY, ProcessRoomOpenNotify);
             PacketFuncDictionary.Add(PacketID.ROOM_ENTER_RESPONSE, ProcessRoomEnterResponse);
+            PacketFuncDictionary.Add(PacketID.ROOM_ENTER_USER_NOTIFY, ProcessRoomEnterUserNotify);
+            PacketFuncDictionary.Add(PacketID.ROOM_USER_LIST_NOTIFY, ProcessRoomUserListNotify);
             PacketFuncDictionary.Add(PacketID.ROOM_LEAVE_RESPONSE, ProcessRoomLeaveResponse);
+            PacketFuncDictionary.Add(PacketID.ROOM_LEAVE_NOTIFY, ProcessRoomLeaveNotify);
         }
 
         void ProcessPacket()
@@ -142,13 +145,13 @@ namespace WinFormClient
                 {
                     this.Invoke(new Action(() =>
                     {
+                        button_RoomLeave.Enabled = true;
                         button_chat.Enabled = true;
                         textBox_chat.Enabled = true;
                         listBox_chat.Enabled = true;
 
                         listBox_user.Enabled = true;
                         listBox_user.Items.Add("firstUser");
-                        listBox_user.SelectedIndex = listBox_user.Items.Count - 1;
                     }));
                 }
                 else
@@ -157,23 +160,6 @@ namespace WinFormClient
                 }
             }
             
-        }
-
-        void ProcessRoomUserListNotify(PACKET_HEADER packetHeader)
-        {
-            SC_ROOM_USERLIST_NOTIFY[] roomUserListPacket = new SC_ROOM_USERLIST_NOTIFY[packetHeader.packetCount];
-
-            if (GetRoomUserNotifyPacket(ref roomUserListPacket, packetHeader.packetCount))
-            {
-                for (int i = 0; i < packetHeader.packetCount; ++i)
-                {
-                    this.Invoke(new Action(() =>
-                    {
-                        listBox_user.Items.Add(roomUserListPacket[i].userID);
-                        listBox_user.SelectedIndex = listBox_user.Items.Count - 1;
-                    }));
-                }
-            }
         }
 
         void ProcessRoomEnterUserNotify(PACKET_HEADER packetHeader)
@@ -193,10 +179,29 @@ namespace WinFormClient
             }
         }
 
+        void ProcessRoomUserListNotify(PACKET_HEADER packetHeader)
+        {
+            SC_ROOM_USERLIST_NOTIFY[] roomUserListPacket = new SC_ROOM_USERLIST_NOTIFY[packetHeader.packetCount];
+
+            if (GetRoomUserNotifyPacket(ref roomUserListPacket, packetHeader.packetCount))
+            {
+                for (int i = 0; i < packetHeader.packetCount; ++i)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        listBox_user.Items.Add(roomUserListPacket[i].userID);
+                        listBox_user.SelectedIndex = listBox_user.Items.Count - 1;
+                    }));
+                }
+            }
+        }
 
         void ProcessRoomLeaveResponse(PACKET_HEADER packetHeader)
         {
+        }
 
+        void ProcessRoomLeaveNotify(PACKET_HEADER packetHeader)
+        {
         }
     }
 }

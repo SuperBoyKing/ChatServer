@@ -63,20 +63,21 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 	::free(basePacketAddress);
 }
 
-void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size)
+void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size)
 {
 }
 
-void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size)
+void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size)
 {
 }
 
 void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char* packetData, int size)
 {
-	int roomNumber = 0;
 	CS_ROOM_OPEN_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_OPEN_REQUEST*>(packetData);
+
+	int roomNumber = 0;
 	bool isOpenSuccess = GRoomManager->OpenRoom(recvPacket->roomTitle, strlen(recvPacket->roomTitle), recvPacket->userCount, &roomNumber);
-	
+
 	SC_ROOM_OPEN_RESPONSE sendPacket;
 	sendPacket.result = isOpenSuccess;
 	sendPacket.roomNumber = roomNumber;
@@ -88,9 +89,9 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	packetHeader.size += sizeof(SC_ROOM_OPEN_NOTIFY);
 
 	SC_ROOM_OPEN_NOTIFY broadcastPacket;
-	broadcastPacket.roomInfo.number = roomNumber;
-	memcpy(broadcastPacket.roomInfo.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
-	broadcastPacket.roomInfo.userCount = recvPacket->userCount;
+	broadcastPacket.number = roomNumber;
+	memcpy(broadcastPacket.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
+	broadcastPacket.userCount = recvPacket->userCount;
 
 	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY));
 	::memcpy(baseAddress, &packetHeader, sizeof(PACKET_HEADER));
@@ -105,8 +106,9 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		  방에 접속한 클라이언트에게 방 접속 성공 여부 전송
 	/////////////////////////////////////////////////////*/
 	CS_ROOM_ENTER_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_ENTER_REQUEST*>(packetData);
-	SC_ROOM_ENTER_RESPONSE sendPacket;
 	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber - 1);
+	
+	SC_ROOM_ENTER_RESPONSE sendPacket;
 	sendPacket.size = sizeof(SC_ROOM_ENTER_RESPONSE);
 	
 	if (enteredRoom != shared_ptr<Room>())
@@ -162,5 +164,20 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 
 void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char* packetData, int size)
 {
+	SC_ROOM_LEAVE_RESPONSE sendPacket;
+	CS_ROOM_LEAVE_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_LEAVE_REQUEST*>(packetData);
+	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber - 1);
 
+	if (enteredRoom != shared_ptr<Room>())
+	{
+		if (enteredRoom->Leave(session))
+			sendPacket.result = true;
+	}
+	SendProcessedPacket(session, &sendPacket);
+
+	if (sendPacket.result)
+	{
+		SC_ROOM_LEAVE_NOTIFY broadcastPacket;
+		
+	}
 }

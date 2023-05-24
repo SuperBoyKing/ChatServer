@@ -36,6 +36,7 @@ namespace WinFormClient
         public MainForm()
         {
             InitializeComponent();
+            InitProcessPacket();
             BackGroundRecvThread = new Thread(BackGroundRecvProcess);
         }
 
@@ -100,9 +101,13 @@ namespace WinFormClient
             int index = listBox_room.SelectedIndex;
 
             if (roomManager.roomDictionary.TryGetValue(listBox_room.Items[index].ToString(), out room))
+            {
                 SendRoomEnterPacket(room.number);
+            }
             else
+            {
                 MessageBox.Show("Does not exist room.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button_RoomLeave_Click(object sender, EventArgs e)
@@ -114,50 +119,7 @@ namespace WinFormClient
         {
             while (IsActivatedBackGroundThread)
             {
-                PACKET_HEADER packetHeader;
-                packetHeader.size = 0;
-                packetHeader.packetCount = 0;
-                packetHeader.id = PacketID.NONE;
-                if (GetPacketHeader(ref packetHeader))
-                {
-                    switch (packetHeader.id)
-                    {
-                        case PacketID.CONNECT_RESPONSE:
-                            ProcessConnectResponse(packetHeader);
-                            break;
-
-                        case PacketID.CHAT_RESPONSE:
-                            break;
-
-                        case PacketID.CHAT_NOTIFY:
-                            break;
-
-                        case PacketID.ROOM_OPEN_RESPONSE:
-                            ProcessRoomOpenResponse(packetHeader);
-                            break;
-
-                        case PacketID.ROOM_OPEN_NOTIFY:
-                            ProcessRoomOpenNotify(packetHeader);
-                            break;
-
-                        case PacketID.ROOM_USER_LIST_NOTIFY:
-                            ProcessRoomUserListNotify(packetHeader);
-                            break;
-
-                        case PacketID.ROOM_ENTER_USER_NOTIFY:
-                            ProcessRoomEnterUserNotify(packetHeader);
-                            break;
-
-                        case PacketID.ROOM_ENTER_RESPONSE:
-                            ProcessRoomEnterResponse(packetHeader);
-                            break;
-
-                        case PacketID.ROOM_LEAVE_RESPONSE:
-                            ProcessRoomLeaveResponse(packetHeader);
-                            break;
-                    }
-                }
-                else { }
+                ProcessPacket();
             }
         }
     }

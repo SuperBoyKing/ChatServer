@@ -104,4 +104,24 @@ namespace WinFormClient
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
         public string userID;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_ROOM_LEAVE_REQUEST
+    {
+        int roomNumber;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_ROOM_LEAVE_RESPONSE
+    {
+        bool result;
+    }
+
+    public struct SC_ROOM_LEAVE_NOTIFY
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
+        public string roomTitle;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
+    }
 }
