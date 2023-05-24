@@ -7,6 +7,7 @@ namespace WinFormClient
 {
     public enum PacketID : ushort
     {
+        NONE,
         CONNECT_REQUEST,
         CONNECT_RESPONSE,
 
@@ -23,35 +24,36 @@ namespace WinFormClient
 
         ROOM_ENTER_REQUEST,
         ROOM_ENTER_RESPONSE,
+        ROOM_ENTER_USER_NOTIFY,
+        ROOM_USER_LIST_NOTIFY,
 
         ROOM_LEAVE_REQUEST,
         ROOM_LEAVE_RESPONSE,
+        ROOM_LEAVE_NOTIFY,
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PACKET_HEADER
     {
         public int size;
+        public int packetCount;
         public PacketID id;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CS_CONNECT_REQUEST
     {
-        public PACKET_HEADER header;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_CONNECT_RESPONSE
     {
-        public PACKET_HEADER header;
-        public Room[] roomInfo;
+        public Room roomInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_CHAT_NOTIFY
     {
-        public PACKET_HEADER header;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 257)]
         public string message;
     }
@@ -59,7 +61,6 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CS_ROOM_OPEN_REQUEST
     {
-        public PACKET_HEADER header;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
         public string roomTitle;
         public int userCount;
@@ -68,7 +69,6 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_OPEN_RESPONSE
     {
-        public PACKET_HEADER header;
         public int roomNumber;
         public bool result;
     }
@@ -82,14 +82,26 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CS_ROOM_ENTER_REQUEST
     {
-        public PACKET_HEADER header;
         public int roomNumber;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_ENTER_RESPONSE
     {
-        public PACKET_HEADER header;
         public bool result;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_ROOM_USERLIST_NOTIFY
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_ROOM_ENTER_USER_NOTIFY
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
     }
 }

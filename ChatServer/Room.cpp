@@ -16,13 +16,20 @@ void Room::Init(const char* roomTitle, const size_t titleSize, const int maxUser
 	m_maxUserCount = maxUserCount;
 }
 
-void Room::Enter(shared_ptr<ChatSession> userSession)
+bool Room::Enter(shared_ptr<ChatSession> userSession)
 {
-	lock_guard<recursive_mutex> lock(m_mutex);
-	m_userList.push_back(userSession);
+	if (m_maxUserCount <= m_currentUserCount.fetch_add(1))
+		return false;
+
+	{
+		lock_guard<recursive_mutex> lock(m_mutex);
+		m_userList.push_back(userSession); 
+	}
+
+	return true;
 }
 
-void Room::Leave(shared_ptr<ChatSession> userSession)
+bool Room::Leave(shared_ptr<ChatSession> userSession)
 {
 	auto itr = find(m_userList.begin(), m_userList.end(), userSession);
 
@@ -33,7 +40,11 @@ void Room::Leave(shared_ptr<ChatSession> userSession)
 
 		if (m_userList.empty())
 			CloseRoom();
+
+		return true;
 	}
+
+	return false;
 }
 
 void Room::CloseRoom()

@@ -1,7 +1,7 @@
 ﻿
 namespace WinFormClient
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -52,10 +52,10 @@ namespace WinFormClient
             this.textbox_roomTitle = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.Lobby = new System.Windows.Forms.GroupBox();
+            this.listBox_room = new System.Windows.Forms.ListBox();
             this.button_RoomCreate = new System.Windows.Forms.Button();
             this.button_RoomLeave = new System.Windows.Forms.Button();
             this.button_RoomEnter = new System.Windows.Forms.Button();
-            this.listBox_room = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Lobby.SuspendLayout();
@@ -121,6 +121,7 @@ namespace WinFormClient
             // 
             // button_login
             // 
+            this.button_login.Enabled = false;
             this.button_login.Location = new System.Drawing.Point(9, 121);
             this.button_login.Name = "button_login";
             this.button_login.Size = new System.Drawing.Size(168, 25);
@@ -131,6 +132,7 @@ namespace WinFormClient
             // 
             // textBox_password
             // 
+            this.textBox_password.Enabled = false;
             this.textBox_password.Location = new System.Drawing.Point(42, 79);
             this.textBox_password.Name = "textBox_password";
             this.textBox_password.Size = new System.Drawing.Size(132, 23);
@@ -147,6 +149,7 @@ namespace WinFormClient
             // 
             // textBox_ID
             // 
+            this.textBox_ID.Enabled = false;
             this.textBox_ID.Location = new System.Drawing.Point(42, 37);
             this.textBox_ID.Name = "textBox_ID";
             this.textBox_ID.Size = new System.Drawing.Size(132, 23);
@@ -170,6 +173,7 @@ namespace WinFormClient
             // 
             // button_chat
             // 
+            this.button_chat.Enabled = false;
             this.button_chat.Location = new System.Drawing.Point(479, 415);
             this.button_chat.Name = "button_chat";
             this.button_chat.Size = new System.Drawing.Size(81, 24);
@@ -180,6 +184,7 @@ namespace WinFormClient
             // 
             // textBox_chat
             // 
+            this.textBox_chat.Enabled = false;
             this.textBox_chat.Location = new System.Drawing.Point(197, 416);
             this.textBox_chat.MaxLength = 256;
             this.textBox_chat.Multiline = true;
@@ -189,6 +194,7 @@ namespace WinFormClient
             // 
             // listBox_chat
             // 
+            this.listBox_chat.Enabled = false;
             this.listBox_chat.FormattingEnabled = true;
             this.listBox_chat.ItemHeight = 15;
             this.listBox_chat.Location = new System.Drawing.Point(197, 60);
@@ -199,6 +205,7 @@ namespace WinFormClient
             // 
             // listBox_user
             // 
+            this.listBox_user.Enabled = false;
             this.listBox_user.FormattingEnabled = true;
             this.listBox_user.ItemHeight = 15;
             this.listBox_user.Location = new System.Drawing.Point(6, 60);
@@ -244,6 +251,7 @@ namespace WinFormClient
             // 
             // textBox_userCount
             // 
+            this.textBox_userCount.Enabled = false;
             this.textBox_userCount.Location = new System.Drawing.Point(406, 25);
             this.textBox_userCount.Name = "textBox_userCount";
             this.textBox_userCount.ReadOnly = true;
@@ -253,6 +261,7 @@ namespace WinFormClient
             // 
             // textbox_roomTitle
             // 
+            this.textbox_roomTitle.Enabled = false;
             this.textbox_roomTitle.Location = new System.Drawing.Point(96, 25);
             this.textbox_roomTitle.Name = "textbox_roomTitle";
             this.textbox_roomTitle.ReadOnly = true;
@@ -282,10 +291,20 @@ namespace WinFormClient
             this.Lobby.TabStop = false;
             this.Lobby.Text = "Lobby";
             // 
+            // listBox_room
+            // 
+            this.listBox_room.FormattingEnabled = true;
+            this.listBox_room.ItemHeight = 15;
+            this.listBox_room.Location = new System.Drawing.Point(7, 22);
+            this.listBox_room.Name = "listBox_room";
+            this.listBox_room.Size = new System.Drawing.Size(187, 124);
+            this.listBox_room.TabIndex = 16;
+            // 
             // button_RoomCreate
             // 
+            this.button_RoomCreate.Enabled = false;
             this.button_RoomCreate.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomCreate.Location = new System.Drawing.Point(209, 113);
+            this.button_RoomCreate.Location = new System.Drawing.Point(214, 22);
             this.button_RoomCreate.Name = "button_RoomCreate";
             this.button_RoomCreate.Size = new System.Drawing.Size(145, 33);
             this.button_RoomCreate.TabIndex = 15;
@@ -296,8 +315,9 @@ namespace WinFormClient
             // 
             // button_RoomLeave
             // 
+            this.button_RoomLeave.Enabled = false;
             this.button_RoomLeave.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomLeave.Location = new System.Drawing.Point(209, 67);
+            this.button_RoomLeave.Location = new System.Drawing.Point(214, 113);
             this.button_RoomLeave.Name = "button_RoomLeave";
             this.button_RoomLeave.Size = new System.Drawing.Size(145, 33);
             this.button_RoomLeave.TabIndex = 14;
@@ -307,8 +327,9 @@ namespace WinFormClient
             // 
             // button_RoomEnter
             // 
+            this.button_RoomEnter.Enabled = false;
             this.button_RoomEnter.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomEnter.Location = new System.Drawing.Point(209, 22);
+            this.button_RoomEnter.Location = new System.Drawing.Point(214, 69);
             this.button_RoomEnter.Name = "button_RoomEnter";
             this.button_RoomEnter.Size = new System.Drawing.Size(145, 33);
             this.button_RoomEnter.TabIndex = 10;
@@ -316,16 +337,7 @@ namespace WinFormClient
             this.button_RoomEnter.UseVisualStyleBackColor = true;
             this.button_RoomEnter.Click += new System.EventHandler(this.button_RoomEnter_Click);
             // 
-            // listBox_room
-            // 
-            this.listBox_room.FormattingEnabled = true;
-            this.listBox_room.ItemHeight = 15;
-            this.listBox_room.Location = new System.Drawing.Point(7, 22);
-            this.listBox_room.Name = "listBox_room";
-            this.listBox_room.Size = new System.Drawing.Size(187, 124);
-            this.listBox_room.TabIndex = 16;
-            // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -339,7 +351,7 @@ namespace WinFormClient
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox_IP);
             this.Controls.Add(this.label1);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.groupBox1.ResumeLayout(false);

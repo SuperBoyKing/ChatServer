@@ -20,10 +20,39 @@ bool GetPacket(void* packetData, int size)
 	{
 		char* packet;
 		packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-		::memcpy(packetData, packet, size);
+		::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
 		GRecvPacketQueue.pop();
 
 		return true;
+	}
+
+	return false;
+}
+
+template <typename PacketType>
+bool GetNumberOfPacket(PacketType** packetData, int packetCount)
+{
+	int packetSize = sizeof(PacketType) * packetCount;
+	PacketType* newArray = reinterpret_cast<PacketType*>(CoTaskMemAlloc(packetSize));
+
+	if (packetSize == 0)
+		newArray = nullptr;
+
+	mutex m;
+	{
+		lock_guard<mutex> lock(m);
+		if (!GRecvPacketQueue.empty())
+		{
+			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			if (newArray != nullptr)
+			{
+				::memcpy(newArray, packet + PACKET_HEADER_SIZE, packetSize);
+			}
+			GRecvPacketQueue.pop();
+
+			*packetData = newArray;
+			return true;
+		}
 	}
 
 	return false;
@@ -90,34 +119,14 @@ extern "C"
 		return false;
 	}
 
-	EXPORT bool GetConnectPacket(ROOM_INFO** packetData, int* arrayLength, int size)
+	EXPORT bool GetConnectPacket(SC_CONNECT_RESPONSE** packetData, int size)
 	{
-		int roomInfoSize = size - sizeof(SC_CONNECT_RESPONSE);
-		ROOM_INFO* newArray = reinterpret_cast<ROOM_INFO*>(CoTaskMemAlloc(roomInfoSize));
-		mutex m;
-		{
-			lock_guard<mutex> lock(m);
-			if (!GRecvPacketQueue.empty())
-			{
-				char* packet;
-				packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-				if (newArray != nullptr)
-				{
-					::memcpy(arrayLength, packet + sizeof(PACKET_HEADER), sizeof(int));
-					::memcpy(newArray, packet + sizeof(SC_CONNECT_RESPONSE), roomInfoSize);
-				}
-				GRecvPacketQueue.pop();
-
-				*packetData = newArray;
-				return true;
-			}
-		}
-
-		return false;
+		return GetNumberOfPacket(packetData, size);
 	}
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
 	{
+		// chatclient userID 갱신 필요
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
@@ -138,22 +147,21 @@ extern "C"
 
 	EXPORT bool GetRoomOpenNotifyPacket(SC_ROOM_OPEN_NOTIFY* packetData, int size)
 	{
-		mutex m;
-		lock_guard<mutex> lock(m);
-		if (!GRecvPacketQueue.empty())
-		{
-			char* packet;
-			packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-			::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
-			GRecvPacketQueue.pop();
-
-			return true;
-		}
-
-		return false;
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
 	EXPORT bool GetRoomEnterPacket(SC_ROOM_ENTER_RESPONSE* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
+
+	EXPORT bool GetRoomUserNotifyPacket(SC_ROOM_USERLIST_NOTIFY** packetData, int size)
+	{
+		return GetNumberOfPacket(packetData, size);
+		//return false;
+	}
+
+	EXPORT bool GetRoomEnterUserNotify(SC_ROOM_ENTER_USER_NOTIFY* packetData, int size)
 	{
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}

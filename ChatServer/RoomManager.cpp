@@ -6,6 +6,7 @@ unique_ptr<RoomManager> GRoomManager = make_unique<RoomManager>();
 
 RoomManager::RoomManager()
 	: m_maxRoomCount(MAX_ROOM_COUNT)
+	, m_currentOpenRoomCount(0)
 	, m_roomPoolIndex(0)
 {
 	m_roomPool.reserve(m_maxRoomCount);
@@ -56,4 +57,6 @@ bool RoomManager::OpenRoom(const char* roomTitle, const size_t titleSize, const 
 
 	return bResult;
 }
+
+
 

@@ -15,7 +15,10 @@ public:
 
 	inline  int	GetOpenRoomCount() const { return m_currentOpenRoomCount; }
 
-	shared_ptr<Room> SearchRoom();
+	inline shared_ptr<Room>& SearchRoom(int roomNumber)
+	{
+		return m_roomPool[roomNumber];
+	}
 
 private:
 	int							m_maxRoomCount;

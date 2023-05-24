@@ -9,7 +9,7 @@ void ClientSession::OnSend(unsigned int len)
 
 void ClientSession::OnRecv(char* buffer, unsigned int len)
 {
-	GClientPacketHandler->HandlePacket(GetSock(), buffer);
+	GClientPacketHandler->HandlePacket(static_pointer_cast<ChatSession>(shared_from_this()), buffer);
 }
 
 void ClientSession::OnConnect()

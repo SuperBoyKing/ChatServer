@@ -21,9 +21,14 @@ public:
 	bool		Connect();
 	void		Disconnect();
 	void		Send(shared_ptr<SendBuffer> sendbuffer);
-	inline void	SetApp(weak_ptr<ChatApplication> chatApp) { m_chatApp = chatApp; }
+		
+	inline void		SetApp(weak_ptr<ChatApplication> chatApp)	{ m_chatApp = chatApp; }
 
-	inline bool		IsConnected() const			{ return m_isConnected; }
+	inline void		SetUserID(const char* userID, int size = 33)			{ ::memcpy(m_userID, userID, 33); }
+
+	inline bool		IsConnected() const							{ return m_isConnected; }
+
+	inline const char* GetUserID() const { return m_userID; }
 
 	// Operation Ã³¸®
 	void		ProcessSend(unsigned int numberOfBytes);
@@ -44,15 +49,14 @@ protected:
 	virtual void		OnConnect() {};
 	virtual void		OnDisconnect() {};
 
+	// Operation ¸â¹ö
 private:
-	SOCKET				m_socket;
 	RecvOperation		m_recvOperation;
 	SendOperation		m_sendOperation;
 	ConnectOperation	m_connectOperation;
 	DisconnectOperation	m_disconnectOperation;
 
-	recursive_mutex		m_mutex;
-
+	// ¼Û/¼ö½Å Ã³¸® ¸â¹ö
 private:
 	RecvBuffer						m_recvBuffer;
 	queue<shared_ptr<SendBuffer>>	m_sendQueue;
@@ -60,5 +64,11 @@ private:
 	atomic<bool>					m_isConnected;
 
 	weak_ptr<ChatApplication>		m_chatApp;
+
+	// ChatSession ¸â¹ö
+private:
+	SOCKET				m_socket;
+	recursive_mutex		m_mutex;
+	char				m_userID[32 + 1] = {};
 };
 
