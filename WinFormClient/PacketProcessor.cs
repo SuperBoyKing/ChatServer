@@ -10,10 +10,13 @@ namespace WinFormClient
     {
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetConnectPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStruct, SizeParamIndex = 1)]
-        ref SC_CONNECT_RESPONSE[] packetData, int size);
+        ref SC_ROOM_LIST_MULTIPLE[] packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetPacketHeader(ref PACKET_HEADER packetHeader);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern bool GetLoginPacket(ref SC_LOGIN_RESPONSE packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetChatNotifyPacket(ref SC_CHAT_NOTIFY packetData, int size);
@@ -22,14 +25,14 @@ namespace WinFormClient
         static extern bool GetRoomOpenPacket(ref SC_ROOM_OPEN_RESPONSE packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomOpenNotifyPacket(ref SC_ROOM_OPEN_NOTIFY packetData, int size);
+        static extern bool GetRoomOpenNotifyPacket(ref SC_ROOM_OPEN_NOTIFY_MULTIPLE packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetRoomEnterPacket(ref SC_ROOM_ENTER_RESPONSE packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetRoomUserNotifyPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 1)]
-            ref SC_ROOM_USERLIST_NOTIFY[] packetData, int size);
+            ref SC_USER_LIST_NOTIFY_MULTIPLE[] packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetRoomEnterUserNotify(ref SC_ROOM_ENTER_USER_NOTIFY packetData, int size);
@@ -39,6 +42,7 @@ namespace WinFormClient
         void InitProcessPacket()
         {
             PacketFuncDictionary.Add(PacketID.CONNECT_RESPONSE, ProcessConnectResponse);
+            PacketFuncDictionary.Add(PacketID.LOGIN_RESPONSE, ProcessLoginResponse);
             PacketFuncDictionary.Add(PacketID.CHAT_RESPONSE, ProcessChatResponse);
             PacketFuncDictionary.Add(PacketID.CHAT_NOTIFY, ProcessChatNotify);
             PacketFuncDictionary.Add(PacketID.ROOM_OPEN_RESPONSE, ProcessRoomOpenResponse);
@@ -72,7 +76,7 @@ namespace WinFormClient
 
         void ProcessConnectResponse(PACKET_HEADER packetHeader)
         {
-            SC_CONNECT_RESPONSE[] conResPacket = new SC_CONNECT_RESPONSE[packetHeader.packetCount];
+            SC_ROOM_LIST_MULTIPLE[] conResPacket = new SC_ROOM_LIST_MULTIPLE[packetHeader.packetCount];
 
             if (GetConnectPacket(ref conResPacket, packetHeader.packetCount))
             {
@@ -83,6 +87,32 @@ namespace WinFormClient
                     {
                         listBox_room.Items.Add(conResPacket[i].roomInfo.title);
                     }));
+                }
+            }
+        }
+
+        void ProcessLoginResponse(PACKET_HEADER packetHeader)
+        {
+            SC_LOGIN_RESPONSE loginResPacket;
+            loginResPacket.result = false;
+
+            if (GetLoginPacket(ref loginResPacket, packetHeader.size))
+            {
+                if (loginResPacket.result)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        button_login.Text = "Logout";
+                        textBox_ID.Enabled = false;
+                        textBox_password.Enabled = false;
+                    }));
+
+                    IsActivatedLogin = true;
+                    userID = textBox_ID.Text;
+                }
+                else
+                {
+                    MessageBox.Show("Login Failed.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -117,7 +147,7 @@ namespace WinFormClient
 
         void ProcessRoomOpenNotify(PACKET_HEADER packetHeader)
         {
-            SC_ROOM_OPEN_NOTIFY roomNotify;
+            SC_ROOM_OPEN_NOTIFY_MULTIPLE roomNotify;
             roomNotify.roomInfo.number = 0;
             roomNotify.roomInfo.title = null;
             roomNotify.roomInfo.userCount = 0;
@@ -151,12 +181,12 @@ namespace WinFormClient
                         listBox_chat.Enabled = true;
 
                         listBox_user.Enabled = true;
-                        listBox_user.Items.Add("firstUser");
+                        listBox_user.Items.Add(userID);
                     }));
                 }
                 else
                 {
-                    MessageBox.Show("Chat Room is full.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Chat Room is full.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             
@@ -181,7 +211,7 @@ namespace WinFormClient
 
         void ProcessRoomUserListNotify(PACKET_HEADER packetHeader)
         {
-            SC_ROOM_USERLIST_NOTIFY[] roomUserListPacket = new SC_ROOM_USERLIST_NOTIFY[packetHeader.packetCount];
+            SC_USER_LIST_NOTIFY_MULTIPLE[] roomUserListPacket = new SC_USER_LIST_NOTIFY_MULTIPLE[packetHeader.packetCount];
 
             if (GetRoomUserNotifyPacket(ref roomUserListPacket, packetHeader.packetCount))
             {

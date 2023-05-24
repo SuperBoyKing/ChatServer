@@ -35,9 +35,9 @@ struct PACKET_HEADER
 	PacketID		id = PacketID::NONE;
 };
 
-struct CS_CONNECT_REQUEST : public PACKET_HEADER
+struct CS_ROOM_LIST_REQUEST : public PACKET_HEADER
 {
-	CS_CONNECT_REQUEST()
+	CS_ROOM_LIST_REQUEST()
 	{
 		size = PACKET_HEADER_SIZE;
 		packetCount = 1;
@@ -45,7 +45,7 @@ struct CS_CONNECT_REQUEST : public PACKET_HEADER
 	}
 };
 
-struct SC_CONNECT_RESPONSE
+struct SC_ROOM_LIST_MULTIPLE
 {
 	int		number = 0;
 	char	title[50 + 1] = { 0 };
@@ -71,7 +71,7 @@ struct SC_LOGIN_RESPONSE : public PACKET_HEADER
 
 	SC_LOGIN_RESPONSE()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_LOGIN_RESPONSE);
 		packetCount = 1;
 		id = PacketID::LOGIN_RESPONSE;
 	}
@@ -103,6 +103,7 @@ struct SC_CHAT_RESPONSE : public PACKET_HEADER
 
 struct SC_CHAT_NOTIFY : public PACKET_HEADER
 {
+	char userID[32 + 1] = {};
 	char message[256 + 1] = {};
 
 	SC_CHAT_NOTIFY()
@@ -133,13 +134,13 @@ struct SC_ROOM_OPEN_RESPONSE : public PACKET_HEADER
 
 	SC_ROOM_OPEN_RESPONSE()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_ROOM_OPEN_RESPONSE);
 		packetCount = 1;
 		id = PacketID::ROOM_OPEN_RESPONSE;
 	}
 };
 
-struct SC_ROOM_OPEN_NOTIFY
+struct SC_ROOM_OPEN_NOTIFY_MULTIPLE
 {
 	int		number = 0;
 	char	title[50 + 1] = { 0 };
@@ -170,11 +171,6 @@ struct SC_ROOM_ENTER_RESPONSE : public PACKET_HEADER
 	}
 };
 
-struct SC_ROOM_USERLIST_NOTIFY
-{
-	char userID[32 + 1] = {};
-};
-
 struct SC_ROOM_ENTER_USER_NOTIFY : public PACKET_HEADER
 {
 	char userID[32 + 1] = {};
@@ -185,6 +181,11 @@ struct SC_ROOM_ENTER_USER_NOTIFY : public PACKET_HEADER
 		packetCount = 1;
 		id = PacketID::ROOM_ENTER_USER_NOTIFY;
 	}
+};
+
+struct SC_USER_LIST_NOTIFY_MULTIPLE
+{
+	char userID[32 + 1] = {};
 };
 
 struct CS_ROOM_LEAVE_REQUEST : public PACKET_HEADER

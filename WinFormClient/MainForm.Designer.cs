@@ -45,7 +45,7 @@ namespace WinFormClient
             this.textBox_chat = new System.Windows.Forms.TextBox();
             this.listBox_chat = new System.Windows.Forms.ListBox();
             this.listBox_user = new System.Windows.Forms.ListBox();
-            this.label_ConnectStatus = new System.Windows.Forms.Label();
+            this.label_Status = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox_userCount = new System.Windows.Forms.TextBox();
@@ -214,14 +214,14 @@ namespace WinFormClient
             this.listBox_user.TabIndex = 11;
             this.listBox_user.TabStop = false;
             // 
-            // label_ConnectStatus
+            // label_Status
             // 
-            this.label_ConnectStatus.AutoSize = true;
-            this.label_ConnectStatus.Location = new System.Drawing.Point(15, 679);
-            this.label_ConnectStatus.Name = "label_ConnectStatus";
-            this.label_ConnectStatus.Size = new System.Drawing.Size(92, 15);
-            this.label_ConnectStatus.TabIndex = 12;
-            this.label_ConnectStatus.Text = "Connect Status:";
+            this.label_Status.AutoSize = true;
+            this.label_Status.Location = new System.Drawing.Point(15, 679);
+            this.label_Status.Name = "label_Status";
+            this.label_Status.Size = new System.Drawing.Size(43, 15);
+            this.label_Status.TabIndex = 12;
+            this.label_Status.Text = "Status:";
             // 
             // groupBox2
             // 
@@ -344,7 +344,7 @@ namespace WinFormClient
             this.ClientSize = new System.Drawing.Size(594, 699);
             this.Controls.Add(this.Lobby);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.label_ConnectStatus);
+            this.Controls.Add(this.label_Status);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button_isConnect);
             this.Controls.Add(this.textBox_port);
@@ -382,7 +382,7 @@ namespace WinFormClient
         private System.Windows.Forms.TextBox textBox_chat;
         private System.Windows.Forms.ListBox listBox_chat;
         private System.Windows.Forms.ListBox listBox_user;
-        private System.Windows.Forms.Label label_ConnectStatus;
+        private System.Windows.Forms.Label label_Status;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox Lobby;
         private System.Windows.Forms.Button button_RoomEnter;

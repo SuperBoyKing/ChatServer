@@ -10,16 +10,13 @@ shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
 	make_shared<IOCPHandler>(),
 	serverSession);
 
-ServerSession* session;
-
 bool GetPacket(void* packetData, int size)
 {
 	mutex m;
 	lock_guard<mutex> lock(m);
 	if (!GRecvPacketQueue.empty())
 	{
-		char* packet;
-		packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+		char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
 		::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
 		GRecvPacketQueue.pop();
 
@@ -79,8 +76,6 @@ extern "C"
 				}
 			});
 		}
-
-		session = static_cast<ServerSession*>(chatClient->GetChatSession());
 	}
 
 	EXPORT void SendConnectPacket()
@@ -119,14 +114,13 @@ extern "C"
 		return false;
 	}
 
-	EXPORT bool GetConnectPacket(SC_CONNECT_RESPONSE** packetData, int size)
+	EXPORT bool GetConnectPacket(SC_ROOM_LIST_MULTIPLE** packetData, int size)
 	{
 		return GetNumberOfPacket(packetData, size);
 	}
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
 	{
-		// chatclient userID 갱신 필요
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
@@ -145,7 +139,7 @@ extern "C"
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
-	EXPORT bool GetRoomOpenNotifyPacket(SC_ROOM_OPEN_NOTIFY* packetData, int size)
+	EXPORT bool GetRoomOpenNotifyPacket(SC_ROOM_OPEN_NOTIFY_MULTIPLE* packetData, int size)
 	{
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
@@ -155,7 +149,7 @@ extern "C"
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
-	EXPORT bool GetRoomUserNotifyPacket(SC_ROOM_USERLIST_NOTIFY** packetData, int size)
+	EXPORT bool GetRoomUserNotifyPacket(SC_USER_LIST_NOTIFY_MULTIPLE** packetData, int size)
 	{
 		return GetNumberOfPacket(packetData, size);
 		//return false;

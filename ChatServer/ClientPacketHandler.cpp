@@ -36,11 +36,11 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 {
 	PACKET_HEADER packetHeader;
 	packetHeader.packetCount = GRoomManager->GetOpenRoomCount();
-	packetHeader.size += sizeof(SC_CONNECT_RESPONSE) * packetHeader.packetCount;
+	packetHeader.size += sizeof(SC_ROOM_LIST_MULTIPLE) * packetHeader.packetCount;
 	packetHeader.id = PacketID::CONNECT_RESPONSE;
 
 	void* basePacketAddress = ::malloc(packetHeader.size);
-	unique_ptr<SC_CONNECT_RESPONSE[]> roomInfos = make_unique<SC_CONNECT_RESPONSE[]>(packetHeader.packetCount);
+	unique_ptr<SC_ROOM_LIST_MULTIPLE[]> roomInfos = make_unique<SC_ROOM_LIST_MULTIPLE[]>(packetHeader.packetCount);
 
 	int i = 0;
 	for (auto& room : GRoomManager->GetRoomPool())
@@ -57,7 +57,7 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 	}
 
 	::memcpy(basePacketAddress, &packetHeader, PACKET_HEADER_SIZE);
-	::memcpy(static_cast<char*>(basePacketAddress) + PACKET_HEADER_SIZE, roomInfos.get(), sizeof(SC_CONNECT_RESPONSE) * packetHeader.packetCount);
+	::memcpy(static_cast<char*>(basePacketAddress) + PACKET_HEADER_SIZE, roomInfos.get(), sizeof(SC_ROOM_LIST_MULTIPLE) * packetHeader.packetCount);
 
 	SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(basePacketAddress));
 	::free(basePacketAddress);
@@ -65,6 +65,13 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 
 void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size)
 {
+	CS_LOGIN_REQUEST* recvPacket = reinterpret_cast<CS_LOGIN_REQUEST*>(packetData);
+	session->SetUserID(recvPacket->userID);
+
+	SC_LOGIN_RESPONSE sendPacket;
+	sendPacket.result = true;
+
+	SendProcessedPacket(session, &sendPacket);
 }
 
 void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size)
@@ -81,21 +88,20 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	SC_ROOM_OPEN_RESPONSE sendPacket;
 	sendPacket.result = isOpenSuccess;
 	sendPacket.roomNumber = roomNumber;
-	sendPacket.size = sizeof(SC_ROOM_OPEN_RESPONSE);
 	SendProcessedPacket(session, &sendPacket);
 
 	PACKET_HEADER packetHeader;
 	packetHeader.id = PacketID::ROOM_OPEN_NOTIFY;
-	packetHeader.size += sizeof(SC_ROOM_OPEN_NOTIFY);
+	packetHeader.size += sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE);
 
-	SC_ROOM_OPEN_NOTIFY broadcastPacket;
+	SC_ROOM_OPEN_NOTIFY_MULTIPLE broadcastPacket;
 	broadcastPacket.number = roomNumber;
 	memcpy(broadcastPacket.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
 	broadcastPacket.userCount = recvPacket->userCount;
 
-	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY));
+	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
 	::memcpy(baseAddress, &packetHeader, sizeof(PACKET_HEADER));
-	::memcpy(static_cast<char*>(baseAddress) + sizeof(PACKET_HEADER), &broadcastPacket, sizeof(SC_ROOM_OPEN_NOTIFY));
+	::memcpy(static_cast<char*>(baseAddress) + sizeof(PACKET_HEADER), &broadcastPacket, sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
 	SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(baseAddress), true);
 	::free(baseAddress);
 }
@@ -120,28 +126,25 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 
 	if (enteredRoom->GetCurrentUserCount() > 1 && sendPacket.result == true)
 	{
-		session->SetUserID("TestClient");
-
-
 		///*/////////////////////////////////////////////////////
 		//  방에 접속한 클라이언트에게 RoomUserList 전송
 		///////////////////////////////////////////////////////*/
 		PACKET_HEADER packetHeader;
 		packetHeader.packetCount = enteredRoom->GetCurrentUserCount() - 1; // 자기 자신은 빼준다.
-		packetHeader.size += sizeof(SC_ROOM_USERLIST_NOTIFY) * packetHeader.packetCount;
+		packetHeader.size += sizeof(SC_USER_LIST_NOTIFY_MULTIPLE) * packetHeader.packetCount;
 		packetHeader.id = PacketID::ROOM_USER_LIST_NOTIFY;
 
 		void* basePacketAddress = ::malloc(packetHeader.size);
 		::memcpy((PACKET_HEADER*)basePacketAddress, &packetHeader, PACKET_HEADER_SIZE);
 
-		unique_ptr<SC_ROOM_USERLIST_NOTIFY[]> userIDs = make_unique<SC_ROOM_USERLIST_NOTIFY[]>(packetHeader.packetCount);
+		unique_ptr<SC_USER_LIST_NOTIFY_MULTIPLE[]> userIDs = make_unique<SC_USER_LIST_NOTIFY_MULTIPLE[]>(packetHeader.packetCount);
 		int i = 0;
 		for (auto& user : enteredRoom->GetUserList())
 		{
 			if (user->GetSock() != session->GetSock())	// 자기 자신은 리스트에서 제외
-				::memcpy(userIDs[i++].userID, session->GetUserID(), strlen(session->GetUserID()));
+				::memcpy(userIDs[i++].userID, user->GetUserID(), strlen(user->GetUserID()));
 		}
-		::memcpy(static_cast<char*>(basePacketAddress) + PACKET_HEADER_SIZE, userIDs.get(), sizeof(SC_ROOM_USERLIST_NOTIFY) * packetHeader.packetCount);
+		::memcpy(static_cast<char*>(basePacketAddress) + PACKET_HEADER_SIZE, userIDs.get(), sizeof(SC_USER_LIST_NOTIFY_MULTIPLE) * packetHeader.packetCount);
 		SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(basePacketAddress));
 
 

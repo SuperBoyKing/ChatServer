@@ -41,14 +41,29 @@ namespace WinFormClient
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct CS_CONNECT_REQUEST
+    public struct CS_ROOM_LIST_REQUEST
     {
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SC_CONNECT_RESPONSE
+    public struct SC_ROOM_LIST_MULTIPLE
     {
         public Room roomInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CS_LOGIN_REQUEST
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userPW;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_LOGIN_RESPONSE
+    {
+        public bool result;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -74,7 +89,7 @@ namespace WinFormClient
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SC_ROOM_OPEN_NOTIFY
+    public struct SC_ROOM_OPEN_NOTIFY_MULTIPLE
     {
         public Room roomInfo;
     }
@@ -92,7 +107,7 @@ namespace WinFormClient
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SC_ROOM_USERLIST_NOTIFY
+    public struct SC_USER_LIST_NOTIFY_MULTIPLE
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
         public string userID;
@@ -117,6 +132,7 @@ namespace WinFormClient
         bool result;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_LEAVE_NOTIFY
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]

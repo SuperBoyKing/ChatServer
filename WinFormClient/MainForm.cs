@@ -16,7 +16,7 @@ namespace WinFormClient
         static extern void SendConnectPacket();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void SendLoginPacket([MarshalAs(UnmanagedType.LPStr)] string id, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwd, int idSize, int pwdSize);
+        static extern void SendLoginPacket([MarshalAs(UnmanagedType.LPStr)] string id, int idSize, [MarshalAs(UnmanagedType.LPStr)] string pwd, int pwdSize);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendChatPacket([MarshalAs(UnmanagedType.LPStr)] string str, int size);
@@ -27,11 +27,16 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRoomEnterPacket(int number);
 
+        public string userID = null;
         public string roomTitle = null;
         public int roomUserCount = 0;
-        bool IsActivatedBackGroundThread = false;
+
         Thread BackGroundRecvThread = null;
         RoomManager roomManager = new RoomManager();
+
+        bool IsActivatedBackGroundThread = false;
+        bool IsActivatedLogin = false;
+        bool IsActivatedConnect = false;
 
         public MainForm()
         {
@@ -68,7 +73,20 @@ namespace WinFormClient
 
         private void Button_login_Click(object sender, EventArgs e)
         {
-            //SendLoginPacket()
+            if (!IsActivatedLogin)
+            {
+                SendLoginPacket(textBox_ID.Text, textBox_ID.Text.Length, textBox_password.Text, textBox_password.Text.Length);
+            }
+            else
+            {
+                userID = null;
+                button_login.Text = "Login";
+                textBox_ID.Text = "";
+                textBox_ID.Enabled = true;
+                textBox_password.Enabled = true;
+                textBox_password.Text = "";
+                IsActivatedLogin = false;
+            }
         }
 
         private void Button_chat_Click(object sender, EventArgs e)

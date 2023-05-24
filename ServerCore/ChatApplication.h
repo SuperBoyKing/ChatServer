@@ -71,7 +71,7 @@ public:
 
 	void SendRoomEnter(int number);
 
-	inline ChatSession* GetChatSession() { return m_session.get(); }
+	//inline ChatSession* GetChatSession() { return m_session.get(); }
 
 private:
 	template<typename PacketType>

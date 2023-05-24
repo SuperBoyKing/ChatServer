@@ -92,8 +92,8 @@ bool ChatClient::Start()
 
 void ChatClient::SendConnect()
 {
-	CS_CONNECT_REQUEST packet;
-	SendPacket<CS_CONNECT_REQUEST>(packet);
+	CS_ROOM_LIST_REQUEST packet;
+	SendPacket<CS_ROOM_LIST_REQUEST>(packet);
 }
 
 void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize)
