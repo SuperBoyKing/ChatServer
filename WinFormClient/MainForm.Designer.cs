@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace WinFormClient
 {
     partial class MainForm
@@ -64,42 +66,47 @@ namespace WinFormClient
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 15);
+            this.label1.Location = new System.Drawing.Point(19, 20);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 15);
+            this.label1.Size = new System.Drawing.Size(81, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Server IP : ";
             // 
             // textBox_IP
             // 
-            this.textBox_IP.Location = new System.Drawing.Point(81, 13);
+            this.textBox_IP.Location = new System.Drawing.Point(104, 17);
+            this.textBox_IP.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_IP.Name = "textBox_IP";
-            this.textBox_IP.Size = new System.Drawing.Size(144, 23);
+            this.textBox_IP.Size = new System.Drawing.Size(184, 27);
             this.textBox_IP.TabIndex = 1;
             this.textBox_IP.Text = "127.0.0.1";
             // 
             // textBox_port
             // 
-            this.textBox_port.Location = new System.Drawing.Point(325, 14);
+            this.textBox_port.Location = new System.Drawing.Point(418, 19);
+            this.textBox_port.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_port.Name = "textBox_port";
-            this.textBox_port.Size = new System.Drawing.Size(81, 23);
+            this.textBox_port.Size = new System.Drawing.Size(103, 27);
             this.textBox_port.TabIndex = 3;
             this.textBox_port.Text = "2023";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(242, 17);
+            this.label2.Location = new System.Drawing.Point(311, 23);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(77, 15);
+            this.label2.Size = new System.Drawing.Size(96, 20);
             this.label2.TabIndex = 2;
             this.label2.Text = "Server Port : ";
             // 
             // button_isConnect
             // 
-            this.button_isConnect.Location = new System.Drawing.Point(426, 14);
+            this.button_isConnect.Location = new System.Drawing.Point(548, 19);
+            this.button_isConnect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_isConnect.Name = "button_isConnect";
-            this.button_isConnect.Size = new System.Drawing.Size(155, 23);
+            this.button_isConnect.Size = new System.Drawing.Size(199, 31);
             this.button_isConnect.TabIndex = 4;
             this.button_isConnect.Text = "Connect";
             this.button_isConnect.UseVisualStyleBackColor = true;
@@ -112,9 +119,11 @@ namespace WinFormClient
             this.groupBox1.Controls.Add(this.pw);
             this.groupBox1.Controls.Add(this.textBox_ID);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Location = new System.Drawing.Point(15, 55);
+            this.groupBox1.Location = new System.Drawing.Point(19, 73);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(183, 160);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Size = new System.Drawing.Size(235, 213);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Login";
@@ -122,9 +131,10 @@ namespace WinFormClient
             // button_login
             // 
             this.button_login.Enabled = false;
-            this.button_login.Location = new System.Drawing.Point(9, 121);
+            this.button_login.Location = new System.Drawing.Point(12, 161);
+            this.button_login.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_login.Name = "button_login";
-            this.button_login.Size = new System.Drawing.Size(168, 25);
+            this.button_login.Size = new System.Drawing.Size(216, 33);
             this.button_login.TabIndex = 6;
             this.button_login.Text = "Login";
             this.button_login.UseVisualStyleBackColor = true;
@@ -133,34 +143,38 @@ namespace WinFormClient
             // textBox_password
             // 
             this.textBox_password.Enabled = false;
-            this.textBox_password.Location = new System.Drawing.Point(42, 79);
+            this.textBox_password.Location = new System.Drawing.Point(54, 105);
+            this.textBox_password.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_password.Name = "textBox_password";
-            this.textBox_password.Size = new System.Drawing.Size(132, 23);
+            this.textBox_password.Size = new System.Drawing.Size(169, 27);
             this.textBox_password.TabIndex = 9;
             // 
             // pw
             // 
             this.pw.AutoSize = true;
-            this.pw.Location = new System.Drawing.Point(6, 82);
+            this.pw.Location = new System.Drawing.Point(8, 109);
+            this.pw.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.pw.Name = "pw";
-            this.pw.Size = new System.Drawing.Size(32, 15);
+            this.pw.Size = new System.Drawing.Size(40, 20);
             this.pw.TabIndex = 8;
             this.pw.Text = "PW :";
             // 
             // textBox_ID
             // 
             this.textBox_ID.Enabled = false;
-            this.textBox_ID.Location = new System.Drawing.Point(42, 37);
+            this.textBox_ID.Location = new System.Drawing.Point(54, 49);
+            this.textBox_ID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_ID.Name = "textBox_ID";
-            this.textBox_ID.Size = new System.Drawing.Size(132, 23);
+            this.textBox_ID.Size = new System.Drawing.Size(169, 27);
             this.textBox_ID.TabIndex = 7;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 40);
+            this.label3.Location = new System.Drawing.Point(8, 53);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(30, 15);
+            this.label3.Size = new System.Drawing.Size(37, 20);
             this.label3.TabIndex = 6;
             this.label3.Text = "ID  :";
             // 
@@ -168,15 +182,16 @@ namespace WinFormClient
             // 
             this.textBox3.Location = new System.Drawing.Point(42, 31);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 23);
+            this.textBox3.Size = new System.Drawing.Size(100, 27);
             this.textBox3.TabIndex = 1;
             // 
             // button_chat
             // 
             this.button_chat.Enabled = false;
-            this.button_chat.Location = new System.Drawing.Point(479, 415);
+            this.button_chat.Location = new System.Drawing.Point(616, 553);
+            this.button_chat.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_chat.Name = "button_chat";
-            this.button_chat.Size = new System.Drawing.Size(81, 24);
+            this.button_chat.Size = new System.Drawing.Size(104, 32);
             this.button_chat.TabIndex = 8;
             this.button_chat.Text = "chat";
             this.button_chat.UseVisualStyleBackColor = true;
@@ -185,41 +200,46 @@ namespace WinFormClient
             // textBox_chat
             // 
             this.textBox_chat.Enabled = false;
-            this.textBox_chat.Location = new System.Drawing.Point(197, 416);
+            this.textBox_chat.Location = new System.Drawing.Point(253, 555);
+            this.textBox_chat.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_chat.MaxLength = 256;
             this.textBox_chat.Multiline = true;
             this.textBox_chat.Name = "textBox_chat";
-            this.textBox_chat.Size = new System.Drawing.Size(276, 23);
+            this.textBox_chat.Size = new System.Drawing.Size(354, 29);
             this.textBox_chat.TabIndex = 9;
             // 
             // listBox_chat
             // 
-            this.listBox_chat.Enabled = false;
+            this.listBox_chat.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.listBox_chat.FormattingEnabled = true;
             this.listBox_chat.ItemHeight = 15;
-            this.listBox_chat.Location = new System.Drawing.Point(197, 60);
+            this.listBox_chat.Location = new System.Drawing.Point(253, 80);
+            this.listBox_chat.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listBox_chat.Name = "listBox_chat";
-            this.listBox_chat.Size = new System.Drawing.Size(363, 349);
+            this.listBox_chat.Size = new System.Drawing.Size(466, 454);
             this.listBox_chat.TabIndex = 10;
             this.listBox_chat.TabStop = false;
+            this.listBox_chat.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBox_chat_DrawItem1);
             // 
             // listBox_user
             // 
             this.listBox_user.Enabled = false;
             this.listBox_user.FormattingEnabled = true;
-            this.listBox_user.ItemHeight = 15;
-            this.listBox_user.Location = new System.Drawing.Point(6, 60);
+            this.listBox_user.ItemHeight = 20;
+            this.listBox_user.Location = new System.Drawing.Point(8, 80);
+            this.listBox_user.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listBox_user.Name = "listBox_user";
-            this.listBox_user.Size = new System.Drawing.Size(185, 379);
+            this.listBox_user.Size = new System.Drawing.Size(237, 504);
             this.listBox_user.TabIndex = 11;
             this.listBox_user.TabStop = false;
             // 
             // label_Status
             // 
             this.label_Status.AutoSize = true;
-            this.label_Status.Location = new System.Drawing.Point(15, 679);
+            this.label_Status.Location = new System.Drawing.Point(19, 905);
+            this.label_Status.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_Status.Name = "label_Status";
-            this.label_Status.Size = new System.Drawing.Size(43, 15);
+            this.label_Status.Size = new System.Drawing.Size(53, 20);
             this.label_Status.TabIndex = 12;
             this.label_Status.Text = "Status:";
             // 
@@ -233,9 +253,11 @@ namespace WinFormClient
             this.groupBox2.Controls.Add(this.textBox_chat);
             this.groupBox2.Controls.Add(this.listBox_chat);
             this.groupBox2.Controls.Add(this.button_chat);
-            this.groupBox2.Location = new System.Drawing.Point(15, 221);
+            this.groupBox2.Location = new System.Drawing.Point(19, 295);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(566, 454);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Size = new System.Drawing.Size(728, 605);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Room";
@@ -243,38 +265,42 @@ namespace WinFormClient
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(360, 26);
+            this.label5.Location = new System.Drawing.Point(463, 35);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(46, 15);
+            this.label5.Size = new System.Drawing.Size(58, 20);
             this.label5.TabIndex = 15;
             this.label5.Text = "Users : ";
             // 
             // textBox_userCount
             // 
             this.textBox_userCount.Enabled = false;
-            this.textBox_userCount.Location = new System.Drawing.Point(406, 25);
+            this.textBox_userCount.Location = new System.Drawing.Point(522, 33);
+            this.textBox_userCount.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_userCount.Name = "textBox_userCount";
             this.textBox_userCount.ReadOnly = true;
-            this.textBox_userCount.Size = new System.Drawing.Size(49, 23);
+            this.textBox_userCount.Size = new System.Drawing.Size(62, 27);
             this.textBox_userCount.TabIndex = 14;
             this.textBox_userCount.TabStop = false;
             // 
             // textbox_roomTitle
             // 
             this.textbox_roomTitle.Enabled = false;
-            this.textbox_roomTitle.Location = new System.Drawing.Point(96, 25);
+            this.textbox_roomTitle.Location = new System.Drawing.Point(123, 33);
+            this.textbox_roomTitle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textbox_roomTitle.Name = "textbox_roomTitle";
             this.textbox_roomTitle.ReadOnly = true;
-            this.textbox_roomTitle.Size = new System.Drawing.Size(233, 23);
+            this.textbox_roomTitle.Size = new System.Drawing.Size(298, 27);
             this.textbox_roomTitle.TabIndex = 13;
             this.textbox_roomTitle.TabStop = false;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(54, 27);
+            this.label4.Location = new System.Drawing.Point(69, 36);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 15);
+            this.label4.Size = new System.Drawing.Size(51, 20);
             this.label4.TabIndex = 12;
             this.label4.Text = "Title : ";
             // 
@@ -284,9 +310,11 @@ namespace WinFormClient
             this.Lobby.Controls.Add(this.button_RoomCreate);
             this.Lobby.Controls.Add(this.button_RoomLeave);
             this.Lobby.Controls.Add(this.button_RoomEnter);
-            this.Lobby.Location = new System.Drawing.Point(212, 55);
+            this.Lobby.Location = new System.Drawing.Point(273, 73);
+            this.Lobby.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Lobby.Name = "Lobby";
-            this.Lobby.Size = new System.Drawing.Size(369, 160);
+            this.Lobby.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Lobby.Size = new System.Drawing.Size(474, 213);
             this.Lobby.TabIndex = 15;
             this.Lobby.TabStop = false;
             this.Lobby.Text = "Lobby";
@@ -294,19 +322,21 @@ namespace WinFormClient
             // listBox_room
             // 
             this.listBox_room.FormattingEnabled = true;
-            this.listBox_room.ItemHeight = 15;
-            this.listBox_room.Location = new System.Drawing.Point(7, 22);
+            this.listBox_room.ItemHeight = 20;
+            this.listBox_room.Location = new System.Drawing.Point(9, 29);
+            this.listBox_room.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listBox_room.Name = "listBox_room";
-            this.listBox_room.Size = new System.Drawing.Size(187, 124);
+            this.listBox_room.Size = new System.Drawing.Size(239, 164);
             this.listBox_room.TabIndex = 16;
             // 
             // button_RoomCreate
             // 
             this.button_RoomCreate.Enabled = false;
             this.button_RoomCreate.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomCreate.Location = new System.Drawing.Point(214, 22);
+            this.button_RoomCreate.Location = new System.Drawing.Point(275, 29);
+            this.button_RoomCreate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_RoomCreate.Name = "button_RoomCreate";
-            this.button_RoomCreate.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomCreate.Size = new System.Drawing.Size(186, 44);
             this.button_RoomCreate.TabIndex = 15;
             this.button_RoomCreate.Text = "Create";
             this.button_RoomCreate.UseVisualStyleBackColor = true;
@@ -317,9 +347,10 @@ namespace WinFormClient
             // 
             this.button_RoomLeave.Enabled = false;
             this.button_RoomLeave.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomLeave.Location = new System.Drawing.Point(214, 113);
+            this.button_RoomLeave.Location = new System.Drawing.Point(275, 151);
+            this.button_RoomLeave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_RoomLeave.Name = "button_RoomLeave";
-            this.button_RoomLeave.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomLeave.Size = new System.Drawing.Size(186, 44);
             this.button_RoomLeave.TabIndex = 14;
             this.button_RoomLeave.Text = "Leave";
             this.button_RoomLeave.UseVisualStyleBackColor = true;
@@ -329,9 +360,10 @@ namespace WinFormClient
             // 
             this.button_RoomEnter.Enabled = false;
             this.button_RoomEnter.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomEnter.Location = new System.Drawing.Point(214, 69);
+            this.button_RoomEnter.Location = new System.Drawing.Point(275, 92);
+            this.button_RoomEnter.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_RoomEnter.Name = "button_RoomEnter";
-            this.button_RoomEnter.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomEnter.Size = new System.Drawing.Size(186, 44);
             this.button_RoomEnter.TabIndex = 10;
             this.button_RoomEnter.Text = "Enter";
             this.button_RoomEnter.UseVisualStyleBackColor = true;
@@ -339,9 +371,9 @@ namespace WinFormClient
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 699);
+            this.ClientSize = new System.Drawing.Size(764, 932);
             this.Controls.Add(this.Lobby);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label_Status);
@@ -351,6 +383,7 @@ namespace WinFormClient
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox_IP);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -362,6 +395,11 @@ namespace WinFormClient
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void ListBox_chat_DrawItem(object sender, System.Windows.Forms.DrawItemEventArgs e)
+        {
+            throw new System.NotImplementedException();
         }
 
         #endregion

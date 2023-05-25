@@ -95,7 +95,7 @@ struct SC_CHAT_RESPONSE : public PACKET_HEADER
 
 	SC_CHAT_RESPONSE()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_CHAT_RESPONSE);
 		packetCount = 1;
 		id = PacketID::CHAT_RESPONSE;
 	}
@@ -108,7 +108,7 @@ struct SC_CHAT_NOTIFY : public PACKET_HEADER
 
 	SC_CHAT_NOTIFY()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_CHAT_NOTIFY);
 		packetCount = 1;
 		id = PacketID::CHAT_NOTIFY;
 	}

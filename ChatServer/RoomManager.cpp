@@ -9,20 +9,20 @@ RoomManager::RoomManager()
 	, m_currentOpenRoomCount(0)
 	, m_roomPoolIndex(0)
 {
-	m_roomPool.reserve(m_maxRoomCount);
+	m_roomObjectPool.reserve(m_maxRoomCount);
 	Init();
 }
 
 RoomManager::~RoomManager()
 {
-	m_roomPool.clear();
+	m_roomObjectPool.clear();
 }
 
 void RoomManager::Init()
 {
 	for (int i = 1; i <= m_maxRoomCount; ++i)
 	{
-		m_roomPool.push_back(make_shared<Room>(0));
+		m_roomObjectPool.push_back(make_shared<Room>(0));
 	}
 }
 
@@ -41,7 +41,7 @@ bool RoomManager::OpenRoom(const char* roomTitle, const size_t titleSize, const 
 
 	while (poolIndexCycle != m_roomPoolIndex)
 	{
-		room = m_roomPool[m_roomPoolIndex++];
+		room = m_roomObjectPool[m_roomPoolIndex++];
 		if (room->GetRoomNumber() == 0)
 		{
 			room->Init(roomTitle, titleSize, maxUserCount, m_roomPoolIndex);

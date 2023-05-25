@@ -27,13 +27,15 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRoomEnterPacket(int number);
 
-        public string userID = null;
-        public string roomTitle = null;
-        public int roomUserCount = 0;
+        string userID = null;
+        string roomTitle = null;
+        int roomUserCount = 0;
+        int currentChatIndex = -1;
 
         Thread BackGroundRecvThread = null;
         RoomManager roomManager = new RoomManager();
 
+        bool IsActivateDrawChatEvent = false;
         bool IsActivatedBackGroundThread = false;
         bool IsActivatedLogin = false;
         bool IsActivatedConnect = false;
@@ -68,7 +70,6 @@ namespace WinFormClient
 
             // Lobby Setup
             button_RoomCreate.Enabled = true;
-            button_RoomEnter.Enabled = true;
         }
 
         private void Button_login_Click(object sender, EventArgs e)
@@ -91,9 +92,10 @@ namespace WinFormClient
 
         private void Button_chat_Click(object sender, EventArgs e)
         {
+            IsActivateDrawChatEvent = true;
             string chatMsg = textBox_chat.Text;
             SendChatPacket(chatMsg, chatMsg.Length);
-            listBox_chat.Items.Add(chatMsg);
+            button_chat.Enabled = false;
         }
 
         private void button_RoomCreate_Click(object sender, EventArgs e)
@@ -137,6 +139,17 @@ namespace WinFormClient
         {
             while (IsActivatedBackGroundThread)
             {
+                this.Invoke(new Action(() =>
+                {
+                    if (listBox_room.SelectedIndex >= 0)
+                    {
+                        button_RoomEnter.Enabled = true;
+                    }
+                    else
+                    {
+                        button_RoomEnter.Enabled = false;
+                    }
+                }));
                 ProcessPacket();
             }
         }

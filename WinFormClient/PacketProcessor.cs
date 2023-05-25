@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace WinFormClient
 {
@@ -17,6 +18,9 @@ namespace WinFormClient
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetLoginPacket(ref SC_LOGIN_RESPONSE packetData, int size);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern bool GetChatPacket(ref SC_CHAT_RESPONSE packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetChatNotifyPacket(ref SC_CHAT_NOTIFY packetData, int size);
@@ -117,9 +121,52 @@ namespace WinFormClient
             }
         }
 
-        void ProcessChatResponse(PACKET_HEADER packetHeader) { }
+        void ProcessChatResponse(PACKET_HEADER packetHeader) 
+        {
+            SC_CHAT_RESPONSE chatResPacket;
+            chatResPacket.result = false;
 
-        void ProcessChatNotify(PACKET_HEADER packetHeader) { }
+            if (GetChatPacket(ref chatResPacket, packetHeader.size))
+            {
+                this.Invoke(new Action(() =>
+                {
+                    if (chatResPacket.result)
+                    {
+                        listBox_chat.Items.Add(textBox_chat.Text);
+                        textBox_chat.Clear();
+                    }
+                }));
+            }
+
+            this.Invoke(new Action(() =>
+            {
+                button_chat.Enabled = true;
+            }));
+        }
+
+        void ProcessChatNotify(PACKET_HEADER packetHeader) 
+        {
+            SC_CHAT_NOTIFY chatNotifyPacket;
+            chatNotifyPacket.userID = null;
+            chatNotifyPacket.message = null;
+
+            if (GetChatNotifyPacket(ref chatNotifyPacket, packetHeader.size))
+            {
+                this.Invoke(new Action(() =>
+                {
+                    var msg = $"{chatNotifyPacket.userID}:  {chatNotifyPacket.message}";
+                    listBox_chat.Items.Add(msg);
+                }));
+            }
+        }
+
+        private void ListBox_chat_DrawItem1(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            StringFormat strFormat = new StringFormat();
+            strFormat.Alignment = StringAlignment.Far;
+            e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Bold), Brushes.Black, e.Bounds, strFormat);
+        }
 
         void ProcessRoomOpenResponse(PACKET_HEADER packetHeader)
         {

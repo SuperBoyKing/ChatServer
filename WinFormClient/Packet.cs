@@ -67,8 +67,16 @@ namespace WinFormClient
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_CHAT_RESPONSE
+    {
+        public bool result; 
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_CHAT_NOTIFY
     {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 257)]
         public string message;
     }

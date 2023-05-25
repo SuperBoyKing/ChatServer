@@ -43,7 +43,7 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 	unique_ptr<SC_ROOM_LIST_MULTIPLE[]> roomInfos = make_unique<SC_ROOM_LIST_MULTIPLE[]>(packetHeader.packetCount);
 
 	int i = 0;
-	for (auto& room : GRoomManager->GetRoomPool())
+	for (auto& room : GRoomManager->GetRoomObjectPool())
 	{
 		if (room->GetRoomNumber() != 0 && GRoomManager->GetOpenRoomCount() != 0)
 		{
@@ -76,6 +76,15 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 
 void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size)
 {
+	CS_CHAT_REQUEST* recvPacket = reinterpret_cast<CS_CHAT_REQUEST*>(packetData);
+	SC_CHAT_RESPONSE sendPacket;
+	sendPacket.result = true;
+	SendProcessedPacket(session, &sendPacket);
+
+	SC_CHAT_NOTIFY broadcastPacket;
+	memcpy(broadcastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
+	memcpy(broadcastPacket.message, recvPacket->message, strlen(recvPacket->message));
+	SendProcessedPacket(session, &broadcastPacket, true);
 }
 
 void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char* packetData, int size)
@@ -181,6 +190,5 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 	if (sendPacket.result)
 	{
 		SC_ROOM_LEAVE_NOTIFY broadcastPacket;
-		
 	}
 }
