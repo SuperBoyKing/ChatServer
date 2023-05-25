@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace WinFormClient
 {
@@ -30,12 +31,11 @@ namespace WinFormClient
         string userID = null;
         string roomTitle = null;
         int roomUserCount = 0;
-        int currentChatIndex = -1;
+        bool[] chatDrawIndexFlags = new bool[512];
 
         Thread BackGroundRecvThread = null;
         RoomManager roomManager = new RoomManager();
 
-        bool IsActivateDrawChatEvent = false;
         bool IsActivatedBackGroundThread = false;
         bool IsActivatedLogin = false;
         bool IsActivatedConnect = false;
@@ -70,6 +70,7 @@ namespace WinFormClient
 
             // Lobby Setup
             button_RoomCreate.Enabled = true;
+            button_RoomEnter.Enabled = true;
         }
 
         private void Button_login_Click(object sender, EventArgs e)
@@ -92,10 +93,28 @@ namespace WinFormClient
 
         private void Button_chat_Click(object sender, EventArgs e)
         {
-            IsActivateDrawChatEvent = true;
             string chatMsg = textBox_chat.Text;
             SendChatPacket(chatMsg, chatMsg.Length);
             button_chat.Enabled = false;
+        }
+
+        private void ListBox_chat_DrawItem1(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            if (e.Index == -1)
+                return;
+
+            if (chatDrawIndexFlags[e.Index])
+            {
+                StringFormat strFormat = new StringFormat();
+                strFormat.Alignment = StringAlignment.Far;
+                e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Bold), Brushes.Black, e.Bounds, strFormat);
+            }
+            else
+            {
+                e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Regular), Brushes.Black, e.Bounds);
+            }
         }
 
         private void button_RoomCreate_Click(object sender, EventArgs e)
@@ -139,17 +158,17 @@ namespace WinFormClient
         {
             while (IsActivatedBackGroundThread)
             {
-                this.Invoke(new Action(() =>
-                {
-                    if (listBox_room.SelectedIndex >= 0)
-                    {
-                        button_RoomEnter.Enabled = true;
-                    }
-                    else
-                    {
-                        button_RoomEnter.Enabled = false;
-                    }
-                }));
+                //this.Invoke(new Action(() =>
+                //{
+                //    if (listBox_room.SelectedIndex >= 0)
+                //    {
+                //        button_RoomEnter.Enabled = true;
+                //    }
+                //    else
+                //    {
+                //        button_RoomEnter.Enabled = false;
+                //    }
+                //}));
                 ProcessPacket();
             }
         }

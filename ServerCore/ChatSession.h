@@ -22,13 +22,17 @@ public:
 	void		Disconnect();
 	void		Send(shared_ptr<SendBuffer> sendbuffer);
 		
-	inline void		SetApp(weak_ptr<ChatApplication> chatApp)	{ m_chatApp = chatApp; }
+	inline void		SetApp(weak_ptr<ChatApplication> chatApp)		{ m_chatApp = chatApp; }
 
-	inline void		SetUserID(const char* userID, int size = 33)			{ ::memcpy(m_userID, userID, 33); }
+	inline void		SetUserID(const char* userID, int size = 33)	{ ::memcpy(m_userID, userID, 33); }
 
-	inline bool		IsConnected() const							{ return m_isConnected; }
+	inline void		SetRoomNumber(const int roomNumber)				{ m_roomNumber = roomNumber; }
 
-	inline const char* GetUserID() const { return m_userID; }
+	inline const char*	GetUserID() const		{ return m_userID; }
+
+	inline const int	GetRoomNumber() const	{ return m_roomNumber; }
+
+	inline bool			IsConnected() const		{ return m_isConnected; }
 
 	// Operation Ã³¸®
 	void		ProcessSend(unsigned int numberOfBytes);
@@ -69,6 +73,7 @@ private:
 private:
 	SOCKET				m_socket;
 	recursive_mutex		m_mutex;
-	char				m_userID[32 + 1] = {};
+	char				m_userID[32 + 1];
+	int					m_roomNumber;
 };
 

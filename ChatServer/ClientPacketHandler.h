@@ -1,4 +1,7 @@
 #pragma once
+#include "Room.h"
+#include "RoomManager.h"
+
 class ClientPacketHandler
 {
 public:
@@ -22,11 +25,27 @@ public:
 		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);
 		if (isBroadcast == false)
 		{
-			GClientSessionManager->SendToSession(session, sendBuffer);
+			GClientSessionManager->SendToSession(sendBuffer, session);
 		}
 		else
 		{
-			GClientSessionManager->Broadcast(session, sendBuffer);
+			GClientSessionManager->Broadcast(sendBuffer, session);
+		}
+	}
+
+	void SendChatNotifyPacket(shared_ptr<ChatSession> session, SC_CHAT_NOTIFY* packet)
+	{
+		shared_ptr<SendBuffer> sendBuffer = make_shared<SendBuffer>(packet->size);
+		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);
+		int roomNumber = session->GetRoomNumber();
+		shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(roomNumber);
+		if (enteredRoom != shared_ptr<Room>())
+		{
+			for (auto& user : enteredRoom->GetUserList())
+			{
+				if (session.get() != user.get())
+					GClientSessionManager->SendToSession(sendBuffer, user);
+			}
 		}
 	}
 

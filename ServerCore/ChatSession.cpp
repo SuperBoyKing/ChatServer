@@ -10,6 +10,8 @@ ChatSession::ChatSession()
 	, m_isConnected(false)
 	, m_isRegisteredSend(false)
 	, m_chatApp(shared_ptr<ChatApplication>(nullptr))
+	, m_userID{}
+	, m_roomNumber(0)
 {
 	if (m_socket == INVALID_SOCKET)
 		PRINT_WSA_ERROR("Create Socket Error");

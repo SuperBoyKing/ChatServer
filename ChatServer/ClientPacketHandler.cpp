@@ -1,6 +1,4 @@
 #include "pch.h"
-#include "Room.h"
-#include "RoomManager.h"
 #include "ClientPacketHandler.h"
 
 unique_ptr<ClientPacketHandler> GClientPacketHandler = make_unique<ClientPacketHandler>();
@@ -81,10 +79,10 @@ void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* pac
 	sendPacket.result = true;
 	SendProcessedPacket(session, &sendPacket);
 
-	SC_CHAT_NOTIFY broadcastPacket;
-	memcpy(broadcastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
-	memcpy(broadcastPacket.message, recvPacket->message, strlen(recvPacket->message));
-	SendProcessedPacket(session, &broadcastPacket, true);
+	SC_CHAT_NOTIFY unicastPacket;
+	memcpy(unicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
+	memcpy(unicastPacket.message, recvPacket->message, strlen(recvPacket->message));
+	SendChatNotifyPacket(session, &unicastPacket);
 }
 
 void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char* packetData, int size)
@@ -97,6 +95,7 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	SC_ROOM_OPEN_RESPONSE sendPacket;
 	sendPacket.result = isOpenSuccess;
 	sendPacket.roomNumber = roomNumber;
+	session->SetRoomNumber(roomNumber);
 	SendProcessedPacket(session, &sendPacket);
 
 	PACKET_HEADER packetHeader;
@@ -121,7 +120,7 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		  방에 접속한 클라이언트에게 방 접속 성공 여부 전송
 	/////////////////////////////////////////////////////*/
 	CS_ROOM_ENTER_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_ENTER_REQUEST*>(packetData);
-	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber - 1);
+	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber);
 	
 	SC_ROOM_ENTER_RESPONSE sendPacket;
 	sendPacket.size = sizeof(SC_ROOM_ENTER_RESPONSE);
@@ -129,7 +128,10 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 	if (enteredRoom != shared_ptr<Room>())
 	{
 		if (enteredRoom->Enter(session))
+		{
 			sendPacket.result = true;
+			session->SetRoomNumber(enteredRoom->GetRoomNumber());
+		}
 	}
 	SendProcessedPacket(session, &sendPacket);
 
@@ -178,7 +180,7 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 {
 	SC_ROOM_LEAVE_RESPONSE sendPacket;
 	CS_ROOM_LEAVE_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_LEAVE_REQUEST*>(packetData);
-	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber - 1);
+	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber);
 
 	if (enteredRoom != shared_ptr<Room>())
 	{

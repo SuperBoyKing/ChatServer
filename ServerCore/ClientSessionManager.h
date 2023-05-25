@@ -11,8 +11,8 @@ public:
 	void						Remove(shared_ptr<ChatSession> session);
 	void						Remove(SOCKET key);
 	shared_ptr<ChatSession>		Search(SOCKET key);
-	void						Broadcast(shared_ptr<ChatSession> exceptSession, shared_ptr<SendBuffer> sendBuffer);
-	bool						SendToSession(shared_ptr<ChatSession> session, shared_ptr<SendBuffer> sendBuffer);
+	void						Broadcast(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> exceptSession = nullptr);
+	bool						SendToSession(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> session);
 
 private:
 	unordered_map<SOCKET, shared_ptr<ChatSession>> m_uMapSessions;

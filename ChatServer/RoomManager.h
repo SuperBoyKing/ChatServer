@@ -15,9 +15,12 @@ public:
 
 	inline  int	GetOpenRoomCount() const { return m_currentOpenRoomCount; }
 
-	inline shared_ptr<Room>& SearchRoom(int roomNumber)
+	inline shared_ptr<Room> SearchRoom(int roomNumber)
 	{
-		return m_roomObjectPool[roomNumber];
+		if (roomNumber - 1 < 0)
+			return shared_ptr<Room>();
+
+		return m_roomObjectPool[(int)(roomNumber - 1)];
 	}
 
 private:

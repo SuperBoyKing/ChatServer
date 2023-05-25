@@ -47,16 +47,16 @@ shared_ptr<ChatSession> ClientSessionManager::Search(SOCKET key)
 	return itr->second;
 }
 
-void ClientSessionManager::Broadcast(shared_ptr<ChatSession> exceptSession, shared_ptr<SendBuffer> sendBuffer)
+void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> exceptSession)
 {
 	for (auto &clients : m_uMapSessions)
 	{
-		if (exceptSession->GetSock() != clients.second->GetSock())
+		if (exceptSession.get() != clients.second.get())
 			clients.second->Send(sendBuffer);
 	}
 }
 
-bool ClientSessionManager::SendToSession(shared_ptr<ChatSession> session, shared_ptr<SendBuffer> sendBuffer)
+bool ClientSessionManager::SendToSession(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> session)
 {
 	lock_guard<recursive_mutex> lock(m_mutex); 
 	if (session.get() != nullptr)

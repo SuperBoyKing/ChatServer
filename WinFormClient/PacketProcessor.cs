@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace WinFormClient
 {
@@ -132,7 +131,9 @@ namespace WinFormClient
                 {
                     if (chatResPacket.result)
                     {
+                        CheckLimitChatCount();
                         listBox_chat.Items.Add(textBox_chat.Text);
+                        chatDrawIndexFlags[listBox_chat.Items.Count - 1] = true;
                         textBox_chat.Clear();
                     }
                 }));
@@ -154,18 +155,12 @@ namespace WinFormClient
             {
                 this.Invoke(new Action(() =>
                 {
-                    var msg = $"{chatNotifyPacket.userID}:  {chatNotifyPacket.message}";
+                    CheckLimitChatCount();
+                    var msg = $"{chatNotifyPacket.userID}: {chatNotifyPacket.message}";
                     listBox_chat.Items.Add(msg);
+                    chatDrawIndexFlags[listBox_chat.Items.Count - 1] = false;
                 }));
             }
-        }
-
-        private void ListBox_chat_DrawItem1(object sender, DrawItemEventArgs e)
-        {
-            e.DrawBackground();
-            StringFormat strFormat = new StringFormat();
-            strFormat.Alignment = StringAlignment.Far;
-            e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Bold), Brushes.Black, e.Bounds, strFormat);
         }
 
         void ProcessRoomOpenResponse(PACKET_HEADER packetHeader)
@@ -188,7 +183,6 @@ namespace WinFormClient
             this.Invoke(new Action(() =>
             {
                 button_RoomCreate.Enabled = true;
-                button_RoomEnter.Enabled = true;
             }));
         }
 
@@ -279,6 +273,12 @@ namespace WinFormClient
 
         void ProcessRoomLeaveNotify(PACKET_HEADER packetHeader)
         {
+        }
+
+        void CheckLimitChatCount()
+        {
+            if (listBox_chat.Items.Count > 512)
+                listBox_chat.Items.Clear();
         }
     }
 }
