@@ -8,8 +8,17 @@ using System.Drawing;
 
 namespace WinFormClient
 {
+    enum ChatDrawingType
+    {
+        NONE,
+        RESPONSE_CHAT,
+        NOTIFY_ID,
+        NOTIFY_CHAT,
+        INFO,
+    }
     public partial class MainForm : Form
     {
+
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void ChatClientStart([MarshalAs(UnmanagedType.LPWStr)] String ip, [MarshalAs(UnmanagedType.I2)] short port);
 
@@ -28,14 +37,19 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRoomEnterPacket(int number);
 
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendRoomLeavePacket(int number);
+
+        Thread BackGroundRecvThread = null;
+        ChatDrawingType[] chatDrawIndexFlags = new ChatDrawingType[512];
+
+        // 로컬 ChatApplication 정보
         string userID = null;
         string roomTitle = null;
         int roomUserCount = 0;
-        bool[] chatDrawIndexFlags = new bool[512];
-
-        Thread BackGroundRecvThread = null;
         RoomManager roomManager = new RoomManager();
 
+        // flag
         bool IsActivatedBackGroundThread = false;
         bool IsActivatedLogin = false;
         bool IsActivatedConnect = false;
@@ -51,26 +65,44 @@ namespace WinFormClient
         {
             roomManager.roomDictionary.Clear();
             IsActivatedBackGroundThread = false;
+
             if (BackGroundRecvThread.IsAlive)
                 BackGroundRecvThread.Join();
         }
 
         private void Button_isConnect_Click(object sender, EventArgs e)
         {
-            ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
-            IsActivatedBackGroundThread = true;
-            BackGroundRecvThread.Start();
-            SendConnectPacket();
-            button_isConnect.Enabled = false;
+            if(!IsActivatedConnect)
+            {
+                ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
+                IsActivatedBackGroundThread = true;
+                BackGroundRecvThread.Start();
+                SendConnectPacket();
 
-            // Login Setup
-            textBox_ID.Enabled = true;
-            textBox_password.Enabled = true;
-            button_login.Enabled = true;
+                // Connect Disable
+                textBox_IP.Enabled = false;
+                textBox_port.Enabled = false;
 
-            // Lobby Setup
-            button_RoomCreate.Enabled = true;
-            button_RoomEnter.Enabled = true;
+                // Login Setup
+                textBox_ID.Enabled = true;
+                textBox_password.Enabled = true;
+                button_login.Enabled = true;
+                
+                IsActivatedConnect = true;
+            }
+            else
+            {
+                // Connect Setup
+                textBox_IP.Enabled = true;
+                textBox_port.Enabled = true;
+
+                // Login Disable
+                textBox_ID.Enabled = false;
+                textBox_password.Enabled = false;
+                button_login.Enabled = false;
+
+                IsActivatedConnect = false;
+            }
         }
 
         private void Button_login_Click(object sender, EventArgs e)
@@ -98,22 +130,48 @@ namespace WinFormClient
             button_chat.Enabled = false;
         }
 
-        private void ListBox_chat_DrawItem1(object sender, DrawItemEventArgs e)
+        private void ListBox_user_DrawEvent(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
 
             if (e.Index == -1)
                 return;
 
-            if (chatDrawIndexFlags[e.Index])
-            {
-                StringFormat strFormat = new StringFormat();
-                strFormat.Alignment = StringAlignment.Far;
-                e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Bold), Brushes.Black, e.Bounds, strFormat);
-            }
+            if (e.Index == 0)
+                e.Graphics.DrawString(listBox_user.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Bold), Brushes.Black, e.Bounds);
             else
+                e.Graphics.DrawString(listBox_user.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Regular), Brushes.Black, e.Bounds);
+        }
+
+        private void ListBox_chat_DrawEvent(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            if (e.Index == -1)
+                return;
+            
+            switch (chatDrawIndexFlags[e.Index])
             {
-                e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Regular), Brushes.Black, e.Bounds);
+                case ChatDrawingType.RESPONSE_CHAT:
+                    StringFormat strFormat = new StringFormat();
+                    strFormat.Alignment = StringAlignment.Far;
+                    e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Bold), Brushes.Black, e.Bounds, strFormat);
+                    break;
+
+                case ChatDrawingType.NOTIFY_ID:
+                    e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Bold), Brushes.Black, e.Bounds);
+                    break;
+
+                case ChatDrawingType.NOTIFY_CHAT:
+                    e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Regular), Brushes.Black, e.Bounds);
+                    break;
+
+                case ChatDrawingType.INFO:
+                    StringFormat strInfoFormat = new StringFormat();
+                    strInfoFormat.Alignment = StringAlignment.Center;
+                    e.Graphics.DrawString(listBox_chat.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Regular), Brushes.Black, e.Bounds, strInfoFormat);
+                    //D3D3D3
+                    break;
             }
         }
 
@@ -138,6 +196,8 @@ namespace WinFormClient
         {
             Room room;
             int index = listBox_room.SelectedIndex;
+            if (index == -1)
+                return;
 
             if (roomManager.roomDictionary.TryGetValue(listBox_room.Items[index].ToString(), out room))
             {
@@ -147,28 +207,31 @@ namespace WinFormClient
             {
                 MessageBox.Show("Does not exist room.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            button_RoomEnter.Enabled = false;
         }
 
         private void button_RoomLeave_Click(object sender, EventArgs e)
         {
+            Room room;
+            int index = listBox_room.SelectedIndex;
+            if (index == -1)
+                return;
 
+            if (roomManager.roomDictionary.TryGetValue(listBox_room.Items[index].ToString(), out room))
+            {
+                SendRoomLeavePacket(room.number);
+            }
+            else
+            {
+                MessageBox.Show("Does not exist room.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         void BackGroundRecvProcess()
         {
             while (IsActivatedBackGroundThread)
-            {
-                //this.Invoke(new Action(() =>
-                //{
-                //    if (listBox_room.SelectedIndex >= 0)
-                //    {
-                //        button_RoomEnter.Enabled = true;
-                //    }
-                //    else
-                //    {
-                //        button_RoomEnter.Enabled = false;
-                //    }
-                //}));
+            { 
                 ProcessPacket();
             }
         }

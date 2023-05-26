@@ -12,7 +12,7 @@ public:
 
 	bool			Leave(shared_ptr<ChatSession> userSession);
 
-	void			CloseRoom();
+	void			reset();
 
 	inline int			GetRoomNumber() const			{ return m_roomNumber; }
 

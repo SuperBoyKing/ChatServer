@@ -58,5 +58,14 @@ bool RoomManager::OpenRoom(const char* roomTitle, const size_t titleSize, const 
 	return bResult;
 }
 
+bool RoomManager::CloseRoom(const int roomNumber)
+{
+	if (roomNumber - 1 < 0)
+		return false;
+
+	m_roomObjectPool[(int)(roomNumber - 1)]->reset();
+	return true;
+}
+
 
 

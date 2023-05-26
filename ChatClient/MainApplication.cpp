@@ -32,7 +32,7 @@ bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 	int packetSize = sizeof(PacketType) * packetCount;
 	PacketType* newArray = reinterpret_cast<PacketType*>(CoTaskMemAlloc(packetSize));
 
-	if (packetSize == 0)
+	if (packetSize <= 0)
 		newArray = nullptr;
 
 	mutex m;
@@ -59,13 +59,13 @@ extern "C"
 {
 	EXPORT void ChatClientStart(WCHAR* ip, __int16 port)
 	{
-		chatClient->Connect(ip, port);
+		chatClient->SetAddress(ip, port);
+
+		ASSERT_CRASH(chatClient->Start());
 
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
 		int numberOfProcessor = sysinfo.dwNumberOfProcessors;
-
-		ASSERT_CRASH(chatClient->Start());
 
 		for (int i = 0; i < numberOfProcessor; ++i)
 		{
@@ -103,6 +103,11 @@ extern "C"
 		chatClient->SendRoomEnter(number);
 	}
 
+	EXPORT void SendRoomLeavePacket(int number)
+	{
+		chatClient->SendRoomLeave(number);
+	}
+
 	EXPORT bool	GetPacketHeader(PACKET_HEADER* packetHeader)
 	{
 		if (!GRecvPacketQueue.empty())
@@ -114,9 +119,9 @@ extern "C"
 		return false;
 	}
 
-	EXPORT bool GetConnectPacket(SC_ROOM_LIST_MULTIPLE** packetData, int size)
+	EXPORT bool GetConnectPacket(SC_ROOM_LIST_MULTIPLE** packetData, int count)
 	{
-		return GetNumberOfPacket(packetData, size);
+		return GetNumberOfPacket(packetData, count);
 	}
 
 	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
@@ -149,13 +154,27 @@ extern "C"
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
-	EXPORT bool GetRoomUserNotifyPacket(SC_USER_LIST_NOTIFY_MULTIPLE** packetData, int size)
+	EXPORT bool GetRoomEnterUserNotify(SC_ROOM_ENTER_USER_NOTIFY* packetData, int size)
 	{
-		return GetNumberOfPacket(packetData, size);
-		//return false;
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 
-	EXPORT bool GetRoomEnterUserNotify(SC_ROOM_ENTER_USER_NOTIFY* packetData, int size)
+	EXPORT bool GetRoomUserNotifyPacket(SC_USER_LIST_NOTIFY_MULTIPLE** packetData, int count)
+	{
+		return GetNumberOfPacket(packetData, count);
+	}
+
+	EXPORT bool GetRoomLeavePacket(SC_ROOM_LEAVE_RESPONSE* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
+
+	EXPORT bool GetRoomLeaveNotifyPacket(SC_ROOM_LEAVE_USER_NOTIFY* packetData, int size)
+	{
+		return GetPacket(reinterpret_cast<void*>(packetData), size);
+	}
+
+	EXPORT bool GetClosePacket(SC_ROOM_CLOSE* packetData, int size)
 	{
 		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}

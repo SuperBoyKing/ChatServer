@@ -58,7 +58,7 @@ ChatClient::~ChatClient()
 {
 }
 
-void ChatClient::Connect(const WCHAR* ip, const __int16 port)
+void ChatClient::SetAddress(const WCHAR* ip, const __int16 port)
 {
 	if (ip != nullptr)
 		m_serverAddress->SetServerAddress(ip, port);
@@ -110,7 +110,7 @@ void ChatClient::SendChat(const char* str, const int size)
 {
 	CS_CHAT_REQUEST packet;
 	::memcpy(packet.message, str, size);
-	packet.size += size;
+	packet.size = size + PACKET_HEADER_SIZE;
 
 	SendPacket<CS_CHAT_REQUEST>(packet);
 }
@@ -120,7 +120,6 @@ void ChatClient::SendRoomOpen(char* title, int titleSize, int userCount)
 	CS_ROOM_OPEN_REQUEST packet;
 	::memcpy(&packet.roomTitle, title, titleSize);
 	packet.userCount = userCount;
-	packet.size = sizeof(CS_ROOM_OPEN_REQUEST);
 
 	SendPacket<CS_ROOM_OPEN_REQUEST>(packet);
 }
@@ -129,7 +128,14 @@ void ChatClient::SendRoomEnter(int number)
 {
 	CS_ROOM_ENTER_REQUEST packet;
 	packet.roomNumber = number;
-	packet.size = sizeof(CS_ROOM_ENTER_REQUEST);
 
 	SendPacket<CS_ROOM_ENTER_REQUEST>(packet);
+}
+
+void ChatClient::SendRoomLeave(int number)
+{
+	CS_ROOM_LEAVE_REQUEST packet;
+	packet.roomNumber = number;
+
+	SendPacket<CS_ROOM_LEAVE_REQUEST>(packet);
 }

@@ -11,6 +11,8 @@ public:
 
 	bool	OpenRoom(const char* roomTitle, const size_t titleSize, const int maxUserCount, OUT int* roomNumber);
 
+	bool	CloseRoom(const int roomNumber);
+
 	inline  vector<shared_ptr<Room>>& GetRoomObjectPool() { return m_roomObjectPool; }
 
 	inline  int	GetOpenRoomCount() const { return m_currentOpenRoomCount; }

@@ -56,7 +56,7 @@ public:
 	ChatClient(shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount = 1);
 	virtual ~ChatClient();
 
-	void Connect(const WCHAR* ip, const __int16 port);
+	void SetAddress(const WCHAR* ip, const __int16 port);
 
 	bool Start() override;
 
@@ -70,6 +70,8 @@ public:
 	void SendRoomOpen(char* title, int titleSize, int userCount);
 
 	void SendRoomEnter(int number);
+
+	void SendRoomLeave(int number);
 
 	//inline ChatSession* GetChatSession() { return m_session.get(); }
 

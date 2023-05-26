@@ -33,7 +33,8 @@ public:
 		}
 	}
 
-	void SendChatNotifyPacket(shared_ptr<ChatSession> session, SC_CHAT_NOTIFY* packet)
+	template <typename PacketType>
+	void SendUserNotifyPacket(shared_ptr<ChatSession> session, PacketType* packet)
 	{
 		shared_ptr<SendBuffer> sendBuffer = make_shared<SendBuffer>(packet->size);
 		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);

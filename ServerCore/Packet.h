@@ -25,7 +25,8 @@ enum class PacketID : unsigned __int16
 
 	ROOM_LEAVE_REQUEST,
 	ROOM_LEAVE_RESPONSE,
-	ROOM_LEAVE_NOTIFY,
+	ROOM_LEAVE_USER_NOTIFY,
+	ROOM_CLOSE
 };
 
 struct PACKET_HEADER
@@ -39,7 +40,7 @@ struct CS_ROOM_LIST_REQUEST : public PACKET_HEADER
 {
 	CS_ROOM_LIST_REQUEST()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(CS_ROOM_LIST_REQUEST);
 		packetCount = 1;
 		id = PacketID::CONNECT_REQUEST;
 	}
@@ -50,6 +51,7 @@ struct SC_ROOM_LIST_MULTIPLE
 	int		number = 0;
 	char	title[50 + 1] = { 0 };
 	int		userCount = 0;
+	int		currentUserCount = 0;
 };
 
 struct CS_LOGIN_REQUEST : public PACKET_HEADER
@@ -59,7 +61,7 @@ struct CS_LOGIN_REQUEST : public PACKET_HEADER
 
 	CS_LOGIN_REQUEST()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(CS_LOGIN_REQUEST);
 		packetCount = 1;
 		id = PacketID::LOGIN_REQUEST;
 	}
@@ -83,7 +85,7 @@ struct CS_CHAT_REQUEST : public PACKET_HEADER
 
 	CS_CHAT_REQUEST()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(CS_CHAT_REQUEST);
 		packetCount = 1;
 		id = PacketID::CHAT_REQUEST;
 	}
@@ -121,7 +123,7 @@ struct CS_ROOM_OPEN_REQUEST : public PACKET_HEADER
 
 	CS_ROOM_OPEN_REQUEST()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(CS_ROOM_OPEN_REQUEST);
 		packetCount = 1;
 		id = PacketID::ROOM_OPEN_REQUEST;
 	}
@@ -145,6 +147,7 @@ struct SC_ROOM_OPEN_NOTIFY_MULTIPLE
 	int		number = 0;
 	char	title[50 + 1] = { 0 };
 	int		userCount = 0;
+	int		currentUserCount = 0;
 };
 
 struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
@@ -153,7 +156,7 @@ struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
 	
 	CS_ROOM_ENTER_REQUEST()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(CS_ROOM_ENTER_REQUEST);
 		packetCount = 1;
 		id = PacketID::ROOM_ENTER_REQUEST;
 	}
@@ -165,7 +168,7 @@ struct SC_ROOM_ENTER_RESPONSE : public PACKET_HEADER
 
 	SC_ROOM_ENTER_RESPONSE()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_ROOM_ENTER_RESPONSE);
 		packetCount = 1;
 		id = PacketID::ROOM_ENTER_RESPONSE;
 	}
@@ -177,7 +180,7 @@ struct SC_ROOM_ENTER_USER_NOTIFY : public PACKET_HEADER
 
 	SC_ROOM_ENTER_USER_NOTIFY()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_ROOM_ENTER_USER_NOTIFY);
 		packetCount = 1;
 		id = PacketID::ROOM_ENTER_USER_NOTIFY;
 	}
@@ -194,7 +197,7 @@ struct CS_ROOM_LEAVE_REQUEST : public PACKET_HEADER
 
 	CS_ROOM_LEAVE_REQUEST()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(CS_ROOM_LEAVE_REQUEST);
 		packetCount = 1;
 		id = PacketID::ROOM_LEAVE_REQUEST;
 	}
@@ -206,22 +209,34 @@ struct SC_ROOM_LEAVE_RESPONSE : public PACKET_HEADER
 
 	SC_ROOM_LEAVE_RESPONSE()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_ROOM_LEAVE_RESPONSE);
 		packetCount = 1;
 		id = PacketID::ROOM_LEAVE_RESPONSE;
 	}
 };
 
-struct SC_ROOM_LEAVE_NOTIFY : public PACKET_HEADER
+struct SC_ROOM_LEAVE_USER_NOTIFY : public PACKET_HEADER
 {
 	char roomTitle[50 + 1] = {};
 	char userID[32 + 1] = {};
 
-	SC_ROOM_LEAVE_NOTIFY()
+	SC_ROOM_LEAVE_USER_NOTIFY()
 	{
-		size = PACKET_HEADER_SIZE;
+		size = sizeof(SC_ROOM_LEAVE_USER_NOTIFY);
 		packetCount = 1;
-		id = PacketID::ROOM_LEAVE_NOTIFY;
+		id = PacketID::ROOM_LEAVE_USER_NOTIFY;
+	}
+};
+
+struct SC_ROOM_CLOSE : public PACKET_HEADER
+{
+	//int roomNumber = 0;
+	char title[50 + 1] = {};
+	SC_ROOM_CLOSE()
+	{
+		size = sizeof(SC_ROOM_CLOSE);
+		packetCount = 1;
+		id = PacketID::ROOM_CLOSE;
 	}
 };
 

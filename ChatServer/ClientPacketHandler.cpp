@@ -41,13 +41,14 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 	unique_ptr<SC_ROOM_LIST_MULTIPLE[]> roomInfos = make_unique<SC_ROOM_LIST_MULTIPLE[]>(packetHeader.packetCount);
 
 	int i = 0;
-	for (auto& room : GRoomManager->GetRoomObjectPool())
+	for (auto& room : GRoomManager->GetRoomObjectPool())	// 할당된 RoomList 패킷 구성
 	{
 		if (room->GetRoomNumber() != 0 && GRoomManager->GetOpenRoomCount() != 0)
 		{
 			roomInfos[i].number = room->GetRoomNumber();
 			::memcpy(roomInfos[i].title, room->GetTitle(), strlen(room->GetTitle()));
 			roomInfos[i].userCount = room->GetMaxUserCount();
+			roomInfos[i].currentUserCount = room->GetCurrentUserCount();
 
 			if (GRoomManager->GetOpenRoomCount() == i++)
 				break;
@@ -79,10 +80,10 @@ void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* pac
 	sendPacket.result = true;
 	SendProcessedPacket(session, &sendPacket);
 
-	SC_CHAT_NOTIFY unicastPacket;
-	memcpy(unicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
-	memcpy(unicastPacket.message, recvPacket->message, strlen(recvPacket->message));
-	SendChatNotifyPacket(session, &unicastPacket);
+	SC_CHAT_NOTIFY multicastPacket;
+	memcpy(multicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
+	memcpy(multicastPacket.message, recvPacket->message, strlen(recvPacket->message));
+	SendUserNotifyPacket(session, &multicastPacket);
 }
 
 void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char* packetData, int size)
@@ -92,21 +93,26 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	int roomNumber = 0;
 	bool isOpenSuccess = GRoomManager->OpenRoom(recvPacket->roomTitle, strlen(recvPacket->roomTitle), recvPacket->userCount, &roomNumber);
 
+	// Open 응답 패킷 구성 및 전송
 	SC_ROOM_OPEN_RESPONSE sendPacket;
 	sendPacket.result = isOpenSuccess;
 	sendPacket.roomNumber = roomNumber;
 	session->SetRoomNumber(roomNumber);
 	SendProcessedPacket(session, &sendPacket);
 
+	// Notify 패킷을 위한 패킷 헤더 구성 
 	PACKET_HEADER packetHeader;
 	packetHeader.id = PacketID::ROOM_OPEN_NOTIFY;
 	packetHeader.size += sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE);
 
+	// 모든 클라이언트들에게 방이 Open되었다는 것을 전달하기 위한 Room Open Nofity 패킷 구성
 	SC_ROOM_OPEN_NOTIFY_MULTIPLE broadcastPacket;
 	broadcastPacket.number = roomNumber;
 	memcpy(broadcastPacket.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
 	broadcastPacket.userCount = recvPacket->userCount;
+	broadcastPacket.currentUserCount = 0;
 
+	// 패킷 헤더와 Room Open Nofity 패킷 조립 후 broadcast 전송
 	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
 	::memcpy(baseAddress, &packetHeader, sizeof(PACKET_HEADER));
 	::memcpy(static_cast<char*>(baseAddress) + sizeof(PACKET_HEADER), &broadcastPacket, sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
@@ -116,15 +122,11 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 
 void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char* packetData, int size)
 {
-	/*/////////////////////////////////////////////////////
-		  방에 접속한 클라이언트에게 방 접속 성공 여부 전송
-	/////////////////////////////////////////////////////*/
+	// 신규 접속한 클라이언트에게 방 접속 성공 여부를 전송할 패킷 구성
 	CS_ROOM_ENTER_REQUEST* recvPacket = reinterpret_cast<CS_ROOM_ENTER_REQUEST*>(packetData);
 	shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(recvPacket->roomNumber);
 	
 	SC_ROOM_ENTER_RESPONSE sendPacket;
-	sendPacket.size = sizeof(SC_ROOM_ENTER_RESPONSE);
-	
 	if (enteredRoom != shared_ptr<Room>())
 	{
 		if (enteredRoom->Enter(session))
@@ -135,11 +137,9 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 	}
 	SendProcessedPacket(session, &sendPacket);
 
-	if (enteredRoom->GetCurrentUserCount() > 1 && sendPacket.result == true)
+	if (sendPacket.result == true && enteredRoom->GetCurrentUserCount() > 1)
 	{
-		///*/////////////////////////////////////////////////////
-		//  방에 접속한 클라이언트에게 RoomUserList 전송
-		///////////////////////////////////////////////////////*/
+		//  신규 접속한 클라이언트에게 RoomUserList 전송
 		PACKET_HEADER packetHeader;
 		packetHeader.packetCount = enteredRoom->GetCurrentUserCount() - 1; // 자기 자신은 빼준다.
 		packetHeader.size += sizeof(SC_USER_LIST_NOTIFY_MULTIPLE) * packetHeader.packetCount;
@@ -148,8 +148,8 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		void* basePacketAddress = ::malloc(packetHeader.size);
 		::memcpy((PACKET_HEADER*)basePacketAddress, &packetHeader, PACKET_HEADER_SIZE);
 
-		unique_ptr<SC_USER_LIST_NOTIFY_MULTIPLE[]> userIDs = make_unique<SC_USER_LIST_NOTIFY_MULTIPLE[]>(packetHeader.packetCount);
 		int i = 0;
+		unique_ptr<SC_USER_LIST_NOTIFY_MULTIPLE[]> userIDs = make_unique<SC_USER_LIST_NOTIFY_MULTIPLE[]>(packetHeader.packetCount);
 		for (auto& user : enteredRoom->GetUserList())
 		{
 			if (user->GetSock() != session->GetSock())	// 자기 자신은 리스트에서 제외
@@ -159,20 +159,10 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(basePacketAddress));
 
 
-		/*/////////////////////////////////////////////////////
-			기존 방에 접속해있던 클라이언트들에게 신규 접속한 UserID 전송
-		/////////////////////////////////////////////////////*/
-		for (auto& user : enteredRoom->GetUserList())
-		{
-			if (user->GetSock() != session->GetSock())	// 자기 자신은 리스트에서 제외
-			{
-				SC_ROOM_ENTER_USER_NOTIFY enterUserPacket;
-				::memcpy(enterUserPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
-				enterUserPacket.size = sizeof(SC_ROOM_ENTER_USER_NOTIFY);
-				SendProcessedPacket(user, &enterUserPacket);
-			}
-		}
-		
+		// 기존 방에 접속해있던 클라이언트들에게 신규 접속한 UserID 전송
+		SC_ROOM_ENTER_USER_NOTIFY enterUserPacket;
+		::memcpy(enterUserPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
+		SendUserNotifyPacket(session, &enterUserPacket);
 	}
 }
 
@@ -191,6 +181,19 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 
 	if (sendPacket.result)
 	{
-		SC_ROOM_LEAVE_NOTIFY broadcastPacket;
+		if (enteredRoom->GetCurrentUserCount() == 0)	// Room에 유저가 존재하지 않는다면 Room Close
+		{
+			GRoomManager->CloseRoom(enteredRoom->GetRoomNumber());
+			SC_ROOM_CLOSE closePacket;
+			memcpy(closePacket.title, enteredRoom->GetTitle(), strlen(enteredRoom->GetTitle()));
+			SendProcessedPacket(session, &closePacket, true);
+		}
+		else
+		{
+			SC_ROOM_LEAVE_USER_NOTIFY multicastPacket;
+			memcpy(multicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
+			memcpy(multicastPacket.roomTitle, enteredRoom->GetTitle(), strlen(enteredRoom->GetTitle()));
+			SendUserNotifyPacket(session, &multicastPacket);
+		}
 	}
 }

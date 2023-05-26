@@ -51,7 +51,7 @@ namespace WinFormClient
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox_userCount = new System.Windows.Forms.TextBox();
-            this.textbox_roomTitle = new System.Windows.Forms.TextBox();
+            this.textBox_roomTitle = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.Lobby = new System.Windows.Forms.GroupBox();
             this.listBox_room = new System.Windows.Forms.ListBox();
@@ -205,10 +205,11 @@ namespace WinFormClient
             this.listBox_chat.Size = new System.Drawing.Size(363, 334);
             this.listBox_chat.TabIndex = 10;
             this.listBox_chat.TabStop = false;
-            this.listBox_chat.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBox_chat_DrawItem1);
+            this.listBox_chat.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBox_chat_DrawEvent);
             // 
             // listBox_user
             // 
+            this.listBox_user.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.listBox_user.Enabled = false;
             this.listBox_user.FormattingEnabled = true;
             this.listBox_user.ItemHeight = 15;
@@ -217,6 +218,7 @@ namespace WinFormClient
             this.listBox_user.Size = new System.Drawing.Size(185, 379);
             this.listBox_user.TabIndex = 11;
             this.listBox_user.TabStop = false;
+            this.listBox_user.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBox_user_DrawEvent);
             // 
             // label_Status
             // 
@@ -231,7 +233,7 @@ namespace WinFormClient
             // 
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.textBox_userCount);
-            this.groupBox2.Controls.Add(this.textbox_roomTitle);
+            this.groupBox2.Controls.Add(this.textBox_roomTitle);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.listBox_user);
             this.groupBox2.Controls.Add(this.textBox_chat);
@@ -255,23 +257,22 @@ namespace WinFormClient
             // 
             // textBox_userCount
             // 
-            this.textBox_userCount.Enabled = false;
             this.textBox_userCount.Location = new System.Drawing.Point(406, 25);
             this.textBox_userCount.Name = "textBox_userCount";
             this.textBox_userCount.ReadOnly = true;
             this.textBox_userCount.Size = new System.Drawing.Size(49, 23);
             this.textBox_userCount.TabIndex = 14;
             this.textBox_userCount.TabStop = false;
+            this.textBox_userCount.Text = "0";
             // 
-            // textbox_roomTitle
+            // textBox_roomTitle
             // 
-            this.textbox_roomTitle.Enabled = false;
-            this.textbox_roomTitle.Location = new System.Drawing.Point(96, 25);
-            this.textbox_roomTitle.Name = "textbox_roomTitle";
-            this.textbox_roomTitle.ReadOnly = true;
-            this.textbox_roomTitle.Size = new System.Drawing.Size(233, 23);
-            this.textbox_roomTitle.TabIndex = 13;
-            this.textbox_roomTitle.TabStop = false;
+            this.textBox_roomTitle.Location = new System.Drawing.Point(96, 25);
+            this.textBox_roomTitle.Name = "textBox_roomTitle";
+            this.textBox_roomTitle.ReadOnly = true;
+            this.textBox_roomTitle.Size = new System.Drawing.Size(233, 23);
+            this.textBox_roomTitle.TabIndex = 13;
+            this.textBox_roomTitle.TabStop = false;
             // 
             // label4
             // 
@@ -397,7 +398,7 @@ namespace WinFormClient
         private System.Windows.Forms.Button button_RoomEnter;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox_userCount;
-        private System.Windows.Forms.TextBox textbox_roomTitle;
+        private System.Windows.Forms.TextBox textBox_roomTitle;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button_RoomCreate;
         private System.Windows.Forms.Button button_RoomLeave;

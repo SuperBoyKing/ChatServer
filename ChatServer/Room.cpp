@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Room.h"
+#include "RoomManager.h"
+
+class RoomManager;
 
 Room::Room(unsigned int roomNumber)
 	:	m_title{}
@@ -18,7 +21,7 @@ void Room::Init(const char* roomTitle, const size_t titleSize, const int maxUser
 
 bool Room::Enter(shared_ptr<ChatSession> userSession)
 {
-	if (m_maxUserCount <= m_currentUserCount.fetch_add(1))
+	if (m_currentUserCount.fetch_add(1) >= m_maxUserCount)
 		return false;
 
 	{
@@ -31,22 +34,26 @@ bool Room::Enter(shared_ptr<ChatSession> userSession)
 
 bool Room::Leave(shared_ptr<ChatSession> userSession)
 {
+	if (m_currentUserCount.fetch_sub(1) <= 0)
+		return false;
+
 	auto itr = find(m_userList.begin(), m_userList.end(), userSession);
 
 	lock_guard<recursive_mutex> lock(m_mutex);
 	if (itr != m_userList.end())
 	{
 		m_userList.erase(itr);
-
-		if (m_userList.empty())
-			CloseRoom();
-
 		return true;
 	}
 
 	return false;
 }
 
-void Room::CloseRoom()
+void Room::reset()
 {
+	memset(m_title, 0, 33);
+	m_roomNumber = 0;
+	m_maxUserCount = 0;
+	m_currentUserCount = 0;
+	m_userList.clear();
 }
