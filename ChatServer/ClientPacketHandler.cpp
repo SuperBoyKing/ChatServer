@@ -47,8 +47,8 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 		{
 			roomInfos[i].number = room->GetRoomNumber();
 			::memcpy(roomInfos[i].title, room->GetTitle(), strlen(room->GetTitle()));
-			roomInfos[i].userCount = room->GetMaxUserCount();
 			roomInfos[i].currentUserCount = room->GetCurrentUserCount();
+			roomInfos[i].maxUserCount = room->GetMaxUserCount();
 
 			if (GRoomManager->GetOpenRoomCount() == i++)
 				break;
@@ -109,8 +109,8 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	SC_ROOM_OPEN_NOTIFY_MULTIPLE broadcastPacket;
 	broadcastPacket.number = roomNumber;
 	memcpy(broadcastPacket.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
-	broadcastPacket.userCount = recvPacket->userCount;
 	broadcastPacket.currentUserCount = 0;
+	broadcastPacket.maxUserCount = recvPacket->userCount;
 
 	// 패킷 헤더와 Room Open Nofity 패킷 조립 후 broadcast 전송
 	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
@@ -185,14 +185,13 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 		{
 			GRoomManager->CloseRoom(enteredRoom->GetRoomNumber());
 			SC_ROOM_CLOSE closePacket;
-			memcpy(closePacket.title, enteredRoom->GetTitle(), strlen(enteredRoom->GetTitle()));
+			closePacket.roomNumber = enteredRoom->GetRoomNumber();
 			SendProcessedPacket(session, &closePacket, true);
 		}
 		else
 		{
 			SC_ROOM_LEAVE_USER_NOTIFY multicastPacket;
 			memcpy(multicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
-			memcpy(multicastPacket.roomTitle, enteredRoom->GetTitle(), strlen(enteredRoom->GetTitle()));
 			SendUserNotifyPacket(session, &multicastPacket);
 		}
 	}

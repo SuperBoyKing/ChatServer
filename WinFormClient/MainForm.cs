@@ -40,34 +40,43 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRoomLeavePacket(int number);
 
-        Thread BackGroundRecvThread = null;
         ChatDrawingType[] chatDrawIndexFlags = new ChatDrawingType[512];
 
         // 로컬 ChatApplication 정보
         string userID = null;
         string roomTitle = null;
-        int roomUserCount = 0;
+        int roomMaxUserCount = 0;
         RoomManager roomManager = new RoomManager();
 
         // flag
-        bool IsActivatedBackGroundThread = false;
         bool IsActivatedLogin = false;
         bool IsActivatedConnect = false;
 
         public MainForm()
         {
-            InitializeComponent();
-            InitProcessPacket();
-            BackGroundRecvThread = new Thread(BackGroundRecvProcess);
+            InitializeComponent();  
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        public void mainForm_Load(object sender, EventArgs e)
+        {
+            InitProcessPacket();
+
+            listView_room.View = View.Details;
+            listView_room.FullRowSelect = true;
+            listView_room.Columns.Add("ID", 0, HorizontalAlignment.Left);
+            listView_room.Columns.Add("Title", 170, HorizontalAlignment.Left);
+            listView_room.Columns.Add("Users", 40, HorizontalAlignment.Left);
+            listView_room.Columns.Add("Max", 40, HorizontalAlignment.Left);
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 100;
+            timer.Tick += new EventHandler(BackGroundRecvProcess);
+            timer.Start();
+        }
+
+        private void mainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             roomManager.roomDictionary.Clear();
-            IsActivatedBackGroundThread = false;
-
-            if (BackGroundRecvThread.IsAlive)
-                BackGroundRecvThread.Join();
         }
 
         private void Button_isConnect_Click(object sender, EventArgs e)
@@ -75,8 +84,6 @@ namespace WinFormClient
             if(!IsActivatedConnect)
             {
                 ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
-                IsActivatedBackGroundThread = true;
-                BackGroundRecvThread.Start();
                 SendConnectPacket();
 
                 // Connect Disable
@@ -183,44 +190,38 @@ namespace WinFormClient
             if (result == DialogResult.OK)
             {
                 roomTitle = roomCreator.returnTitle;
-                roomUserCount = roomCreator.returnUserCount;
-                if (!roomManager.roomDictionary.ContainsKey(roomTitle))
-                {
-                    SendRoomOpenPacket(roomTitle, roomTitle.Length, roomUserCount);
-                    button_RoomCreate.Enabled = false;
-                }
+                roomMaxUserCount = roomCreator.returnUserCount;
+                SendRoomOpenPacket(roomTitle, roomTitle.Length, roomMaxUserCount);
             }
         }
 
         private void button_RoomEnter_Click(object sender, EventArgs e)
         {
             Room room;
-            int index = listBox_room.SelectedIndex;
-            if (index == -1)
-                return;
+            int key = Int32.Parse(listView_room.SelectedItems[0].SubItems[0].Text);
 
-            if (roomManager.roomDictionary.TryGetValue(listBox_room.Items[index].ToString(), out room))
+            if (roomManager.roomDictionary.TryGetValue(key, out room))
             {
-                SendRoomEnterPacket(room.number);
+                SendRoomEnterPacket(key);
+                button_RoomEnter.Enabled = false;
             }
             else
             {
                 MessageBox.Show("Does not exist room.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            button_RoomEnter.Enabled = false;
         }
 
         private void button_RoomLeave_Click(object sender, EventArgs e)
         {
             Room room;
-            int index = listBox_room.SelectedIndex;
+            int index = listView_room.SelectedItems.Count - 1;
             if (index == -1)
                 return;
 
-            if (roomManager.roomDictionary.TryGetValue(listBox_room.Items[index].ToString(), out room))
+            int key = Int32.Parse(listView_room.SelectedItems[index].SubItems[0].Text);
+            if (roomManager.roomDictionary.TryGetValue(key, out room))
             {
-                SendRoomLeavePacket(room.number);
+                SendRoomLeavePacket(key);
             }
             else
             {
@@ -228,12 +229,104 @@ namespace WinFormClient
             }
         }
 
-        void BackGroundRecvProcess()
+        void BackGroundRecvProcess(object sender, EventArgs e)
         {
-            while (IsActivatedBackGroundThread)
-            { 
-                ProcessPacket();
+            ProcessPacket();
+        }
+
+        void AddRoomListUI(Room room)
+        {
+            roomManager.roomDictionary.Add(room.number, room);
+            ListViewItem newItem = new ListViewItem(new string[] { room.number.ToString(), room.title, room.currentUserCount.ToString(), room.maxUserCount.ToString() });
+            listView_room.Items.Add(newItem);
+            listView_room.Items[0].Selected = true;
+        }
+
+        void RemoveRoomListUI(int key)
+        {
+            roomManager.roomDictionary.Remove(key);
+        }
+
+        void EnableRoomUI()
+        {
+            // Chat UI 활성화
+            button_chat.Enabled = true;
+            textBox_chat.Enabled = true;
+            listBox_chat.Enabled = true;
+            listBox_user.Enabled = true;
+
+            // Leave 버튼 활성화
+            button_RoomLeave.Enabled = true;
+
+            // title 입력
+            textBox_roomTitle.Text = listView_room.SelectedItems[0].SubItems[1].Text;
+            UserCountIncreaseUI();
+        }
+
+        void DisableRoomUI()
+        {
+            listBox_chat.Items.Clear();
+            listBox_user.Items.Clear();
+            textBox_roomTitle.Clear();
+            textBox_userCount.Clear();
+
+            Room room;
+            int key = Int32.Parse(listView_room.SelectedItems[0].SubItems[0].Text);
+            if (roomManager.roomDictionary.TryGetValue(key, out room))
+            {
+                if (room.currentUserCount == 1) // 만약 남은 유저가 자기 자신밖에 없다면 List에서 room 제거
+                    RemoveRoomListUI(key);
             }
+
+            button_RoomEnter.Enabled = true;
+        }
+
+        void AddUserListUI(string userID)
+        {
+            listBox_user.Items.Add(userID);
+        }
+
+        void RemoveUserListUI(string userID)
+        {
+            if (listBox_user.FindString(userID) != ListBox.NoMatches)
+            {
+                listBox_user.Items.Remove(userID);
+            }
+        }
+
+        void UserCountIncreaseUI()
+        {
+            Room room;
+            int index = listView_room.SelectedItems.Count - 1;
+            if (index == -1)
+                return;
+
+            int key = Int32.Parse(listView_room.SelectedItems[index].SubItems[0].Text);
+
+            if(roomManager.roomDictionary.TryGetValue(key, out room))
+            {
+                room.currentUserCount += 1;
+                roomManager.roomDictionary[key] = room;
+                textBox_userCount.Text = room.currentUserCount.ToString();
+            }
+        }
+
+        void SetLoginStateUI()
+        {
+            button_login.Text = "Logout";
+            userID = textBox_ID.Text;
+            IsActivatedLogin = true;
+
+            textBox_ID.Enabled = false;
+            textBox_password.Enabled = false;
+            button_RoomCreate.Enabled = true;
+            button_RoomEnter.Enabled = true;
+        }
+
+        private void listView_room_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.NewWidth = listView_room.Columns[e.ColumnIndex].Width;
+            e.Cancel = true;
         }
     }
 }

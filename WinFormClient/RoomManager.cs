@@ -8,24 +8,24 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Room
     {
-        public Room(int number, string title, int maxUserCount, int currentUserCount)
+        public Room(int number, string title, int currentUserCount, int maxUserCount)
         {
             this.number = number;
             this.title = title;
-            this.maxUserCount = maxUserCount;
             this.currentUserCount = currentUserCount;
+            this.maxUserCount = maxUserCount;
         }
 
         public int number;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
         public string title;
-        public int maxUserCount;
         public int currentUserCount;
+        public int maxUserCount;
     }
 
     // Room List 관리를 위한 클라이언트 UI 내부 자료구조
     class RoomManager
     {
-       public Dictionary<string, Room> roomDictionary = new Dictionary<string, Room>();
+       public Dictionary<int, Room> roomDictionary = new Dictionary<int, Room>();
     }
 }

@@ -50,8 +50,8 @@ struct SC_ROOM_LIST_MULTIPLE
 {
 	int		number = 0;
 	char	title[50 + 1] = { 0 };
-	int		userCount = 0;
 	int		currentUserCount = 0;
+	int		maxUserCount = 0;
 };
 
 struct CS_LOGIN_REQUEST : public PACKET_HEADER
@@ -146,8 +146,8 @@ struct SC_ROOM_OPEN_NOTIFY_MULTIPLE
 {
 	int		number = 0;
 	char	title[50 + 1] = { 0 };
-	int		userCount = 0;
 	int		currentUserCount = 0;
+	int		maxUserCount = 0;
 };
 
 struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
@@ -217,7 +217,6 @@ struct SC_ROOM_LEAVE_RESPONSE : public PACKET_HEADER
 
 struct SC_ROOM_LEAVE_USER_NOTIFY : public PACKET_HEADER
 {
-	char roomTitle[50 + 1] = {};
 	char userID[32 + 1] = {};
 
 	SC_ROOM_LEAVE_USER_NOTIFY()
@@ -230,8 +229,7 @@ struct SC_ROOM_LEAVE_USER_NOTIFY : public PACKET_HEADER
 
 struct SC_ROOM_CLOSE : public PACKET_HEADER
 {
-	//int roomNumber = 0;
-	char title[50 + 1] = {};
+	int roomNumber = 0;
 	SC_ROOM_CLOSE()
 	{
 		size = sizeof(SC_ROOM_CLOSE);

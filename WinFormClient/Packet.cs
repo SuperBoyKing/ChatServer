@@ -144,8 +144,6 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_LEAVE_USER_NOTIFY
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
-        public string roomTitle;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
         public string userID;
     };
@@ -153,8 +151,6 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_CLOSE
     {
-        // public int roomNumber;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 51)]
-        public string roomTitle;
+         public int roomNumber;
     };
 }

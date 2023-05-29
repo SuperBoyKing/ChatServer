@@ -54,7 +54,7 @@ namespace WinFormClient
             this.textBox_roomTitle = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.Lobby = new System.Windows.Forms.GroupBox();
-            this.listBox_room = new System.Windows.Forms.ListBox();
+            this.listView_room = new System.Windows.Forms.ListView();
             this.button_RoomCreate = new System.Windows.Forms.Button();
             this.button_RoomLeave = new System.Windows.Forms.Button();
             this.button_RoomEnter = new System.Windows.Forms.Button();
@@ -124,7 +124,7 @@ namespace WinFormClient
             // button_login
             // 
             this.button_login.Enabled = false;
-            this.button_login.Location = new System.Drawing.Point(9, 121);
+            this.button_login.Location = new System.Drawing.Point(9, 122);
             this.button_login.Name = "button_login";
             this.button_login.Size = new System.Drawing.Size(168, 25);
             this.button_login.TabIndex = 6;
@@ -202,7 +202,7 @@ namespace WinFormClient
             this.listBox_chat.ItemHeight = 15;
             this.listBox_chat.Location = new System.Drawing.Point(197, 60);
             this.listBox_chat.Name = "listBox_chat";
-            this.listBox_chat.Size = new System.Drawing.Size(363, 334);
+            this.listBox_chat.Size = new System.Drawing.Size(363, 349);
             this.listBox_chat.TabIndex = 10;
             this.listBox_chat.TabStop = false;
             this.listBox_chat.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBox_chat_DrawEvent);
@@ -249,7 +249,7 @@ namespace WinFormClient
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(360, 26);
+            this.label5.Location = new System.Drawing.Point(360, 35);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(46, 15);
             this.label5.TabIndex = 15;
@@ -257,7 +257,7 @@ namespace WinFormClient
             // 
             // textBox_userCount
             // 
-            this.textBox_userCount.Location = new System.Drawing.Point(406, 25);
+            this.textBox_userCount.Location = new System.Drawing.Point(406, 31);
             this.textBox_userCount.Name = "textBox_userCount";
             this.textBox_userCount.ReadOnly = true;
             this.textBox_userCount.Size = new System.Drawing.Size(49, 23);
@@ -267,7 +267,7 @@ namespace WinFormClient
             // 
             // textBox_roomTitle
             // 
-            this.textBox_roomTitle.Location = new System.Drawing.Point(96, 25);
+            this.textBox_roomTitle.Location = new System.Drawing.Point(96, 31);
             this.textBox_roomTitle.Name = "textBox_roomTitle";
             this.textBox_roomTitle.ReadOnly = true;
             this.textBox_roomTitle.Size = new System.Drawing.Size(233, 23);
@@ -277,7 +277,7 @@ namespace WinFormClient
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(54, 27);
+            this.label4.Location = new System.Drawing.Point(54, 35);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(40, 15);
             this.label4.TabIndex = 12;
@@ -285,7 +285,7 @@ namespace WinFormClient
             // 
             // Lobby
             // 
-            this.Lobby.Controls.Add(this.listBox_room);
+            this.Lobby.Controls.Add(this.listView_room);
             this.Lobby.Controls.Add(this.button_RoomCreate);
             this.Lobby.Controls.Add(this.button_RoomLeave);
             this.Lobby.Controls.Add(this.button_RoomEnter);
@@ -296,22 +296,24 @@ namespace WinFormClient
             this.Lobby.TabStop = false;
             this.Lobby.Text = "Lobby";
             // 
-            // listBox_room
+            // listView_room
             // 
-            this.listBox_room.FormattingEnabled = true;
-            this.listBox_room.ItemHeight = 15;
-            this.listBox_room.Location = new System.Drawing.Point(7, 22);
-            this.listBox_room.Name = "listBox_room";
-            this.listBox_room.Size = new System.Drawing.Size(187, 124);
-            this.listBox_room.TabIndex = 16;
+            this.listView_room.HideSelection = false;
+            this.listView_room.Location = new System.Drawing.Point(7, 22);
+            this.listView_room.MultiSelect = false;
+            this.listView_room.Name = "listView_room";
+            this.listView_room.Size = new System.Drawing.Size(250, 125);
+            this.listView_room.TabIndex = 16;
+            this.listView_room.UseCompatibleStateImageBehavior = false;
+            this.listView_room.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView_room_ColumnWidthChanging);
             // 
             // button_RoomCreate
             // 
             this.button_RoomCreate.Enabled = false;
             this.button_RoomCreate.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomCreate.Location = new System.Drawing.Point(214, 22);
+            this.button_RoomCreate.Location = new System.Drawing.Point(268, 22);
             this.button_RoomCreate.Name = "button_RoomCreate";
-            this.button_RoomCreate.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomCreate.Size = new System.Drawing.Size(91, 33);
             this.button_RoomCreate.TabIndex = 15;
             this.button_RoomCreate.Text = "Create";
             this.button_RoomCreate.UseVisualStyleBackColor = true;
@@ -322,9 +324,9 @@ namespace WinFormClient
             // 
             this.button_RoomLeave.Enabled = false;
             this.button_RoomLeave.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomLeave.Location = new System.Drawing.Point(214, 113);
+            this.button_RoomLeave.Location = new System.Drawing.Point(268, 113);
             this.button_RoomLeave.Name = "button_RoomLeave";
-            this.button_RoomLeave.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomLeave.Size = new System.Drawing.Size(91, 33);
             this.button_RoomLeave.TabIndex = 14;
             this.button_RoomLeave.Text = "Leave";
             this.button_RoomLeave.UseVisualStyleBackColor = true;
@@ -334,9 +336,9 @@ namespace WinFormClient
             // 
             this.button_RoomEnter.Enabled = false;
             this.button_RoomEnter.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button_RoomEnter.Location = new System.Drawing.Point(214, 69);
+            this.button_RoomEnter.Location = new System.Drawing.Point(268, 69);
             this.button_RoomEnter.Name = "button_RoomEnter";
-            this.button_RoomEnter.Size = new System.Drawing.Size(145, 33);
+            this.button_RoomEnter.Size = new System.Drawing.Size(91, 33);
             this.button_RoomEnter.TabIndex = 10;
             this.button_RoomEnter.Text = "Enter";
             this.button_RoomEnter.UseVisualStyleBackColor = true;
@@ -358,7 +360,8 @@ namespace WinFormClient
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
             this.Text = "Form1";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainForm_FormClosing);
+            this.Load += new System.EventHandler(this.mainForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -402,7 +405,7 @@ namespace WinFormClient
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button_RoomCreate;
         private System.Windows.Forms.Button button_RoomLeave;
-        private System.Windows.Forms.ListBox listBox_room;
+        private ListView listView_room;
     }
 }
 
