@@ -183,10 +183,10 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 	{
 		if (enteredRoom->GetCurrentUserCount() == 0)	// Room에 유저가 존재하지 않는다면 Room Close
 		{
-			GRoomManager->CloseRoom(enteredRoom->GetRoomNumber());
 			SC_ROOM_CLOSE closePacket;
 			closePacket.roomNumber = enteredRoom->GetRoomNumber();
-			SendProcessedPacket(session, &closePacket, true);
+			GRoomManager->CloseRoom(enteredRoom->GetRoomNumber());
+			SendProcessedPacket(shared_ptr<ChatSession>(), &closePacket, true); // 자기 자신을 포함한 모든 유저에게 패킷 전송
 		}
 		else
 		{

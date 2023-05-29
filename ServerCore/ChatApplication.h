@@ -73,7 +73,7 @@ public:
 
 	void SendRoomLeave(int number);
 
-	//inline ChatSession* GetChatSession() { return m_session.get(); }
+	inline void Disconnect() { m_session->Disconnect(); }
 
 private:
 	template<typename PacketType>

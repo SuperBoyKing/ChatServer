@@ -96,6 +96,7 @@ namespace WinFormClient
                 button_login.Enabled = true;
                 
                 IsActivatedConnect = true;
+                button_isConnect.Text = "Disconnect";
             }
             else
             {
@@ -109,6 +110,7 @@ namespace WinFormClient
                 button_login.Enabled = false;
 
                 IsActivatedConnect = false;
+                button_isConnect.Text = "Connect";
             }
         }
 
@@ -245,6 +247,7 @@ namespace WinFormClient
         void RemoveRoomListUI(int key)
         {
             roomManager.roomDictionary.Remove(key);
+            listView_room.SelectedItems[0].Remove();
         }
 
         void EnableRoomUI()
@@ -269,14 +272,6 @@ namespace WinFormClient
             listBox_user.Items.Clear();
             textBox_roomTitle.Clear();
             textBox_userCount.Clear();
-
-            Room room;
-            int key = Int32.Parse(listView_room.SelectedItems[0].SubItems[0].Text);
-            if (roomManager.roomDictionary.TryGetValue(key, out room))
-            {
-                if (room.currentUserCount == 1) // 만약 남은 유저가 자기 자신밖에 없다면 List에서 room 제거
-                    RemoveRoomListUI(key);
-            }
 
             button_RoomEnter.Enabled = true;
         }
@@ -309,6 +304,23 @@ namespace WinFormClient
                 roomManager.roomDictionary[key] = room;
                 textBox_userCount.Text = room.currentUserCount.ToString();
             }
+        }
+
+        void AddChatMsgUI()
+        {
+            CheckChatLimitCount();
+            listBox_chat.Items.Add(textBox_chat.Text);
+            chatDrawIndexFlags[listBox_chat.Items.Count - 1] = ChatDrawingType.RESPONSE_CHAT;
+            textBox_chat.Clear();
+        }
+
+        void AddChatMsgUI(SC_CHAT_NOTIFY chatNotifyPacket)
+        {
+            CheckChatLimitCount();
+            listBox_chat.Items.Add(chatNotifyPacket.userID + ": ");
+            chatDrawIndexFlags[listBox_chat.Items.Count - 1] = ChatDrawingType.NOTIFY_ID;
+            listBox_chat.Items.Add(chatNotifyPacket.message);
+            chatDrawIndexFlags[listBox_chat.Items.Count - 1] = ChatDrawingType.NOTIFY_CHAT;
         }
 
         void SetLoginStateUI()

@@ -77,6 +77,11 @@ extern "C"
 			});
 		}
 	}
+	
+	EXPORT void Disconnect()
+	{
+		chatClient->Disconnect();
+	}
 
 	EXPORT void SendConnectPacket()
 	{

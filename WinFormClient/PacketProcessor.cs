@@ -125,16 +125,8 @@ namespace WinFormClient
 
             if (GetChatPacket(ref chatResPacket, packetHeader.size))
             {
-                this.Invoke(new Action(() =>
-                {
-                    if (chatResPacket.result)
-                    {
-                        CheckChatLimitCount();
-                        listBox_chat.Items.Add(textBox_chat.Text);
-                        chatDrawIndexFlags[listBox_chat.Items.Count - 1] = ChatDrawingType.RESPONSE_CHAT;
-                        textBox_chat.Clear();
-                    }
-                }));
+                if (chatResPacket.result)
+                    AddChatMsgUI();
             }
 
             this.Invoke(new Action(() =>
@@ -151,14 +143,7 @@ namespace WinFormClient
 
             if (GetChatNotifyPacket(ref chatNotifyPacket, packetHeader.size))
             {
-                this.Invoke(new Action(() =>
-                {
-                    CheckChatLimitCount();
-                    listBox_chat.Items.Add(chatNotifyPacket.userID + ": ");
-                    chatDrawIndexFlags[listBox_chat.Items.Count - 1] = ChatDrawingType.NOTIFY_ID;
-                    listBox_chat.Items.Add(chatNotifyPacket.message);
-                    chatDrawIndexFlags[listBox_chat.Items.Count - 1] = ChatDrawingType.NOTIFY_CHAT;
-                }));
+                AddChatMsgUI(chatNotifyPacket);
             }
         }
 
@@ -172,7 +157,7 @@ namespace WinFormClient
             {
                 if (roomOpenPacket.result)
                 {
-                    Room room = new Room(roomOpenPacket.roomNumber, roomTitle, 0, roomMaxUserCount);
+                    Room room = new Room(roomOpenPacket.roomNumber, roomTitle, 1, roomMaxUserCount);
                     AddRoomListUI(room);
                 }
             }
@@ -249,10 +234,10 @@ namespace WinFormClient
             {
                 if (roomLeavePacket.result)
                 {
+                    DisableRoomUI();
+
                     for (int i = 0; i < listBox_chat.Items.Count; ++i)
                         chatDrawIndexFlags[i] = ChatDrawingType.NONE;
-
-                    DisableRoomUI();
                 }
             }
         }

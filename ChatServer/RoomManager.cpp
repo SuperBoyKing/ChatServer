@@ -64,6 +64,7 @@ bool RoomManager::CloseRoom(const int roomNumber)
 		return false;
 
 	m_roomObjectPool[(int)(roomNumber - 1)]->reset();
+	m_currentOpenRoomCount.fetch_sub(1);
 	return true;
 }
 
