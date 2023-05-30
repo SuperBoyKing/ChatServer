@@ -84,8 +84,20 @@ void ChatSession::Disconnect()
 
 void ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
 {
-	if (IsConnected() == false)
-		return;
+	const ULONGLONG startTimeOutTick = ::GetTickCount64();
+	while (true) // ConnectEx를 통한 비동기 소켓이 Connection 될 때 까지 대기
+	{
+		if (IsConnected())
+			break;
+
+		if (::GetTickCount64() - startTimeOutTick >= CONNECTION_TIME_OUT_TICK)
+		{
+			CRASH("Connection Time Out");
+			return;
+		}
+
+		this_thread::yield();
+	}
 
 	bool registSend = false;
 

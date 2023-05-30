@@ -57,8 +57,11 @@ bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 
 extern "C"
 {
+	bool isLoop;
+
 	EXPORT void ChatClientStart(WCHAR* ip, __int16 port)
 	{
+		isLoop = true;
 		chatClient->SetAddress(ip, port);
 
 		ASSERT_CRASH(chatClient->Start());
@@ -67,10 +70,10 @@ extern "C"
 		GetSystemInfo(&sysinfo);
 		int numberOfProcessor = sysinfo.dwNumberOfProcessors;
 
-		for (int i = 0; i < numberOfProcessor; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			GThreadManager->Launch([=]() {
-				while (true)
+				while (isLoop)
 				{
 					chatClient->GetIOCPHandler()->CallGQCS();
 				}
@@ -80,7 +83,9 @@ extern "C"
 	
 	EXPORT void Disconnect()
 	{
+		isLoop = false;
 		chatClient->Disconnect();
+		GThreadManager->Join();
 	}
 
 	EXPORT void SendConnectPacket()

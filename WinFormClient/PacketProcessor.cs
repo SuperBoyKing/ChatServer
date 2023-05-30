@@ -157,7 +157,7 @@ namespace WinFormClient
             {
                 if (roomOpenPacket.result)
                 {
-                    Room room = new Room(roomOpenPacket.roomNumber, roomTitle, 1, roomMaxUserCount);
+                    Room room = new Room(roomOpenPacket.roomNumber, roomTitle, 0, roomMaxUserCount);
                     AddRoomListUI(room);
                 }
             }
@@ -181,6 +181,7 @@ namespace WinFormClient
         {
             SC_ROOM_ENTER_RESPONSE roomEnterPacket;
             roomEnterPacket.result = false;
+            roomEnterPacket.currentUserCount = 0;
 
             if (GetRoomEnterPacket(ref roomEnterPacket, packetHeader.size))
             {
@@ -207,7 +208,6 @@ namespace WinFormClient
                 for (int i = 0; i < packetHeader.packetCount; ++i)
                 {
                     AddUserListUI(roomEnterUserPacket.userID);
-                    UserCountIncreaseUI();
                 }
             }
         }

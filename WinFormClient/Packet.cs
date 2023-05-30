@@ -112,6 +112,7 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_ENTER_RESPONSE
     {
+        public int currentUserCount;
         public bool result;
     }
 

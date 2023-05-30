@@ -50,7 +50,7 @@ namespace WinFormClient
             this.label_Status = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox_userCount = new System.Windows.Forms.TextBox();
+            this.textBox_roomNumber = new System.Windows.Forms.TextBox();
             this.textBox_roomTitle = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.Lobby = new System.Windows.Forms.GroupBox();
@@ -232,7 +232,7 @@ namespace WinFormClient
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.textBox_userCount);
+            this.groupBox2.Controls.Add(this.textBox_roomNumber);
             this.groupBox2.Controls.Add(this.textBox_roomTitle);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.listBox_user);
@@ -251,19 +251,18 @@ namespace WinFormClient
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(360, 35);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(46, 15);
+            this.label5.Size = new System.Drawing.Size(62, 15);
             this.label5.TabIndex = 15;
-            this.label5.Text = "Users : ";
+            this.label5.Text = "Number : ";
             // 
-            // textBox_userCount
+            // textBox_roomNumber
             // 
-            this.textBox_userCount.Location = new System.Drawing.Point(406, 31);
-            this.textBox_userCount.Name = "textBox_userCount";
-            this.textBox_userCount.ReadOnly = true;
-            this.textBox_userCount.Size = new System.Drawing.Size(49, 23);
-            this.textBox_userCount.TabIndex = 14;
-            this.textBox_userCount.TabStop = false;
-            this.textBox_userCount.Text = "0";
+            this.textBox_roomNumber.Location = new System.Drawing.Point(422, 31);
+            this.textBox_roomNumber.Name = "textBox_roomNumber";
+            this.textBox_roomNumber.ReadOnly = true;
+            this.textBox_roomNumber.Size = new System.Drawing.Size(49, 23);
+            this.textBox_roomNumber.TabIndex = 14;
+            this.textBox_roomNumber.TabStop = false;
             // 
             // textBox_roomTitle
             // 
@@ -400,7 +399,7 @@ namespace WinFormClient
         private System.Windows.Forms.GroupBox Lobby;
         private System.Windows.Forms.Button button_RoomEnter;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox_userCount;
+        private System.Windows.Forms.TextBox textBox_roomNumber;
         private System.Windows.Forms.TextBox textBox_roomTitle;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button_RoomCreate;

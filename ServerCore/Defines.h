@@ -1,11 +1,12 @@
 #pragma once
 
-#define SERVER_PORT				2023
-#define MAX_CLIENT_SESSION		1000	// 최대 서버 접속 클라이언트 수
-#define MAX_CLIENT_USER			250		// 최대 방 접속 클라이언트 수
-#define	MAX_ROOM_COUNT			500		// 최대 방 갯 수
-#define MAX_RECV_BUFFER_SIZE	4096
-#define MAX_SEND_BUFFER_SIZE	4096
+#define SERVER_PORT					2023
+#define MAX_CLIENT_SESSION			1000	// 최대 서버 접속 클라이언트 수
+#define MAX_CLIENT_USER				250		// 최대 방 접속 클라이언트 수
+#define	MAX_ROOM_COUNT				500		// 최대 방 갯 수
+#define MAX_RECV_BUFFER_SIZE		4096
+#define MAX_SEND_BUFFER_SIZE		4096
+#define CONNECTION_TIME_OUT_TICK	10000	// 커넥션 타임아웃 제한시간(10초)
 #define PACKET_HEADER_SIZE		sizeof(PACKET_HEADER)
 #define	EXPORT					__declspec(dllexport)
 

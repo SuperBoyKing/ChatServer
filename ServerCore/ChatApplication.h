@@ -73,7 +73,7 @@ public:
 
 	void SendRoomLeave(int number);
 
-	inline void Disconnect() { m_session->Disconnect(); }
+	void Disconnect();
 
 private:
 	template<typename PacketType>

@@ -164,6 +164,7 @@ struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
 
 struct SC_ROOM_ENTER_RESPONSE : public PACKET_HEADER
 {
+	int currentUserCount = 0;
 	bool result = false;
 
 	SC_ROOM_ENTER_RESPONSE()

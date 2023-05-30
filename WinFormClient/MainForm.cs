@@ -16,11 +16,15 @@ namespace WinFormClient
         NOTIFY_CHAT,
         INFO,
     }
+
     public partial class MainForm : Form
     {
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void ChatClientStart([MarshalAs(UnmanagedType.LPWStr)] String ip, [MarshalAs(UnmanagedType.I2)] short port);
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Disconnect();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendConnectPacket();
@@ -64,9 +68,8 @@ namespace WinFormClient
             listView_room.View = View.Details;
             listView_room.FullRowSelect = true;
             listView_room.Columns.Add("ID", 0, HorizontalAlignment.Left);
-            listView_room.Columns.Add("Title", 170, HorizontalAlignment.Left);
-            listView_room.Columns.Add("Users", 40, HorizontalAlignment.Left);
-            listView_room.Columns.Add("Max", 40, HorizontalAlignment.Left);
+            listView_room.Columns.Add("Title", 180, HorizontalAlignment.Left);
+            listView_room.Columns.Add("Max Users", 80, HorizontalAlignment.Left);
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
             timer.Interval = 100;
@@ -100,6 +103,8 @@ namespace WinFormClient
             }
             else
             {
+                Disconnect();
+
                 // Connect Setup
                 textBox_IP.Enabled = true;
                 textBox_port.Enabled = true;
@@ -199,13 +204,15 @@ namespace WinFormClient
 
         private void button_RoomEnter_Click(object sender, EventArgs e)
         {
-            Room room;
-            int key = Int32.Parse(listView_room.SelectedItems[0].SubItems[0].Text);
+            int index = listView_room.SelectedItems.Count - 1;
+            if (index == -1)
+                return;
 
-            if (roomManager.roomDictionary.TryGetValue(key, out room))
+            int key = Int32.Parse(listView_room.SelectedItems[index].SubItems[0].Text);
+
+            if (roomManager.roomDictionary.ContainsKey(key))
             {
                 SendRoomEnterPacket(key);
-                button_RoomEnter.Enabled = false;
             }
             else
             {
@@ -215,13 +222,13 @@ namespace WinFormClient
 
         private void button_RoomLeave_Click(object sender, EventArgs e)
         {
-            Room room;
             int index = listView_room.SelectedItems.Count - 1;
             if (index == -1)
                 return;
 
             int key = Int32.Parse(listView_room.SelectedItems[index].SubItems[0].Text);
-            if (roomManager.roomDictionary.TryGetValue(key, out room))
+
+            if (roomManager.roomDictionary.ContainsKey(key))
             {
                 SendRoomLeavePacket(key);
             }
@@ -233,13 +240,18 @@ namespace WinFormClient
 
         void BackGroundRecvProcess(object sender, EventArgs e)
         {
+            if (listView_room.Items.Count != 0)
+                button_RoomEnter.Enabled = true;
+            else
+                button_RoomEnter.Enabled = false;
+
             ProcessPacket();
         }
 
         void AddRoomListUI(Room room)
         {
             roomManager.roomDictionary.Add(room.number, room);
-            ListViewItem newItem = new ListViewItem(new string[] { room.number.ToString(), room.title, room.currentUserCount.ToString(), room.maxUserCount.ToString() });
+            ListViewItem newItem = new ListViewItem(new string[] { room.number.ToString(), room.title, room.maxUserCount.ToString() });
             listView_room.Items.Add(newItem);
             listView_room.Items[0].Selected = true;
         }
@@ -247,7 +259,14 @@ namespace WinFormClient
         void RemoveRoomListUI(int key)
         {
             roomManager.roomDictionary.Remove(key);
-            listView_room.SelectedItems[0].Remove();
+
+            for (int i = 0; i < listView_room.Items.Count; i++)
+            {
+                ListViewItem item = listView_room.Items[i];
+
+                if (Int32.Parse(item.SubItems[0].Text) == key)
+                    listView_room.Items.Remove(item);
+            }
         }
 
         void EnableRoomUI()
@@ -260,10 +279,11 @@ namespace WinFormClient
 
             // Leave 버튼 활성화
             button_RoomLeave.Enabled = true;
+            listView_room.Enabled = false;
 
-            // title 입력
+            // title, number 입력
             textBox_roomTitle.Text = listView_room.SelectedItems[0].SubItems[1].Text;
-            UserCountIncreaseUI();
+            textBox_roomNumber.Text = listView_room.SelectedItems[0].SubItems[0].Text;
         }
 
         void DisableRoomUI()
@@ -271,9 +291,10 @@ namespace WinFormClient
             listBox_chat.Items.Clear();
             listBox_user.Items.Clear();
             textBox_roomTitle.Clear();
-            textBox_userCount.Clear();
+            textBox_roomNumber.Clear();
 
-            button_RoomEnter.Enabled = true;
+            button_RoomLeave.Enabled = false;
+            listView_room.Enabled = true;
         }
 
         void AddUserListUI(string userID)
@@ -288,24 +309,6 @@ namespace WinFormClient
                 listBox_user.Items.Remove(userID);
             }
         }
-
-        void UserCountIncreaseUI()
-        {
-            Room room;
-            int index = listView_room.SelectedItems.Count - 1;
-            if (index == -1)
-                return;
-
-            int key = Int32.Parse(listView_room.SelectedItems[index].SubItems[0].Text);
-
-            if(roomManager.roomDictionary.TryGetValue(key, out room))
-            {
-                room.currentUserCount += 1;
-                roomManager.roomDictionary[key] = room;
-                textBox_userCount.Text = room.currentUserCount.ToString();
-            }
-        }
-
         void AddChatMsgUI()
         {
             CheckChatLimitCount();

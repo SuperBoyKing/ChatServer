@@ -132,6 +132,7 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		if (enteredRoom->Enter(session))
 		{
 			sendPacket.result = true;
+			sendPacket.currentUserCount = enteredRoom->GetCurrentUserCount();
 			session->SetRoomNumber(enteredRoom->GetRoomNumber());
 		}
 	}

@@ -139,3 +139,12 @@ void ChatClient::SendRoomLeave(int number)
 
 	SendPacket<CS_ROOM_LEAVE_REQUEST>(packet);
 }
+
+void ChatClient::Disconnect()
+{
+	HANDLE sock = (HANDLE)m_session->GetSock();
+	m_session->Disconnect();
+
+	if (!CancelIo(sock))
+		int error = WSAGetLastError();
+}
