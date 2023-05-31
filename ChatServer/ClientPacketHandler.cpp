@@ -65,6 +65,7 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size)
 {
 	CS_LOGIN_REQUEST* recvPacket = reinterpret_cast<CS_LOGIN_REQUEST*>(packetData);
+	UINT32 length = 0;
 	session->SetUserID(recvPacket->userID);
 
 	SC_LOGIN_RESPONSE sendPacket;

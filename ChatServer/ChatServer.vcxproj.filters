@@ -8,6 +8,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{6f918d02-0104-46b5-9b4e-2549552cb839}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -24,6 +27,12 @@
     </ClInclude>
     <ClInclude Include="RoomManager.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="CRedisConn.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBManager.h">
+      <Filter>DB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -44,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="RoomManager.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="DBManager.cpp">
+      <Filter>DB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,8 +4,10 @@
 
 #ifdef _DEBUG
 #pragma comment(lib, "Debug\\ServerCore.lib")
+#pragma comment(lib, "Debug\\hiredisd.lib")
 #else
 #pragma comment(lib, "Release\\ServerCore.lib")
+#pragma comment(lib, "Release\\hiredis.lib")
 #endif
 
 #include "CorePch.h"
