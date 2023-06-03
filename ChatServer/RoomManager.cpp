@@ -32,7 +32,7 @@ bool RoomManager::OpenRoom(const char* roomTitle, const size_t titleSize, const 
 	shared_ptr<Room> room = nullptr;
 
 	mutex m;
-	lock_guard<mutex> lock(m); // 추후에 lock-free로 구성
+	lock_guard<mutex> lock(m); 
 	
 	int poolIndexCycle = m_roomPoolIndex - 1;
 

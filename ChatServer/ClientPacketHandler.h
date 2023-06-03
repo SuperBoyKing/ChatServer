@@ -1,6 +1,7 @@
 #pragma once
 #include "Room.h"
 #include "RoomManager.h"
+#include "DBManager.h"
 
 class ClientPacketHandler
 {
@@ -13,6 +14,7 @@ public:
 	// 패킷 처리 함수 //
 	void ProcessConnect(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size);
+	void ProcessLoginReq(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessRoomOpen(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessRoomEnter(shared_ptr<ChatSession> session, char* packetData, int size);

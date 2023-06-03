@@ -17,6 +17,7 @@ public:
 private:
 	unordered_map<SOCKET, shared_ptr<ChatSession>> m_uMapSessions;
 	recursive_mutex m_mutex;
+	HANDLE m_iocpHandle;
 };
 
 extern std::unique_ptr<ClientSessionManager> GClientSessionManager;

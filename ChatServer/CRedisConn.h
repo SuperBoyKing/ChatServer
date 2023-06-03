@@ -39,7 +39,7 @@ typedef std::map<std::string , std::string> ValueMap;
 
 
 ///< 지정된 요소 앞이나 지정된 요소 뒤에 삽입
-/*typedef */enum INSERT_POS
+/*typedef */inline enum INSERT_POS
 {
 	BEFORE,			///< 지정된 요소 앞에 삽입
 	AFTER
@@ -1069,7 +1069,7 @@ private:
 	static const char* _errDes[ERR_BOTTOM];	///< describe error
 };
 
-const char* CRedisConn::_errDes[ERR_BOTTOM] =
+inline const char* CRedisConn::_errDes[ERR_BOTTOM] =
 {
 		"No error.",
 		"NULL pointer ",

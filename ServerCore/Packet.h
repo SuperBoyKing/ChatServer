@@ -49,15 +49,15 @@ struct CS_ROOM_LIST_REQUEST : public PACKET_HEADER
 struct SC_ROOM_LIST_MULTIPLE
 {
 	int		number = 0;
-	char	title[50 + 1] = { 0 };
+	char	title[MAX_ROOM_TITLE_LENGTH + 1] = { 0 };
 	int		currentUserCount = 0;
 	int		maxUserCount = 0;
 };
 
 struct CS_LOGIN_REQUEST : public PACKET_HEADER
 {
-	char userID[32 + 1] = {};
-	char userPW[32 + 1] = {};
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
+	char userPW[MAX_USER_PW_LENGTH + 1] = {};
 
 	CS_LOGIN_REQUEST()
 	{
@@ -81,7 +81,7 @@ struct SC_LOGIN_RESPONSE : public PACKET_HEADER
 
 struct CS_CHAT_REQUEST : public PACKET_HEADER
 {
-	char message[256 + 1] = {};
+	char message[MAX_CHAT_LENGTH + 1] = {};
 
 	CS_CHAT_REQUEST()
 	{
@@ -105,8 +105,8 @@ struct SC_CHAT_RESPONSE : public PACKET_HEADER
 
 struct SC_CHAT_NOTIFY : public PACKET_HEADER
 {
-	char userID[32 + 1] = {};
-	char message[256 + 1] = {};
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
+	char message[MAX_CHAT_LENGTH + 1] = {};
 
 	SC_CHAT_NOTIFY()
 	{
@@ -118,7 +118,7 @@ struct SC_CHAT_NOTIFY : public PACKET_HEADER
 
 struct CS_ROOM_OPEN_REQUEST : public PACKET_HEADER
 {
-	char	roomTitle[50 + 1] = {};
+	char	roomTitle[MAX_ROOM_TITLE_LENGTH + 1] = {};
 	int		userCount = 0;
 
 	CS_ROOM_OPEN_REQUEST()
@@ -145,7 +145,7 @@ struct SC_ROOM_OPEN_RESPONSE : public PACKET_HEADER
 struct SC_ROOM_OPEN_NOTIFY_MULTIPLE
 {
 	int		number = 0;
-	char	title[50 + 1] = { 0 };
+	char	title[MAX_ROOM_TITLE_LENGTH + 1] = { 0 };
 	int		currentUserCount = 0;
 	int		maxUserCount = 0;
 };
@@ -177,7 +177,7 @@ struct SC_ROOM_ENTER_RESPONSE : public PACKET_HEADER
 
 struct SC_ROOM_ENTER_USER_NOTIFY : public PACKET_HEADER
 {
-	char userID[32 + 1] = {};
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
 
 	SC_ROOM_ENTER_USER_NOTIFY()
 	{
@@ -189,7 +189,7 @@ struct SC_ROOM_ENTER_USER_NOTIFY : public PACKET_HEADER
 
 struct SC_USER_LIST_NOTIFY_MULTIPLE
 {
-	char userID[32 + 1] = {};
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
 };
 
 struct CS_ROOM_LEAVE_REQUEST : public PACKET_HEADER
@@ -218,7 +218,7 @@ struct SC_ROOM_LEAVE_RESPONSE : public PACKET_HEADER
 
 struct SC_ROOM_LEAVE_USER_NOTIFY : public PACKET_HEADER
 {
-	char userID[32 + 1] = {};
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
 
 	SC_ROOM_LEAVE_USER_NOTIFY()
 	{

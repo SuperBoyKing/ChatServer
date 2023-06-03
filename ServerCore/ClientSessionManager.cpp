@@ -58,7 +58,7 @@ void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer, shared_p
 
 bool ClientSessionManager::SendToSession(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> session)
 {
-	lock_guard<recursive_mutex> lock(m_mutex); 
+	//lock_guard<recursive_mutex> lock(m_mutex); 
 	if (session.get() != nullptr)
 	{
 		session->Send(sendBuffer);

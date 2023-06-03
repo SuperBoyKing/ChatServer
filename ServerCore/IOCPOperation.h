@@ -12,6 +12,7 @@ enum class OperationType : unsigned __int8
 	RECV,
 	CONNECT,
 	DISCONNECT,
+	DB_RESPONSE,
 };
 
 class IOCPOperation : public OVERLAPPED
@@ -69,9 +70,18 @@ class AcceptOperation : public IOCPOperation
 public:
 	AcceptOperation() : IOCPOperation(OperationType::ACCEPT) {}
 
-	inline void							SetSession(shared_ptr<ChatSession> session)	{ m_acceptedClientSession = session; }
+	inline void							SetSession(shared_ptr<ChatSession> session)		{ m_acceptedClientSession = session; }
 	inline shared_ptr<ChatSession>		GetSession() const								{ return m_acceptedClientSession; }
 
 private:
 	shared_ptr<ChatSession> m_acceptedClientSession = nullptr;
+};
+
+class DBResOperation : public IOCPOperation
+{
+public:
+	DBResOperation() : IOCPOperation(OperationType::DB_RESPONSE) {}
+
+public:
+	shared_ptr<SendBuffer> sendBuffer;
 };

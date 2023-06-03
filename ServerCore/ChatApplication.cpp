@@ -145,6 +145,7 @@ void ChatClient::Disconnect()
 	HANDLE sock = (HANDLE)m_session->GetSock();
 	m_session->Disconnect();
 
+	//PostQueuedCompletionStatus 처리 구현...
 	if (!CancelIo(sock))
 		int error = WSAGetLastError();
 }

@@ -1,21 +1,150 @@
 #include "pch.h"
 #include "DBManager.h"
 
-void DBManager::Run(string ip, UINT16 port)
+unique_ptr<DBManager> GDBManager = make_unique<DBManager>();
+
+void DBManager::Run(string ip, UINT16 port, int threadCount)
 {
 	if (m_conn.connect(ip, port))
 	{
 		std::cout << "Database connection success!" << endl;
+		m_isEventLoop = true;
+		m_isPQCSLoop = true;
 	}
 	else
 	{
 		std::cout << "Database connection error : " << m_conn.getErrorStr() << endl;
 	}
 
-	// db task thread 추가 필요
+	for (int i = 0; i < threadCount; ++i)
+	{
+		m_DBThreadManager.Launch([=]() {
+			while (m_isEventLoop)
+			{
+				ProcesssDBEvent();
+				this_thread::yield();
+			}
+		});
+	}
+
+	for (int i = 0; i < threadCount; ++i)
+	{
+		m_PQCSThreadManager.Launch([=]() {
+			while (m_isPQCSLoop)
+			{
+				CallPQCS();
+				this_thread::yield();
+			}
+		});
+	}
 }
 
 void DBManager::Disconnect()
 {
+	m_dbEventOperation.ReleaseOwner();
+
+	m_isEventLoop = false;
+	m_DBThreadManager.Join();
+
+	m_isPQCSLoop = false;
+	m_PQCSThreadManager.Join();
+
 	m_conn.disConnect();
+}
+
+bool DBManager::insert(const char* id, const char* pw)
+{
+	uint32_t retval;
+
+	if (m_conn.set(id, pw, retval))
+	{
+		cout << "Database insert success" << endl;
+	}
+
+	return true;
+}
+
+void DBManager::ProcesssDBEvent()
+{
+	auto dbEvent = TakeOutRequestEvent();
+	if (dbEvent.session != nullptr && dbEvent.packet.id == PacketID::LOGIN_REQUEST)
+	{
+		SC_LOGIN_RESPONSE resPacket;
+		std::string value;
+		if (m_conn.get(dbEvent.packet.userID, value))
+		{
+			if (value.compare(dbEvent.packet.userPW) == 0)
+			{
+				resPacket.result = true;
+			}
+		}
+
+		DB_LOGIN_RESPONSE dbResEvent;
+		dbResEvent.packet = resPacket;
+		dbResEvent.session = dbEvent.session;
+		PushReponseEvent(dbResEvent);
+	}
+}
+
+void DBManager::PushReponseEvent(DB_LOGIN_RESPONSE& loginResponseEvent)
+{
+	lock_guard<mutex> lock(m_responseMutex);
+	m_responseEventDeque.push_back(loginResponseEvent);
+}
+
+DB_LOGIN_REQUEST DBManager::TakeOutRequestEvent()
+{
+	lock_guard<mutex> lock(m_requestMutex);
+
+	if (m_requestEventDeque.empty())
+	{
+		return DB_LOGIN_REQUEST();
+	}
+
+	DB_LOGIN_REQUEST reqEvent = m_requestEventDeque.front();
+	m_requestEventDeque.pop_front();
+
+	return reqEvent;
+}
+
+void DBManager::CallPQCS()
+{
+	auto dbResEvent = TakeOutResponseEvent();
+
+	if (dbResEvent.session.get() != nullptr)
+	{
+		{
+			lock_guard<mutex> lock(m_mutex);
+			m_dbEventOperation.Init();
+			m_dbEventOperation.SetOwner(dbResEvent.session);
+			m_dbEventOperation.sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
+			m_dbEventOperation.sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), dbResEvent.packet.size);
+		}
+
+		if (!::PostQueuedCompletionStatus(m_iocpHandle, dbResEvent.packet.size, 0, &m_dbEventOperation))
+		{
+			PRINT_WSA_ERROR("PostQueuedCompletionStatus Error");
+		}
+	}
+}
+
+void DBManager::PushRequestEvent(DB_LOGIN_REQUEST& loginRequestEvent)
+{
+	lock_guard<mutex> lock(m_requestMutex);
+	m_requestEventDeque.push_back(loginRequestEvent);
+}
+
+DB_LOGIN_RESPONSE DBManager::TakeOutResponseEvent()
+{
+	lock_guard<mutex> lock(m_responseMutex);
+
+	if (m_responseEventDeque.empty())
+	{
+		return DB_LOGIN_RESPONSE();
+	}
+
+	DB_LOGIN_RESPONSE resEvent = m_responseEventDeque.front();
+	m_responseEventDeque.pop_front();
+
+	return resEvent;
 }

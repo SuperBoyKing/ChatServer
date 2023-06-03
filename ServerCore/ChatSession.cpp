@@ -38,6 +38,13 @@ void ChatSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int nu
 	case OperationType::DISCONNECT:
 		ProcessDisconnect();
 		break;
+	case OperationType::DB_RESPONSE:
+	{
+		DBResOperation* dbOperation = static_cast<DBResOperation*>(iocpOperation);
+		OnRecv(reinterpret_cast<char*>(dbOperation->sendBuffer->GetBuffer()), numberOfBytes);
+		dbOperation->ReleaseOwner();
+		break;
+	}
 	default:
 		break;
 	}

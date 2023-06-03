@@ -25,7 +25,7 @@ public:
 	inline int							GetMaxSessionCount() const	{ return m_maxSessionCount; }
 
 protected:
-	SessionType				m_appType;
+	SessionType					m_appType;
 	shared_ptr<ServerAddress>	m_serverAddress;
 	shared_ptr<IOCPHandler>		m_iocpHandler;
 	SessionFactory				m_sessionFactory;

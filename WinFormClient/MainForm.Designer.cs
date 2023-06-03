@@ -58,6 +58,7 @@ namespace WinFormClient
             this.button_RoomCreate = new System.Windows.Forms.Button();
             this.button_RoomLeave = new System.Windows.Forms.Button();
             this.button_RoomEnter = new System.Windows.Forms.Button();
+            this.button_register = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Lobby.SuspendLayout();
@@ -109,6 +110,7 @@ namespace WinFormClient
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button_register);
             this.groupBox1.Controls.Add(this.button_login);
             this.groupBox1.Controls.Add(this.textBox_password);
             this.groupBox1.Controls.Add(this.pw);
@@ -126,7 +128,7 @@ namespace WinFormClient
             this.button_login.Enabled = false;
             this.button_login.Location = new System.Drawing.Point(9, 122);
             this.button_login.Name = "button_login";
-            this.button_login.Size = new System.Drawing.Size(168, 25);
+            this.button_login.Size = new System.Drawing.Size(74, 25);
             this.button_login.TabIndex = 6;
             this.button_login.Text = "Login";
             this.button_login.UseVisualStyleBackColor = true;
@@ -343,6 +345,16 @@ namespace WinFormClient
             this.button_RoomEnter.UseVisualStyleBackColor = true;
             this.button_RoomEnter.Click += new System.EventHandler(this.button_RoomEnter_Click);
             // 
+            // button_register
+            // 
+            this.button_register.Enabled = false;
+            this.button_register.Location = new System.Drawing.Point(100, 122);
+            this.button_register.Name = "button_register";
+            this.button_register.Size = new System.Drawing.Size(74, 25);
+            this.button_register.TabIndex = 10;
+            this.button_register.Text = "Register";
+            this.button_register.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -405,6 +417,7 @@ namespace WinFormClient
         private System.Windows.Forms.Button button_RoomCreate;
         private System.Windows.Forms.Button button_RoomLeave;
         private ListView listView_room;
+        private Button button_register;
     }
 }
 

@@ -7,6 +7,7 @@ ClientPacketHandler::ClientPacketHandler()
 {
 	m_uMapProcessPacket[PacketID::CONNECT_REQUEST] = &ClientPacketHandler::ProcessConnect;
 	m_uMapProcessPacket[PacketID::LOGIN_REQUEST] = &ClientPacketHandler::ProcessLogin;
+	m_uMapProcessPacket[PacketID::LOGIN_RESPONSE] = &ClientPacketHandler::ProcessLoginReq;
 	m_uMapProcessPacket[PacketID::CHAT_REQUEST] = &ClientPacketHandler::ProcessChat;
 	m_uMapProcessPacket[PacketID::ROOM_OPEN_REQUEST] = &ClientPacketHandler::ProcessRoomOpen;
 	m_uMapProcessPacket[PacketID::ROOM_ENTER_REQUEST] = &ClientPacketHandler::ProcessRoomEnter;
@@ -41,7 +42,7 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 	unique_ptr<SC_ROOM_LIST_MULTIPLE[]> roomInfos = make_unique<SC_ROOM_LIST_MULTIPLE[]>(packetHeader.packetCount);
 
 	int i = 0;
-	for (auto& room : GRoomManager->GetRoomObjectPool())	// 할당된 RoomList 패킷 구성
+	for (auto& room : GRoomManager->GetRoomObjectPool())	// RoomList 패킷 구성
 	{
 		if (room->GetRoomNumber() != 0 && GRoomManager->GetOpenRoomCount() != 0)
 		{
@@ -66,12 +67,28 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 {
 	CS_LOGIN_REQUEST* recvPacket = reinterpret_cast<CS_LOGIN_REQUEST*>(packetData);
 	UINT32 length = 0;
-	session->SetUserID(recvPacket->userID);
+	
+	// 1. 해당 유저가 이미 로그인 되었나 여부
+	if (strncmp(session->GetUserID(), recvPacket->userID, MAX_USER_ID_LENGTH) != 0)
+	{
+		session->SetUserID(recvPacket->userID);
+		DB_LOGIN_REQUEST dbReqEvent;
+		dbReqEvent.packet = *recvPacket;
+		dbReqEvent.session = session;
+		GDBManager->PushRequestEvent(dbReqEvent);
+	}
+	else
+	{
+		SC_LOGIN_RESPONSE sendPacket;
+		sendPacket.result = false;
+		SendProcessedPacket(session, &sendPacket);
+	}	
+}
 
-	SC_LOGIN_RESPONSE sendPacket;
-	sendPacket.result = true;
-
-	SendProcessedPacket(session, &sendPacket);
+void ClientPacketHandler::ProcessLoginReq(shared_ptr<ChatSession> session, char* packetData, int size)
+{
+	SC_LOGIN_RESPONSE* recvPacket = reinterpret_cast<SC_LOGIN_RESPONSE*>(packetData);
+	SendProcessedPacket(session, recvPacket);
 }
 
 void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size)

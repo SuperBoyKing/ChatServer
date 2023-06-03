@@ -10,6 +10,7 @@ shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
 	make_shared<IOCPHandler>(),
 	serverSession);
 
+
 bool GetPacket(void* packetData, int size)
 {
 	mutex m;

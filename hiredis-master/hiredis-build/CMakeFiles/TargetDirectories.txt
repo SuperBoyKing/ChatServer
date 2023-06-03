@@ -1,0 +1,7 @@
+F:/hiredis-build/CMakeFiles/hiredis.dir
+F:/hiredis-build/CMakeFiles/hiredis-test.dir
+F:/hiredis-build/CMakeFiles/PACKAGE.dir
+F:/hiredis-build/CMakeFiles/RUN_TESTS.dir
+F:/hiredis-build/CMakeFiles/INSTALL.dir
+F:/hiredis-build/CMakeFiles/ALL_BUILD.dir
+F:/hiredis-build/CMakeFiles/ZERO_CHECK.dir
