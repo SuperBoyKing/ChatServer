@@ -36,6 +36,12 @@ void ClientSessionManager::Remove(SOCKET key)
 	m_uMapSessions.erase(key);
 }
 
+void ClientSessionManager::RemoveConnectionUser(string userID)
+{
+	lock_guard<recursive_mutex> lock(m_mutex);
+	m_uSetUserID.erase(userID);
+}
+
 shared_ptr<ChatSession> ClientSessionManager::Search(SOCKET key)
 {
 	auto itr = m_uMapSessions.find(key);

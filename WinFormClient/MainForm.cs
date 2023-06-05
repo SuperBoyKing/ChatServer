@@ -137,7 +137,6 @@ namespace WinFormClient
         {
             if (!IsActivatedLogin)
             {
-                SendConnectPacket();
                 SendLoginPacket(textBox_ID.Text, textBox_ID.Text.Length, textBox_password.Text, textBox_password.Text.Length);
             }
             else
@@ -211,6 +210,8 @@ namespace WinFormClient
         private void button_RoomCreate_Click(object sender, EventArgs e)
         {
             var result = roomCreator.ShowDialog();
+            roomCreator.returnTitle = "";
+            roomCreator.returnUserCount = 0;
 
             if (result == DialogResult.OK)
             {

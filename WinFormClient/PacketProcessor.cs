@@ -138,6 +138,7 @@ namespace WinFormClient
                 if (loginResPacket.result)
                 {
                     SetLoginStateUI();
+                    SendConnectPacket();
                 }
                 else
                 {

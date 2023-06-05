@@ -70,7 +70,7 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 	CS_LOGIN_REQUEST* recvPacket = reinterpret_cast<CS_LOGIN_REQUEST*>(packetData);
 	UINT32 length = 0;
 
-	// 1. 해당 유저가 이미 로그인 되었나 여부
+	// 해당 유저가 이미 로그인 되었나 여부
 	if (session->GetSessionState() == SessionState::NONE 
 		&& false == GClientSessionManager->SearchConnectionUser(recvPacket->userID))
 	{
@@ -102,11 +102,13 @@ void ClientPacketHandler::ProcessLogout(shared_ptr<ChatSession> session, char* p
 	CS_LOGOUT_REQUEST* recvPacket = reinterpret_cast<CS_LOGOUT_REQUEST*>(packetData);
 	SC_LOGOUT_RESPONSE sendPacket;
 	
-	if (GDBManager->Search(recvPacket->userID))
+	if (session->GetSessionState() == SessionState::NONE &&
+		GClientSessionManager->SearchConnectionUser(recvPacket->userID))
 	{
 		sendPacket.result = true;
 		session->SetUserID("");
 		session->SetSessionState(SessionState::NONE);
+		GClientSessionManager->RemoveConnectionUser(recvPacket->userID);
 	}
 
 	SendProcessedPacket(session, &sendPacket);

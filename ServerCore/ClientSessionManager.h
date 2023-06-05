@@ -11,6 +11,7 @@ public:
 	void						AddUser(string userID);
 	void						Remove(shared_ptr<ChatSession> session);
 	void						Remove(SOCKET key);
+	void						RemoveConnectionUser(string userID);
 	shared_ptr<ChatSession>		Search(SOCKET key);
 	bool						SearchConnectionUser(string userID);
 	void						Broadcast(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> exceptSession = nullptr);
