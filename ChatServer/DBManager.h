@@ -32,6 +32,7 @@ private:
 public:
 	void PushRequestEvent(DB_LOGIN_REQUEST& loginRequestEvent);
 	DB_LOGIN_RESPONSE TakeOutResponseEvent();
+	bool Search(string userID);
 	inline void SetIOCPHandle(HANDLE iocpHandle) { m_iocpHandle = iocpHandle; }
 
 private:

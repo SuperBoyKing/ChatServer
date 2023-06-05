@@ -33,7 +33,6 @@ void DBManager::Run(string ip, UINT16 port, int threadCount)
 			while (m_isPQCSLoop)
 			{
 				CallPQCS();
-				this_thread::yield();
 			}
 		});
 	}
@@ -58,10 +57,11 @@ bool DBManager::insert(const char* id, const char* pw)
 
 	if (m_conn.set(id, pw, retval))
 	{
-		cout << "Database insert success" << endl;
+		cout << "Database insert success. ID: " << id << endl;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 void DBManager::ProcesssDBEvent()
@@ -113,15 +113,17 @@ void DBManager::CallPQCS()
 
 	if (dbResEvent.session.get() != nullptr)
 	{
+		DBResOperation* DBOpertaion = new DBResOperation();
 		{
+			// Memory Pool È°¿ë
 			lock_guard<mutex> lock(m_mutex);
-			m_dbEventOperation.Init();
-			m_dbEventOperation.SetOwner(dbResEvent.session);
-			m_dbEventOperation.sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
-			m_dbEventOperation.sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), dbResEvent.packet.size);
+			DBOpertaion->Init();
+			DBOpertaion->SetOwner(dbResEvent.session);
+			DBOpertaion->sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
+			DBOpertaion->sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), dbResEvent.packet.size);
 		}
 
-		if (!::PostQueuedCompletionStatus(m_iocpHandle, dbResEvent.packet.size, 0, &m_dbEventOperation))
+		if (false == ::PostQueuedCompletionStatus(m_iocpHandle, dbResEvent.packet.size, 0, DBOpertaion))
 		{
 			PRINT_WSA_ERROR("PostQueuedCompletionStatus Error");
 		}
@@ -147,4 +149,15 @@ DB_LOGIN_RESPONSE DBManager::TakeOutResponseEvent()
 	m_responseEventDeque.pop_front();
 
 	return resEvent;
+}
+
+bool DBManager::Search(string userID)
+{
+	std::string value;
+	if (m_conn.get(userID, value))
+	{
+		return true;
+	}
+
+	return false;
 }

@@ -3,29 +3,7 @@
 #include "ServerPacketHandler.h"
 #include <ObjBase.h>
 
-function<shared_ptr<ServerSession>(void)> serverSession = make_shared<ServerSession>;
-
-shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
-	make_shared<ServerAddress>(),
-	make_shared<IOCPHandler>(),
-	serverSession);
-
-
-bool GetPacket(void* packetData, int size)
-{
-	mutex m;
-	lock_guard<mutex> lock(m);
-	if (!GRecvPacketQueue.empty())
-	{
-		char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-		::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
-		GRecvPacketQueue.pop();
-
-		return true;
-	}
-
-	return false;
-}
+mutex m;
 
 template <typename PacketType>
 bool GetNumberOfPacket(PacketType** packetData, int packetCount)
@@ -36,21 +14,18 @@ bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 	if (packetSize <= 0)
 		newArray = nullptr;
 
-	mutex m;
+	lock_guard<mutex> lock(m);
+	if (!GRecvPacketQueue.empty())
 	{
-		lock_guard<mutex> lock(m);
-		if (!GRecvPacketQueue.empty())
+		char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+		if (newArray != nullptr)
 		{
-			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-			if (newArray != nullptr)
-			{
-				::memcpy(newArray, packet + PACKET_HEADER_SIZE, packetSize);
-			}
-			GRecvPacketQueue.pop();
-
-			*packetData = newArray;
-			return true;
+			::memcpy(newArray, packet + PACKET_HEADER_SIZE, packetSize);
 		}
+		GRecvPacketQueue.pop();
+
+		*packetData = newArray;
+		return true;
 	}
 
 	return false;
@@ -59,6 +34,21 @@ bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 extern "C"
 {
 	bool isLoop;
+	int numberOfProcessor;
+	shared_ptr<ChatClient> chatClient;
+	function<shared_ptr<ServerSession>(void)> serverSession = make_shared<ServerSession>;
+	
+	EXPORT void ChatInit()
+	{
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo(&sysinfo);
+		numberOfProcessor = sysinfo.dwNumberOfProcessors;
+
+		chatClient = make_shared<ChatClient>(
+			make_shared<ServerAddress>(),
+			make_shared<IOCPHandler>(),
+			serverSession);
+	}
 
 	EXPORT void ChatClientStart(WCHAR* ip, __int16 port)
 	{
@@ -67,11 +57,7 @@ extern "C"
 
 		ASSERT_CRASH(chatClient->Start());
 
-		SYSTEM_INFO sysinfo;
-		GetSystemInfo(&sysinfo);
-		int numberOfProcessor = sysinfo.dwNumberOfProcessors;
-
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < numberOfProcessor; ++i)
 		{
 			GThreadManager->Launch([=]() {
 				while (isLoop)
@@ -85,7 +71,7 @@ extern "C"
 	EXPORT void Disconnect()
 	{
 		isLoop = false;
-		chatClient->Disconnect();
+		chatClient->Disconnect(numberOfProcessor);
 		GThreadManager->Join();
 	}
 
@@ -94,9 +80,19 @@ extern "C"
 		chatClient->SendConnect();
 	}
 
+	EXPORT void SendRegisterAccount(char* id, const int idSize, char* pwd, const int pwdSize)
+	{
+		chatClient->SendRegister(id, idSize, pwd, pwdSize);
+	}
+
 	EXPORT void SendLoginPacket(char* id, const int idSize, char* pwd, const int pwdSize)
 	{
 		chatClient->SendLogin(id, idSize, pwd, pwdSize);
+	}
+
+	EXPORT void SendLogoutPacket(char* id, const int idSize)
+	{
+		chatClient->SendLogout(id, idSize);
 	}
 
 	EXPORT void SendChatPacket(char* str, int size)
@@ -121,6 +117,7 @@ extern "C"
 
 	EXPORT bool	GetPacketHeader(PACKET_HEADER* packetHeader)
 	{
+		lock_guard<mutex> lock(m);
 		if (!GRecvPacketQueue.empty())
 		{
 			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
@@ -130,63 +127,28 @@ extern "C"
 		return false;
 	}
 
+	EXPORT bool GetPacket(void* packetData, int size)
+	{
+		lock_guard<mutex> lock(m);
+		if (!GRecvPacketQueue.empty())
+		{
+			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
+			GRecvPacketQueue.pop();
+
+			return true;
+		}
+
+		return false;
+	}
+
 	EXPORT bool GetConnectPacket(SC_ROOM_LIST_MULTIPLE** packetData, int count)
 	{
 		return GetNumberOfPacket(packetData, count);
 	}
 
-	EXPORT bool GetLoginPacket(SC_LOGIN_RESPONSE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetChatPacket(SC_CHAT_RESPONSE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-	
-	EXPORT bool GetChatNotifyPacket(SC_CHAT_NOTIFY* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetRoomOpenPacket(SC_ROOM_OPEN_RESPONSE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetRoomOpenNotifyPacket(SC_ROOM_OPEN_NOTIFY_MULTIPLE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetRoomEnterPacket(SC_ROOM_ENTER_RESPONSE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetRoomEnterUserNotify(SC_ROOM_ENTER_USER_NOTIFY* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
 	EXPORT bool GetRoomUserNotifyPacket(SC_USER_LIST_NOTIFY_MULTIPLE** packetData, int count)
 	{
 		return GetNumberOfPacket(packetData, count);
-	}
-
-	EXPORT bool GetRoomLeavePacket(SC_ROOM_LEAVE_RESPONSE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetRoomLeaveNotifyPacket(SC_ROOM_LEAVE_USER_NOTIFY* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
-	}
-
-	EXPORT bool GetClosePacket(SC_ROOM_CLOSE* packetData, int size)
-	{
-		return GetPacket(reinterpret_cast<void*>(packetData), size);
 	}
 }

@@ -4,6 +4,13 @@
 
 class ChatApplication;
 
+enum class SessionState : unsigned __int8
+{
+	NONE,
+	LOGIN,
+	ROOM
+};
+
 class ChatSession : public IIOCPBinder
 {
 	friend class ClientListener;
@@ -28,17 +35,22 @@ public:
 
 	inline void		SetRoomNumber(const int roomNumber)				{ m_roomNumber = roomNumber; }
 
+	inline void		SetSessionState(SessionState state)				{ m_sessionState = state; }
+
 	inline const char*	GetUserID() const		{ return m_userID; }
 
 	inline const int	GetRoomNumber() const	{ return m_roomNumber; }
 
 	inline bool			IsConnected() const		{ return m_isConnected; }
 
+	inline SessionState	GetSessionState() const { return m_sessionState; }
+
 	// Operation 처리
 	void		ProcessSend(unsigned int numberOfBytes);
 	void		ProcessRecv(unsigned int numberOfBytes);
 	void		ProcessConnect();
 	void		ProcessDisconnect();
+	void		ProcessDBResponse(DBResOperation* dbOperation, unsigned int numberOfBytes);
 
 	// Operation 등록
 	void		RegisterSend();
@@ -75,5 +87,6 @@ private:
 	recursive_mutex		m_mutex;
 	char				m_userID[32 + 1];
 	int					m_roomNumber;
+	SessionState		m_sessionState;
 };
 

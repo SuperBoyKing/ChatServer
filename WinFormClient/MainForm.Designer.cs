@@ -37,6 +37,7 @@ namespace WinFormClient
             this.label2 = new System.Windows.Forms.Label();
             this.button_isConnect = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button_register = new System.Windows.Forms.Button();
             this.button_login = new System.Windows.Forms.Button();
             this.textBox_password = new System.Windows.Forms.TextBox();
             this.pw = new System.Windows.Forms.Label();
@@ -58,7 +59,6 @@ namespace WinFormClient
             this.button_RoomCreate = new System.Windows.Forms.Button();
             this.button_RoomLeave = new System.Windows.Forms.Button();
             this.button_RoomEnter = new System.Windows.Forms.Button();
-            this.button_register = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Lobby.SuspendLayout();
@@ -122,6 +122,17 @@ namespace WinFormClient
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Login";
+            // 
+            // button_register
+            // 
+            this.button_register.Enabled = false;
+            this.button_register.Location = new System.Drawing.Point(100, 122);
+            this.button_register.Name = "button_register";
+            this.button_register.Size = new System.Drawing.Size(74, 25);
+            this.button_register.TabIndex = 10;
+            this.button_register.Text = "Register";
+            this.button_register.UseVisualStyleBackColor = true;
+            this.button_register.Click += new System.EventHandler(this.button_register_Click);
             // 
             // button_login
             // 
@@ -227,9 +238,9 @@ namespace WinFormClient
             this.label_Status.AutoSize = true;
             this.label_Status.Location = new System.Drawing.Point(15, 679);
             this.label_Status.Name = "label_Status";
-            this.label_Status.Size = new System.Drawing.Size(43, 15);
+            this.label_Status.Size = new System.Drawing.Size(51, 15);
             this.label_Status.TabIndex = 12;
-            this.label_Status.Text = "Status:";
+            this.label_Status.Text = "Status : ";
             // 
             // groupBox2
             // 
@@ -344,16 +355,6 @@ namespace WinFormClient
             this.button_RoomEnter.Text = "Enter";
             this.button_RoomEnter.UseVisualStyleBackColor = true;
             this.button_RoomEnter.Click += new System.EventHandler(this.button_RoomEnter_Click);
-            // 
-            // button_register
-            // 
-            this.button_register.Enabled = false;
-            this.button_register.Location = new System.Drawing.Point(100, 122);
-            this.button_register.Name = "button_register";
-            this.button_register.Size = new System.Drawing.Size(74, 25);
-            this.button_register.TabIndex = 10;
-            this.button_register.Text = "Register";
-            this.button_register.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 

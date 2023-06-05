@@ -46,8 +46,8 @@ bool RoomManager::OpenRoom(const char* roomTitle, const size_t titleSize, const 
 		{
 			room->Init(roomTitle, titleSize, maxUserCount, m_roomPoolIndex);
 			*roomNumber = m_roomPoolIndex;
-			bResult = true;
 			m_currentOpenRoomCount.fetch_add(1);
+			bResult = true;
 			break;
 		}
 	}

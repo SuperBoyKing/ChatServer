@@ -8,6 +8,8 @@ ClientPacketHandler::ClientPacketHandler()
 	m_uMapProcessPacket[PacketID::CONNECT_REQUEST] = &ClientPacketHandler::ProcessConnect;
 	m_uMapProcessPacket[PacketID::LOGIN_REQUEST] = &ClientPacketHandler::ProcessLogin;
 	m_uMapProcessPacket[PacketID::LOGIN_RESPONSE] = &ClientPacketHandler::ProcessLoginReq;
+	m_uMapProcessPacket[PacketID::LOGOUT_REQUEST] = &ClientPacketHandler::ProcessLogout;
+	m_uMapProcessPacket[PacketID::REGISTER_REQUEST] = &ClientPacketHandler::ProcessResgister;
 	m_uMapProcessPacket[PacketID::CHAT_REQUEST] = &ClientPacketHandler::ProcessChat;
 	m_uMapProcessPacket[PacketID::ROOM_OPEN_REQUEST] = &ClientPacketHandler::ProcessRoomOpen;
 	m_uMapProcessPacket[PacketID::ROOM_ENTER_REQUEST] = &ClientPacketHandler::ProcessRoomEnter;
@@ -67,11 +69,15 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 {
 	CS_LOGIN_REQUEST* recvPacket = reinterpret_cast<CS_LOGIN_REQUEST*>(packetData);
 	UINT32 length = 0;
-	
+
 	// 1. 해당 유저가 이미 로그인 되었나 여부
-	if (strncmp(session->GetUserID(), recvPacket->userID, MAX_USER_ID_LENGTH) != 0)
+	if (session->GetSessionState() == SessionState::NONE 
+		&& false == GClientSessionManager->SearchConnectionUser(recvPacket->userID))
 	{
+		session->SetSessionState(SessionState::LOGIN);
 		session->SetUserID(recvPacket->userID);
+		GClientSessionManager->AddUser(recvPacket->userID);
+
 		DB_LOGIN_REQUEST dbReqEvent;
 		dbReqEvent.packet = *recvPacket;
 		dbReqEvent.session = session;
@@ -82,13 +88,42 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 		SC_LOGIN_RESPONSE sendPacket;
 		sendPacket.result = false;
 		SendProcessedPacket(session, &sendPacket);
-	}	
+	}
 }
 
 void ClientPacketHandler::ProcessLoginReq(shared_ptr<ChatSession> session, char* packetData, int size)
 {
 	SC_LOGIN_RESPONSE* recvPacket = reinterpret_cast<SC_LOGIN_RESPONSE*>(packetData);
 	SendProcessedPacket(session, recvPacket);
+}
+
+void ClientPacketHandler::ProcessLogout(shared_ptr<ChatSession> session, char* packetData, int size)
+{
+	CS_LOGOUT_REQUEST* recvPacket = reinterpret_cast<CS_LOGOUT_REQUEST*>(packetData);
+	SC_LOGOUT_RESPONSE sendPacket;
+	
+	if (GDBManager->Search(recvPacket->userID))
+	{
+		sendPacket.result = true;
+		session->SetUserID("");
+		session->SetSessionState(SessionState::NONE);
+	}
+
+	SendProcessedPacket(session, &sendPacket);
+}
+
+void ClientPacketHandler::ProcessResgister(shared_ptr<ChatSession> session, char* packetData, int size)
+{
+	CS_RESGISTER_REQUEST* recvPacket = reinterpret_cast<CS_RESGISTER_REQUEST*>(packetData);
+	SC_RESGISTER_RESPONSE sendPacket;
+
+	if (session->GetSessionState() == SessionState::NONE && GDBManager->Search(recvPacket->userID) == false)
+	{
+		GDBManager->insert(recvPacket->userID, recvPacket->userPW);
+		sendPacket.result = true;
+	}
+
+	SendProcessedPacket(session, &sendPacket);
 }
 
 void ClientPacketHandler::ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size)
@@ -118,24 +153,27 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	session->SetRoomNumber(roomNumber);
 	SendProcessedPacket(session, &sendPacket);
 
-	// Notify 패킷을 위한 패킷 헤더 구성 
-	PACKET_HEADER packetHeader;
-	packetHeader.id = PacketID::ROOM_OPEN_NOTIFY;
-	packetHeader.size += sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE);
+	if (isOpenSuccess)
+	{
+		// Notify 패킷을 위한 패킷 헤더 구성 
+		PACKET_HEADER packetHeader;
+		packetHeader.id = PacketID::ROOM_OPEN_NOTIFY;
+		packetHeader.size += sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE);
 
-	// 모든 클라이언트들에게 방이 Open되었다는 것을 전달하기 위한 Room Open Nofity 패킷 구성
-	SC_ROOM_OPEN_NOTIFY_MULTIPLE broadcastPacket;
-	broadcastPacket.number = roomNumber;
-	memcpy(broadcastPacket.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
-	broadcastPacket.currentUserCount = 0;
-	broadcastPacket.maxUserCount = recvPacket->userCount;
+		// 모든 클라이언트들에게 방이 Open되었다는 것을 전달하기 위한 Room Open Nofity 패킷 구성
+		SC_ROOM_OPEN_NOTIFY_MULTIPLE broadcastPacket;
+		broadcastPacket.number = roomNumber;
+		memcpy(broadcastPacket.title, recvPacket->roomTitle, strlen(recvPacket->roomTitle));
+		broadcastPacket.currentUserCount = 0;
+		broadcastPacket.maxUserCount = recvPacket->userCount;
 
-	// 패킷 헤더와 Room Open Nofity 패킷 조립 후 broadcast 전송
-	void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
-	::memcpy(baseAddress, &packetHeader, sizeof(PACKET_HEADER));
-	::memcpy(static_cast<char*>(baseAddress) + sizeof(PACKET_HEADER), &broadcastPacket, sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
-	SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(baseAddress), true);
-	::free(baseAddress);
+		// 패킷 헤더와 Room Open Nofity 패킷 조립 후 broadcast 전송
+		void* baseAddress = ::malloc(sizeof(PACKET_HEADER) + sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
+		::memcpy(baseAddress, &packetHeader, sizeof(PACKET_HEADER));
+		::memcpy(static_cast<char*>(baseAddress) + sizeof(PACKET_HEADER), &broadcastPacket, sizeof(SC_ROOM_OPEN_NOTIFY_MULTIPLE));
+		SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(baseAddress), true);
+		::free(baseAddress);
+	}
 }
 
 void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char* packetData, int size)
@@ -147,11 +185,16 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 	SC_ROOM_ENTER_RESPONSE sendPacket;
 	if (enteredRoom != shared_ptr<Room>())
 	{
-		if (enteredRoom->Enter(session))
+		if (session->GetSessionState() == SessionState::LOGIN && enteredRoom->Enter(session))
 		{
 			sendPacket.result = true;
 			sendPacket.currentUserCount = enteredRoom->GetCurrentUserCount();
 			session->SetRoomNumber(enteredRoom->GetRoomNumber());
+			session->SetSessionState(SessionState::ROOM);
+		}
+		else
+		{
+			sendPacket.result = false;
 		}
 	}
 	SendProcessedPacket(session, &sendPacket);
@@ -193,8 +236,15 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 
 	if (enteredRoom != shared_ptr<Room>())
 	{
-		if (enteredRoom->Leave(session))
+		if (session->GetSessionState() == SessionState::ROOM && enteredRoom->Leave(session))
+		{
 			sendPacket.result = true;
+			session->SetSessionState(SessionState::LOGIN);
+		}
+		else
+		{
+			sendPacket.result = false;
+		}
 	}
 	SendProcessedPacket(session, &sendPacket);
 

@@ -16,10 +16,10 @@ void ThreadManager::Launch(std::function<void(void)> threadFunction)
 	std::lock_guard<mutex> lock(m_mutex);
 
 	m_vectorThreads.push_back(thread([=]()
-		{
-			SetTLS();
-			threadFunction();
-		}));
+	{
+		SetTLS();
+		threadFunction();
+	}));
 }
 
 void ThreadManager::Join()

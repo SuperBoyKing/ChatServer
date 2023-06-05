@@ -39,12 +39,9 @@ void ChatSession::ProcessOperation(IOCPOperation* iocpOperation, unsigned int nu
 		ProcessDisconnect();
 		break;
 	case OperationType::DB_RESPONSE:
-	{
-		DBResOperation* dbOperation = static_cast<DBResOperation*>(iocpOperation);
-		OnRecv(reinterpret_cast<char*>(dbOperation->sendBuffer->GetBuffer()), numberOfBytes);
-		dbOperation->ReleaseOwner();
+		ProcessDBResponse(static_cast<DBResOperation*>(iocpOperation), numberOfBytes);
 		break;
-	}
+	
 	default:
 		break;
 	}
@@ -176,7 +173,7 @@ void ChatSession::ProcessConnect()
 
 	m_isConnected.store(true);
 	
-	OnConnect();	// 연결된 클라이언트 추가
+	OnConnect();	
 
 	RegisterRecv();
 }
@@ -185,9 +182,18 @@ void ChatSession::ProcessDisconnect()
 {
 	m_disconnectOperation.ReleaseOwner();
 
-	OnDisconnect(); // 연결 해제된 클라이언트 삭제
+	OnDisconnect();
 
 	m_isConnected.store(false);
+}
+
+void ChatSession::ProcessDBResponse(DBResOperation* dbOperation, unsigned int numberOfBytes)
+{
+	OnRecv(reinterpret_cast<char*>(dbOperation->sendBuffer->GetBuffer()), numberOfBytes);
+
+	dbOperation->ReleaseOwner();
+
+	delete dbOperation;
 }
 
 void ChatSession::RegisterSend()
@@ -198,7 +204,7 @@ void ChatSession::RegisterSend()
 	DWORD bytesTransfered = 0;
 	DWORD flags = 0;
 
-	// SendQueue에 있는 버퍼공유포인터를 Operation의 vector로 복사
+	// SendQueue에 있는 버퍼공유포인터를 SendOperation의 vector로 복사
 	{
 		lock_guard<recursive_mutex> lock(m_mutex);
 
@@ -294,7 +300,7 @@ void ChatSession::RegisterDisconnect()
 	m_disconnectOperation.Init();
 	m_disconnectOperation.SetOwner(shared_from_this());
 
-	if (false == SocketAssistant::DisConnectEx(m_socket, &m_disconnectOperation, NULL, NULL))
+	if (false == SocketAssistant::DisConnectEx(m_socket, &m_disconnectOperation, TF_REUSE_SOCKET, NULL))
 	{
 		int errorCode = WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)

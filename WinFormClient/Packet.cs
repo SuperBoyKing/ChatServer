@@ -11,8 +11,14 @@ namespace WinFormClient
         CONNECT_REQUEST,
         CONNECT_RESPONSE,
 
+        REGISTER_REQUEST,
+        REGISTER_RESPONSE,
+
         LOGIN_REQUEST,
         LOGIN_RESPONSE,
+
+        LOGOUT_REQUEST,
+        LOGOUT_RESPONSE,
 
         CHAT_REQUEST,
         CHAT_RESPONSE,
@@ -63,6 +69,34 @@ namespace WinFormClient
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_LOGIN_RESPONSE
+    {
+        public bool result;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CS_LOGOUT_REQUEST
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_LOGOUT_RESPONSE
+    {
+        public bool result;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CS_REGISTER_REQUEST
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string userPW;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_REGISTER_RESPONSE
     {
         public bool result;
     }

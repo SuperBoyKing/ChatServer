@@ -96,6 +96,16 @@ void ChatClient::SendConnect()
 	SendPacket<CS_ROOM_LIST_REQUEST>(packet);
 }
 
+void ChatClient::SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize)
+{
+	CS_RESGISTER_REQUEST packet;
+	::memcpy(packet.userID, id, sizeof(char) * idSize);
+	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
+	packet.size = sizeof(CS_RESGISTER_REQUEST);
+
+	SendPacket<CS_RESGISTER_REQUEST>(packet);
+}
+
 void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize)
 {
 	CS_LOGIN_REQUEST packet;
@@ -104,6 +114,15 @@ void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, co
 	packet.size = sizeof(CS_LOGIN_REQUEST);
 
 	SendPacket<CS_LOGIN_REQUEST>(packet);
+}
+
+void ChatClient::SendLogout(const char* id, const int idSize)
+{
+	CS_LOGOUT_REQUEST packet;
+	memcpy(packet.userID, id, idSize);
+	packet.size = sizeof(CS_LOGOUT_REQUEST);
+
+	SendPacket<CS_LOGOUT_REQUEST>(packet);
 }
 
 void ChatClient::SendChat(const char* str, const int size)
@@ -140,12 +159,21 @@ void ChatClient::SendRoomLeave(int number)
 	SendPacket<CS_ROOM_LEAVE_REQUEST>(packet);
 }
 
-void ChatClient::Disconnect()
+void ChatClient::Disconnect(int numberOfThreads)
 {
 	HANDLE sock = (HANDLE)m_session->GetSock();
 	m_session->Disconnect();
-
-	//PostQueuedCompletionStatus 처리 구현...
-	if (!CancelIo(sock))
-		int error = WSAGetLastError();
+	
+	//GQCS 반환을 위한 PQCS 처리
+	for (int i = 0; i < numberOfThreads; ++i)
+	{
+		if (false == ::PostQueuedCompletionStatus(m_iocpHandler->GetIocpHandle(), NULL, NULL, NULL))
+		{
+			if (WSAGetLastError() != WSA_IO_PENDING)
+			{
+				PRINT_WSA_ERROR("PostQueuedCompletionStatus Error");
+				return;
+			}
+		}
+	}
 }

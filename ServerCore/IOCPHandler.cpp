@@ -27,8 +27,11 @@ void IOCPHandler::CallGQCS()
 
 	if (::GetQueuedCompletionStatus(m_iocpHandle, &bytesTransferred, (PULONG_PTR)&clientSession, reinterpret_cast<LPOVERLAPPED*>(&iocpOperation), INFINITE))
 	{
-		shared_ptr<IIOCPBinder> iocpBinder = iocpOperation->GetOwner();
-		iocpBinder->ProcessOperation(iocpOperation, bytesTransferred);
+		if (iocpOperation != nullptr)	// PQCS로 인한 종료가 아니라면 Operation 처리
+		{
+			shared_ptr<IIOCPBinder> iocpBinder = iocpOperation->GetOwner();
+			iocpBinder->ProcessOperation(iocpOperation, bytesTransferred);
+		}
 	}
 	else
 	{

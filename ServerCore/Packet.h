@@ -1,14 +1,20 @@
 #pragma once
 
 #pragma pack(1)
-enum class PacketID : unsigned __int16
+enum class PacketID : unsigned __int8
 {
 	NONE,
 	CONNECT_REQUEST,
 	CONNECT_RESPONSE,
 
+	REGISTER_REQUEST,
+	REGISTER_RESPONSE,
+
 	LOGIN_REQUEST,
 	LOGIN_RESPONSE,
+
+	LOGOUT_REQUEST,
+	LOGOUT_RESPONSE,
 
 	CHAT_REQUEST,
 	CHAT_RESPONSE,
@@ -54,6 +60,31 @@ struct SC_ROOM_LIST_MULTIPLE
 	int		maxUserCount = 0;
 };
 
+struct CS_RESGISTER_REQUEST : public PACKET_HEADER
+{
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
+	char userPW[MAX_USER_PW_LENGTH + 1] = {};
+
+	CS_RESGISTER_REQUEST()
+	{
+		size = sizeof(CS_RESGISTER_REQUEST);
+		packetCount = 1;
+		id = PacketID::REGISTER_REQUEST;
+	}
+};
+
+struct SC_RESGISTER_RESPONSE : public PACKET_HEADER
+{
+	bool result = false;
+
+	SC_RESGISTER_RESPONSE()
+	{
+		size = sizeof(SC_RESGISTER_RESPONSE);
+		packetCount = 1;
+		id = PacketID::REGISTER_RESPONSE;
+	}
+};
+
 struct CS_LOGIN_REQUEST : public PACKET_HEADER
 {
 	char userID[MAX_USER_ID_LENGTH + 1] = {};
@@ -76,6 +107,30 @@ struct SC_LOGIN_RESPONSE : public PACKET_HEADER
 		size = sizeof(SC_LOGIN_RESPONSE);
 		packetCount = 1;
 		id = PacketID::LOGIN_RESPONSE;
+	}
+};
+
+struct CS_LOGOUT_REQUEST : public PACKET_HEADER
+{
+	char userID[MAX_USER_ID_LENGTH + 1] = {};
+
+	CS_LOGOUT_REQUEST()
+	{
+		size = sizeof(CS_LOGIN_REQUEST);
+		packetCount = 1;
+		id = PacketID::LOGOUT_REQUEST;
+	}
+};
+
+struct SC_LOGOUT_RESPONSE : public PACKET_HEADER
+{
+	bool result = false;
+
+	SC_LOGOUT_RESPONSE()
+	{
+		size = sizeof(SC_LOGIN_RESPONSE);
+		packetCount = 1;
+		id = PacketID::LOGOUT_RESPONSE;
 	}
 };
 

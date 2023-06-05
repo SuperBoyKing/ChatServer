@@ -19,6 +19,8 @@ namespace WinFormClient
 
     public partial class MainForm : Form
     {
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void ChatInit();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void ChatClientStart([MarshalAs(UnmanagedType.LPWStr)] String ip, [MarshalAs(UnmanagedType.I2)] short port);
@@ -29,8 +31,14 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendConnectPacket();
 
+        [DllImport("ChatClient.dll")]
+        static extern void SendRegisterAccount([MarshalAs(UnmanagedType.LPStr)] string id, int idSize, [MarshalAs(UnmanagedType.LPStr)] string pwd, int pwdSize);
+
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendLoginPacket([MarshalAs(UnmanagedType.LPStr)] string id, int idSize, [MarshalAs(UnmanagedType.LPStr)] string pwd, int pwdSize);
+
+        [DllImport("ChatClient.dll")]
+        static extern void SendLogoutPacket([MarshalAs(UnmanagedType.LPStr)] string id, int idSize);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendChatPacket([MarshalAs(UnmanagedType.LPStr)] string str, int size);
@@ -52,13 +60,18 @@ namespace WinFormClient
         int roomMaxUserCount = 0;
         RoomManager roomManager = new RoomManager();
 
+        // ChatApplication SubForm
+        RoomCreator roomCreator = new RoomCreator();
+        Register registerAccount = new Register();
+
         // flag
         bool IsActivatedLogin = false;
         bool IsActivatedConnect = false;
 
         public MainForm()
         {
-            InitializeComponent();  
+            InitializeComponent();
+            ChatInit();
         }
 
         public void mainForm_Load(object sender, EventArgs e)
@@ -87,7 +100,6 @@ namespace WinFormClient
             if(!IsActivatedConnect)
             {
                 ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
-                SendConnectPacket();
 
                 // Connect Disable
                 textBox_IP.Enabled = false;
@@ -97,6 +109,7 @@ namespace WinFormClient
                 textBox_ID.Enabled = true;
                 textBox_password.Enabled = true;
                 button_login.Enabled = true;
+                button_register.Enabled = true;
                 
                 IsActivatedConnect = true;
                 button_isConnect.Text = "Disconnect";
@@ -113,6 +126,7 @@ namespace WinFormClient
                 textBox_ID.Enabled = false;
                 textBox_password.Enabled = false;
                 button_login.Enabled = false;
+                button_register.Enabled = false;
 
                 IsActivatedConnect = false;
                 button_isConnect.Text = "Connect";
@@ -123,17 +137,22 @@ namespace WinFormClient
         {
             if (!IsActivatedLogin)
             {
+                SendConnectPacket();
                 SendLoginPacket(textBox_ID.Text, textBox_ID.Text.Length, textBox_password.Text, textBox_password.Text.Length);
             }
             else
             {
-                userID = null;
-                button_login.Text = "Login";
-                textBox_ID.Text = "";
-                textBox_ID.Enabled = true;
-                textBox_password.Enabled = true;
-                textBox_password.Text = "";
-                IsActivatedLogin = false;
+                SendLogoutPacket(textBox_ID.Text, textBox_ID.Text.Length);
+            }
+        }
+
+        private void button_register_Click(object sender, EventArgs e)
+        {
+            var result = registerAccount.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                SendRegisterAccount(registerAccount.returnID, registerAccount.returnID.Length, registerAccount.returnPW, registerAccount.returnPW.Length);
             }
         }
 
@@ -191,7 +210,6 @@ namespace WinFormClient
 
         private void button_RoomCreate_Click(object sender, EventArgs e)
         {
-            RoomCreator roomCreator = new RoomCreator();
             var result = roomCreator.ShowDialog();
 
             if (result == DialogResult.OK)
@@ -330,18 +348,47 @@ namespace WinFormClient
         {
             button_login.Text = "Logout";
             userID = textBox_ID.Text;
-            IsActivatedLogin = true;
 
             textBox_ID.Enabled = false;
             textBox_password.Enabled = false;
+            button_register.Enabled = false;
+
             button_RoomCreate.Enabled = true;
             button_RoomEnter.Enabled = true;
+
+            IsActivatedLogin = true;
+            button_isConnect.Enabled = false;
+        }
+
+        void DisableLoginStateUI()
+        {
+            button_login.Text = "Login";
+            userID = null;
+            textBox_ID.Text = "";
+            textBox_ID.Enabled = true;
+
+            textBox_password.Enabled = true;
+            textBox_password.Text = "";
+            button_register.Enabled = true;
+
+            // listview Clear
+            listView_room.Items.Clear();
+            button_RoomCreate.Enabled = false;
+            button_RoomEnter.Enabled = false;
+
+            IsActivatedLogin = false;
+            button_isConnect.Enabled = true;
         }
 
         private void listView_room_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
         {
             e.NewWidth = listView_room.Columns[e.ColumnIndex].Width;
             e.Cancel = true;
+        }
+
+        private void changeStatusLabelUI(string status)
+        {
+            label_Status.Text = "Status : " + status;
         }
     }
 }

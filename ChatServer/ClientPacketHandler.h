@@ -15,6 +15,8 @@ public:
 	void ProcessConnect(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessLoginReq(shared_ptr<ChatSession> session, char* packetData, int size);
+	void ProcessLogout(shared_ptr<ChatSession> session, char* packetData, int size);
+	void ProcessResgister(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessChat(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessRoomOpen(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessRoomEnter(shared_ptr<ChatSession> session, char* packetData, int size);

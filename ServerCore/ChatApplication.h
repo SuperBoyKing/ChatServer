@@ -63,7 +63,11 @@ public:
 	// Packet 송신 함수 (Client -> Server)
 	void SendConnect();
 
+	void SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize);
+
 	void SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize);
+
+	void SendLogout(const char* id, const int idSize);
 
 	void SendChat(const char* str, const int size);
 
@@ -73,7 +77,7 @@ public:
 
 	void SendRoomLeave(int number);
 
-	void Disconnect();
+	void Disconnect(int numberOfThreads = 1);
 
 private:
 	template<typename PacketType>

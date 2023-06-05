@@ -14,7 +14,7 @@
 #define PACKET_HEADER_SIZE		sizeof(PACKET_HEADER)
 #define	EXPORT					__declspec(dllexport)
 
-// Chat Application의 공유포인터를 통한 멤버변수 접근 메크로
+// ChatSession 내부에서 Chat Application의 공유포인터를 통한 멤버변수 접근 메크로
 #define CHAT_IOCP_HANDLER		m_chatApp.lock()->GetIOCPHandler()
 #define CHAT_SESSION_TYPE		m_chatApp.lock()->GetSessionType()
 #define CHAT_ADDRESS			m_chatApp.lock()->GetAddress()

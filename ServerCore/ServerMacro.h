@@ -4,7 +4,7 @@
 
 #define CRASH(cause)						\
 {											\
-	unsigned __int32* crash = nullptr;				\
+	unsigned __int32* crash = nullptr;		\
 	__analysis_assume(crash != nullptr);	\
 	*crash = 0xDEADBEEF;					\
 }		

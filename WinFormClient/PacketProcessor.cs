@@ -16,45 +16,48 @@ namespace WinFormClient
         static extern bool GetPacketHeader(ref PACKET_HEADER packetHeader);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetLoginPacket(ref SC_LOGIN_RESPONSE packetData, int size);
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetChatPacket(ref SC_CHAT_RESPONSE packetData, int size);
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetChatNotifyPacket(ref SC_CHAT_NOTIFY packetData, int size);
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomOpenPacket(ref SC_ROOM_OPEN_RESPONSE packetData, int size);
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomOpenNotifyPacket(ref SC_ROOM_OPEN_NOTIFY_MULTIPLE packetData, int size);
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomEnterPacket(ref SC_ROOM_ENTER_RESPONSE packetData, int size);
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomEnterUserNotify(ref SC_ROOM_ENTER_USER_NOTIFY packetData, int size);
+        static extern bool GetPacket(byte[] packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern bool GetRoomUserNotifyPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 1)]
             ref SC_USER_LIST_NOTIFY_MULTIPLE[] packetData, int size);
 
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomLeavePacket(ref SC_ROOM_LEAVE_RESPONSE packetData, int size);
+        public static byte[] StructToByte(object obj)
+        {
+            int size = Marshal.SizeOf(obj);
+            byte[] arr = new byte[size];
+            IntPtr ptr = Marshal.AllocHGlobal(size);
 
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetRoomLeaveNotifyPacket(ref SC_ROOM_LEAVE_USER_NOTIFY packetData, int size);
+            Marshal.StructureToPtr(obj, ptr, true);
+            Marshal.Copy(ptr, arr, 0, size);
+            Marshal.FreeHGlobal(ptr);
+            return arr;
+        }
 
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetClosePacket(ref SC_ROOM_CLOSE packetData, int size);
+        public static T ByteToStruct<T>(byte[] buffer) where T : struct
+        {
+            int size = Marshal.SizeOf(typeof(T));
+
+            if (size > buffer.Length)
+            {
+                throw new Exception();
+            }
+
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.Copy(buffer, 0, ptr, size);
+            T obj = (T)Marshal.PtrToStructure(ptr, typeof(T));
+            Marshal.FreeHGlobal(ptr);
+            return obj;
+        }
 
         Dictionary<PacketID, Action<PACKET_HEADER>> PacketFuncDictionary = new Dictionary<PacketID, Action<PACKET_HEADER>>();
 
         void InitProcessPacket()
         {
             PacketFuncDictionary.Add(PacketID.CONNECT_RESPONSE, ProcessConnectResponse);
+            PacketFuncDictionary.Add(PacketID.REGISTER_RESPONSE, ProcessRegisterResponse);
             PacketFuncDictionary.Add(PacketID.LOGIN_RESPONSE, ProcessLoginResponse);
+            PacketFuncDictionary.Add(PacketID.LOGOUT_RESPONSE, ProcessLogoutResponse);
             PacketFuncDictionary.Add(PacketID.CHAT_RESPONSE, ProcessChatResponse);
             PacketFuncDictionary.Add(PacketID.CHAT_NOTIFY, ProcessChatNotify);
             PacketFuncDictionary.Add(PacketID.ROOM_OPEN_RESPONSE, ProcessRoomOpenResponse);
@@ -100,13 +103,38 @@ namespace WinFormClient
             }
         }
 
+        void ProcessRegisterResponse(PACKET_HEADER packetHeader)
+        {
+            SC_REGISTER_RESPONSE registerPacket;
+            registerPacket.result = false;
+
+            byte[] data = StructToByte(registerPacket);
+
+            if (GetPacket(data, packetHeader.size))
+            {
+                registerPacket = ByteToStruct<SC_REGISTER_RESPONSE>(data);
+                if (registerPacket.result)
+                {
+                    changeStatusLabelUI("Register Account Success.");
+                }
+                else
+                {
+                    MessageBox.Show("Register Failed.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+        }
+
         void ProcessLoginResponse(PACKET_HEADER packetHeader)
         {
             SC_LOGIN_RESPONSE loginResPacket;
             loginResPacket.result = false;
 
-            if (GetLoginPacket(ref loginResPacket, packetHeader.size))
+            byte[] data = StructToByte(loginResPacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                loginResPacket = ByteToStruct<SC_LOGIN_RESPONSE>(data);
                 if (loginResPacket.result)
                 {
                     SetLoginStateUI();
@@ -118,13 +146,32 @@ namespace WinFormClient
             }
         }
 
+        void ProcessLogoutResponse(PACKET_HEADER packetHeader)
+        {
+            SC_LOGOUT_RESPONSE logoutPacket;
+            logoutPacket.result = false;
+
+            byte[] data = StructToByte(logoutPacket);
+
+            if (GetPacket(data, packetHeader.size))
+            {
+                logoutPacket = ByteToStruct<SC_LOGOUT_RESPONSE>(data);
+                if (logoutPacket.result == true)
+                    DisableLoginStateUI();
+            }
+
+        }
+
         void ProcessChatResponse(PACKET_HEADER packetHeader) 
         {
             SC_CHAT_RESPONSE chatResPacket;
             chatResPacket.result = false;
 
-            if (GetChatPacket(ref chatResPacket, packetHeader.size))
+            byte[] data = StructToByte(chatResPacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                chatResPacket = ByteToStruct<SC_CHAT_RESPONSE>(data);
                 if (chatResPacket.result)
                     AddChatMsgUI();
             }
@@ -141,8 +188,11 @@ namespace WinFormClient
             chatNotifyPacket.userID = null;
             chatNotifyPacket.message = null;
 
-            if (GetChatNotifyPacket(ref chatNotifyPacket, packetHeader.size))
+            byte[] data = StructToByte(chatNotifyPacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                chatNotifyPacket = ByteToStruct<SC_CHAT_NOTIFY>(data);
                 AddChatMsgUI(chatNotifyPacket);
             }
         }
@@ -153,8 +203,11 @@ namespace WinFormClient
             roomOpenPacket.roomNumber = 0;
             roomOpenPacket.result = false;
 
-            if (GetRoomOpenPacket(ref roomOpenPacket, packetHeader.size))
+            byte[] data = StructToByte(roomOpenPacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                roomOpenPacket = ByteToStruct<SC_ROOM_OPEN_RESPONSE>(data);
                 if (roomOpenPacket.result)
                 {
                     Room room = new Room(roomOpenPacket.roomNumber, roomTitle, 0, roomMaxUserCount);
@@ -171,8 +224,11 @@ namespace WinFormClient
             roomNotify.roomInfo.maxUserCount = 0;
             roomNotify.roomInfo.currentUserCount = 0;
 
-            if (GetRoomOpenNotifyPacket(ref roomNotify, packetHeader.size))
+            byte[] data = StructToByte(roomNotify);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                roomNotify = ByteToStruct<SC_ROOM_OPEN_NOTIFY_MULTIPLE>(data);
                 AddRoomListUI(roomNotify.roomInfo);
             }
         }
@@ -183,8 +239,11 @@ namespace WinFormClient
             roomEnterPacket.result = false;
             roomEnterPacket.currentUserCount = 0;
 
-            if (GetRoomEnterPacket(ref roomEnterPacket, packetHeader.size))
+            byte[] data = StructToByte(roomEnterPacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                roomEnterPacket = ByteToStruct<SC_ROOM_ENTER_RESPONSE>(data);
                 if (roomEnterPacket.result)
                 {
                     EnableRoomUI();
@@ -203,8 +262,11 @@ namespace WinFormClient
             SC_ROOM_ENTER_USER_NOTIFY roomEnterUserPacket;
             roomEnterUserPacket.userID = null;
 
-            if (GetRoomEnterUserNotify(ref roomEnterUserPacket, packetHeader.size))
+            byte[] data = StructToByte(roomEnterUserPacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                roomEnterUserPacket = ByteToStruct<SC_ROOM_ENTER_USER_NOTIFY>(data);
                 for (int i = 0; i < packetHeader.packetCount; ++i)
                 {
                     AddUserListUI(roomEnterUserPacket.userID);
@@ -230,8 +292,11 @@ namespace WinFormClient
             SC_ROOM_LEAVE_RESPONSE roomLeavePacket;
             roomLeavePacket.result = false;
 
-            if (GetRoomLeavePacket(ref roomLeavePacket, packetHeader.size))
+            byte[] data = StructToByte(roomLeavePacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                roomLeavePacket = ByteToStruct<SC_ROOM_LEAVE_RESPONSE>(data);
                 if (roomLeavePacket.result)
                 {
                     DisableRoomUI();
@@ -247,8 +312,11 @@ namespace WinFormClient
             SC_ROOM_LEAVE_USER_NOTIFY roomLeaveNotify;
             roomLeaveNotify.userID = null;
 
-            if (GetRoomLeaveNotifyPacket(ref roomLeaveNotify, packetHeader.size))
+            byte[] data = StructToByte(roomLeaveNotify);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                roomLeaveNotify = ByteToStruct<SC_ROOM_LEAVE_USER_NOTIFY>(data);
                 RemoveUserListUI(roomLeaveNotify.userID);
             }
         }
@@ -258,8 +326,11 @@ namespace WinFormClient
             SC_ROOM_CLOSE closePacket;
             closePacket.roomNumber = 0;
 
-            if (GetClosePacket(ref closePacket, packetHeader.size))
+            byte[] data = StructToByte(closePacket);
+
+            if (GetPacket(data, packetHeader.size))
             {
+                closePacket = ByteToStruct<SC_ROOM_CLOSE>(data);
                 RemoveRoomListUI(closePacket.roomNumber);
             }
         }
