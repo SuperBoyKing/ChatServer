@@ -29,6 +29,8 @@ namespace WinFormClient
             {
                 returnTitle = textBox_title.Text;
                 returnUserCount = Int32.Parse(textBox_userCount.Text);
+                textBox_title.Text = "";
+                textBox_userCount.Text = "";
                 this.DialogResult = DialogResult.OK;
             }
 

@@ -16,24 +16,12 @@
     <ClCompile Include="ServerSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="ServerPacketHandler.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="PacketManager.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="..\ChatServer\pch.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerSession.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerPacketHandler.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketManager.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="..\ChatServer\pch.h">

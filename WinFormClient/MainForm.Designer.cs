@@ -262,15 +262,15 @@ namespace WinFormClient
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(360, 35);
+            this.label5.Location = new System.Drawing.Point(345, 34);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(62, 15);
+            this.label5.Size = new System.Drawing.Size(98, 15);
             this.label5.TabIndex = 15;
-            this.label5.Text = "Number : ";
+            this.label5.Text = "Room Number : ";
             // 
             // textBox_roomNumber
             // 
-            this.textBox_roomNumber.Location = new System.Drawing.Point(422, 31);
+            this.textBox_roomNumber.Location = new System.Drawing.Point(449, 31);
             this.textBox_roomNumber.Name = "textBox_roomNumber";
             this.textBox_roomNumber.ReadOnly = true;
             this.textBox_roomNumber.Size = new System.Drawing.Size(49, 23);

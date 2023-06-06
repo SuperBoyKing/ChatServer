@@ -69,9 +69,6 @@
     <ClInclude Include="Packet.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="PacketHandler.h">
-      <Filter>Network</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -117,9 +114,6 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="ChatApplication.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PacketHandler.cpp">
       <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>

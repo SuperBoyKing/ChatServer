@@ -210,8 +210,6 @@ namespace WinFormClient
         private void button_RoomCreate_Click(object sender, EventArgs e)
         {
             var result = roomCreator.ShowDialog();
-            roomCreator.returnTitle = "";
-            roomCreator.returnUserCount = 0;
 
             if (result == DialogResult.OK)
             {

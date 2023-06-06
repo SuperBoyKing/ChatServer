@@ -102,7 +102,7 @@ void ClientPacketHandler::ProcessLogout(shared_ptr<ChatSession> session, char* p
 	CS_LOGOUT_REQUEST* recvPacket = reinterpret_cast<CS_LOGOUT_REQUEST*>(packetData);
 	SC_LOGOUT_RESPONSE sendPacket;
 	
-	if (session->GetSessionState() == SessionState::NONE &&
+	if (session->GetSessionState() == SessionState::LOGIN &&
 		GClientSessionManager->SearchConnectionUser(recvPacket->userID))
 	{
 		sendPacket.result = true;

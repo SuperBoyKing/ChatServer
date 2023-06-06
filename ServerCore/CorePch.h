@@ -47,6 +47,5 @@ using namespace std;
 #include "ChatApplication.h"
 #include "ThreadManager.h"
 #include "Packet.h"
-#include "PacketHandler.h"
 
 

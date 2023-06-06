@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "ServerSession.h"
-#include "ServerPacketHandler.h"
 #include <ObjBase.h>
 
 mutex m;
@@ -9,22 +8,20 @@ template <typename PacketType>
 bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 {
 	int packetSize = sizeof(PacketType) * packetCount;
-	PacketType* newArray = reinterpret_cast<PacketType*>(CoTaskMemAlloc(packetSize));
 
 	if (packetSize <= 0)
-		newArray = nullptr;
+		*packetData = nullptr;
 
 	lock_guard<mutex> lock(m);
 	if (!GRecvPacketQueue.empty())
 	{
-		char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-		if (newArray != nullptr)
+		char* packet = &GRecvPacketQueue.front()[0];
+		if (*packetData != nullptr)
 		{
-			::memcpy(newArray, packet + PACKET_HEADER_SIZE, packetSize);
+			::memcpy(*packetData, packet + PACKET_HEADER_SIZE, packetSize);
 		}
 		GRecvPacketQueue.pop();
 
-		*packetData = newArray;
 		return true;
 	}
 
@@ -120,7 +117,7 @@ extern "C"
 		lock_guard<mutex> lock(m);
 		if (!GRecvPacketQueue.empty())
 		{
-			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
+			char* packet = &GRecvPacketQueue.front()[0];
 			::memcpy(packetHeader, packet, PACKET_HEADER_SIZE);
 			return true;
 		}
@@ -132,8 +129,8 @@ extern "C"
 		lock_guard<mutex> lock(m);
 		if (!GRecvPacketQueue.empty())
 		{
-			char* packet = reinterpret_cast<char*>(&GRecvPacketQueue.front()[0]);
-			::memcpy(packetData, packet + sizeof(PACKET_HEADER), size - PACKET_HEADER_SIZE);
+			char* packet = &GRecvPacketQueue.front()[0];
+			::memcpy(packetData, packet + PACKET_HEADER_SIZE, size - PACKET_HEADER_SIZE);
 			GRecvPacketQueue.pop();
 
 			return true;

@@ -22,7 +22,19 @@ namespace WinFormClient
         static extern bool GetRoomUserNotifyPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 1)]
             ref SC_USER_LIST_NOTIFY_MULTIPLE[] packetData, int size);
 
-        public static byte[] StructToByte(object obj)
+        public static byte[] StructToByte(object obj, int count = 1)
+        {
+            int size = Marshal.SizeOf(obj);
+            byte[] arr = new byte[size];
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+
+            Marshal.StructureToPtr(obj, ptr, true);
+            Marshal.Copy(ptr, arr, 0, size);
+            Marshal.FreeHGlobal(ptr);
+            return arr;
+        }
+
+        public static byte[] StructArrayToByte(object[] obj)
         {
             int size = Marshal.SizeOf(obj);
             byte[] arr = new byte[size];
@@ -89,6 +101,19 @@ namespace WinFormClient
                 }
             }
         }
+
+        //void ProcessConnectResponse(PACKET_HEADER packetHeader)
+        //{
+        //    SC_ROOM_LIST_MULTIPLE[] conResPacket = new SC_ROOM_LIST_MULTIPLE[packetHeader.packetCount];
+
+        //    if (GetConnectPacket(ref conResPacket, packetHeader.packetCount))
+        //    {
+        //        for (int i = 0; i < packetHeader.packetCount; ++i)
+        //        {
+        //            AddRoomListUI(conResPacket[i].roomInfo);
+        //        }
+        //    }
+        //}
 
         void ProcessConnectResponse(PACKET_HEADER packetHeader)
         {
@@ -158,7 +183,9 @@ namespace WinFormClient
             {
                 logoutPacket = ByteToStruct<SC_LOGOUT_RESPONSE>(data);
                 if (logoutPacket.result == true)
+                {
                     DisableLoginStateUI();
+                }
             }
 
         }
