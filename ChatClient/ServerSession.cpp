@@ -18,7 +18,7 @@ void ServerSession::OnRecv(char* buffer, unsigned int len)
 
 void ServerSession::OnConnect()
 {
-	//cout << "Connection Success" << endl;
+	cout << "Connection Success" << endl;
 }
 
 void ServerSession::OnDisconnect()

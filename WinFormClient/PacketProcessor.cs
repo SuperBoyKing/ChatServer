@@ -34,18 +34,6 @@ namespace WinFormClient
             return arr;
         }
 
-        public static byte[] StructArrayToByte(object[] obj)
-        {
-            int size = Marshal.SizeOf(obj);
-            byte[] arr = new byte[size];
-            IntPtr ptr = Marshal.AllocHGlobal(size);
-
-            Marshal.StructureToPtr(obj, ptr, true);
-            Marshal.Copy(ptr, arr, 0, size);
-            Marshal.FreeHGlobal(ptr);
-            return arr;
-        }
-
         public static T ByteToStruct<T>(byte[] buffer) where T : struct
         {
             int size = Marshal.SizeOf(typeof(T));
@@ -102,19 +90,6 @@ namespace WinFormClient
             }
         }
 
-        //void ProcessConnectResponse(PACKET_HEADER packetHeader)
-        //{
-        //    SC_ROOM_LIST_MULTIPLE[] conResPacket = new SC_ROOM_LIST_MULTIPLE[packetHeader.packetCount];
-
-        //    if (GetConnectPacket(ref conResPacket, packetHeader.packetCount))
-        //    {
-        //        for (int i = 0; i < packetHeader.packetCount; ++i)
-        //        {
-        //            AddRoomListUI(conResPacket[i].roomInfo);
-        //        }
-        //    }
-        //}
-
         void ProcessConnectResponse(PACKET_HEADER packetHeader)
         {
             SC_ROOM_LIST_MULTIPLE[] conResPacket = new SC_ROOM_LIST_MULTIPLE[packetHeader.packetCount];
@@ -140,7 +115,7 @@ namespace WinFormClient
                 registerPacket = ByteToStruct<SC_REGISTER_RESPONSE>(data);
                 if (registerPacket.result)
                 {
-                    changeStatusLabelUI("Register Account Success.");
+                    MessageBox.Show("Register Success.", "Regit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {

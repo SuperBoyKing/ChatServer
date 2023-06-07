@@ -31,13 +31,13 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendConnectPacket();
 
-        [DllImport("ChatClient.dll")]
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRegisterAccount([MarshalAs(UnmanagedType.LPStr)] string id, int idSize, [MarshalAs(UnmanagedType.LPStr)] string pwd, int pwdSize);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendLoginPacket([MarshalAs(UnmanagedType.LPStr)] string id, int idSize, [MarshalAs(UnmanagedType.LPStr)] string pwd, int pwdSize);
 
-        [DllImport("ChatClient.dll")]
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendLogoutPacket([MarshalAs(UnmanagedType.LPStr)] string id, int idSize);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -52,13 +52,13 @@ namespace WinFormClient
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRoomLeavePacket(int number);
 
-        ChatDrawingType[] chatDrawIndexFlags = new ChatDrawingType[512];
 
         // 로컬 ChatApplication 정보
         string userID = null;
         string roomTitle = null;
         int roomMaxUserCount = 0;
         RoomManager roomManager = new RoomManager();
+        ChatDrawingType[] chatDrawIndexFlags = new ChatDrawingType[512];
 
         // ChatApplication SubForm
         RoomCreator roomCreator = new RoomCreator();
@@ -113,6 +113,7 @@ namespace WinFormClient
                 
                 IsActivatedConnect = true;
                 button_isConnect.Text = "Disconnect";
+                setStatusLabelUI("Connected Chat Server");
             }
             else
             {
@@ -130,6 +131,7 @@ namespace WinFormClient
 
                 IsActivatedConnect = false;
                 button_isConnect.Text = "Connect";
+                setStatusLabelUI("DisConnected");
             }
         }
 
@@ -385,7 +387,7 @@ namespace WinFormClient
             e.Cancel = true;
         }
 
-        private void changeStatusLabelUI(string status)
+        private void setStatusLabelUI(string status)
         {
             label_Status.Text = "Status : " + status;
         }
