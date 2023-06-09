@@ -39,11 +39,13 @@ bool Room::Leave(shared_ptr<ChatSession> userSession)
 
 	auto itr = find(m_userList.begin(), m_userList.end(), userSession);
 
-	lock_guard<recursive_mutex> lock(m_mutex);
-	if (itr != m_userList.end())
 	{
-		m_userList.erase(itr);
-		return true;
+		lock_guard<recursive_mutex> lock(m_mutex);
+		if (itr != m_userList.end())
+		{
+			m_userList.erase(itr);
+			return true;
+		}
 	}
 
 	return false;

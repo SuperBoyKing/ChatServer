@@ -201,7 +201,8 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 	}
 	SendProcessedPacket(session, &sendPacket);
 
-	if (sendPacket.result == true && enteredRoom->GetCurrentUserCount() > 1)
+	
+	if (sendPacket.result == true && enteredRoom->GetCurrentUserCount() > 1) // 방 접속에 성공했으며, 자신을 제외한 다른 유저가 방에 존재 할 경우
 	{
 		//  신규 접속한 클라이언트에게 RoomUserList 전송
 		PACKET_HEADER packetHeader;

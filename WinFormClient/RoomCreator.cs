@@ -41,5 +41,21 @@ namespace WinFormClient
         {
             Close();
         }
+
+        private void textBox_title_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsLetter(e.KeyChar) || Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox_userCount_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

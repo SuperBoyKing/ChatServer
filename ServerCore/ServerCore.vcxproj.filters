@@ -10,9 +10,6 @@
     <Filter Include="Network">
       <UniqueIdentifier>{c820801d-c070-477a-b389-a49174335c24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MemoryManagement">
-      <UniqueIdentifier>{0b82f0a0-e998-46b1-9caf-073ef00a8c71}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">

@@ -9,7 +9,7 @@ public:
 	ClientPacketHandler();
 	~ClientPacketHandler();
 
-	void HandlePacket(shared_ptr<ChatSession> session, char* packet);	// 추후 수정
+	void HandlePacket(shared_ptr<ChatSession> session, char* packet);
 
 	// 패킷 처리 함수 //
 	void ProcessConnect(shared_ptr<ChatSession> session, char* packetData, int size);
@@ -44,6 +44,7 @@ public:
 		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);
 		int roomNumber = session->GetRoomNumber();
 		shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(roomNumber);
+
 		if (enteredRoom != shared_ptr<Room>())
 		{
 			for (auto& user : enteredRoom->GetUserList())

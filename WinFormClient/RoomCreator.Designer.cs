@@ -48,17 +48,21 @@ namespace WinFormClient
             // 
             // textBox_title
             // 
+            this.textBox_title.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_title.Location = new System.Drawing.Point(66, 65);
             this.textBox_title.Name = "textBox_title";
             this.textBox_title.Size = new System.Drawing.Size(238, 23);
             this.textBox_title.TabIndex = 1;
+            this.textBox_title.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_title_KeyPress);
             // 
             // textBox_userCount
             // 
+            this.textBox_userCount.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_userCount.Location = new System.Drawing.Point(105, 109);
             this.textBox_userCount.Name = "textBox_userCount";
             this.textBox_userCount.Size = new System.Drawing.Size(38, 23);
             this.textBox_userCount.TabIndex = 3;
+            this.textBox_userCount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_userCount_KeyPress);
             // 
             // label2
             // 

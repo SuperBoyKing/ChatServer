@@ -39,10 +39,12 @@ namespace WinFormClient
             // 
             // textBox_registerPW
             // 
+            this.textBox_registerPW.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_registerPW.Location = new System.Drawing.Point(103, 106);
             this.textBox_registerPW.Name = "textBox_registerPW";
             this.textBox_registerPW.Size = new System.Drawing.Size(199, 23);
             this.textBox_registerPW.TabIndex = 7;
+            this.textBox_registerPW.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_registerPW_KeyPress);
             // 
             // label2
             // 
@@ -55,10 +57,12 @@ namespace WinFormClient
             // 
             // textBox_registerID
             // 
+            this.textBox_registerID.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_registerID.Location = new System.Drawing.Point(103, 62);
             this.textBox_registerID.Name = "textBox_registerID";
             this.textBox_registerID.Size = new System.Drawing.Size(199, 23);
             this.textBox_registerID.TabIndex = 5;
+            this.textBox_registerID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_registerID_KeyPress);
             // 
             // label3
             // 

@@ -75,19 +75,24 @@ namespace WinFormClient
             // 
             // textBox_IP
             // 
+            this.textBox_IP.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_IP.Location = new System.Drawing.Point(81, 13);
             this.textBox_IP.Name = "textBox_IP";
             this.textBox_IP.Size = new System.Drawing.Size(144, 23);
             this.textBox_IP.TabIndex = 1;
             this.textBox_IP.Text = "127.0.0.1";
+            this.textBox_IP.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_IP_KeyPress);
             // 
             // textBox_port
             // 
+            this.textBox_port.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_port.Location = new System.Drawing.Point(325, 14);
+            this.textBox_port.MaxLength = 5;
             this.textBox_port.Name = "textBox_port";
             this.textBox_port.Size = new System.Drawing.Size(81, 23);
             this.textBox_port.TabIndex = 3;
             this.textBox_port.Text = "2023";
+            this.textBox_port.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_port_KeyPress);
             // 
             // label2
             // 
@@ -148,10 +153,12 @@ namespace WinFormClient
             // textBox_password
             // 
             this.textBox_password.Enabled = false;
+            this.textBox_password.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_password.Location = new System.Drawing.Point(42, 79);
             this.textBox_password.Name = "textBox_password";
             this.textBox_password.Size = new System.Drawing.Size(132, 23);
             this.textBox_password.TabIndex = 9;
+            this.textBox_password.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_password_KeyPress);
             // 
             // pw
             // 
@@ -165,10 +172,12 @@ namespace WinFormClient
             // textBox_ID
             // 
             this.textBox_ID.Enabled = false;
+            this.textBox_ID.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_ID.Location = new System.Drawing.Point(42, 37);
             this.textBox_ID.Name = "textBox_ID";
             this.textBox_ID.Size = new System.Drawing.Size(132, 23);
             this.textBox_ID.TabIndex = 7;
+            this.textBox_ID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_ID_KeyPress);
             // 
             // label3
             // 
@@ -196,16 +205,19 @@ namespace WinFormClient
             this.button_chat.Text = "chat";
             this.button_chat.UseVisualStyleBackColor = true;
             this.button_chat.Click += new System.EventHandler(this.Button_chat_Click);
+            this.button_chat.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button_chat_KeyDown);
             // 
             // textBox_chat
             // 
             this.textBox_chat.Enabled = false;
+            this.textBox_chat.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_chat.Location = new System.Drawing.Point(197, 416);
             this.textBox_chat.MaxLength = 256;
             this.textBox_chat.Multiline = true;
             this.textBox_chat.Name = "textBox_chat";
             this.textBox_chat.Size = new System.Drawing.Size(276, 23);
             this.textBox_chat.TabIndex = 9;
+            this.textBox_chat.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_chat_KeyPress);
             // 
             // listBox_chat
             // 

@@ -97,7 +97,7 @@ namespace WinFormClient
 
         private void Button_isConnect_Click(object sender, EventArgs e)
         {
-            if(!IsActivatedConnect)
+            if (!IsActivatedConnect)
             {
                 ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
 
@@ -110,7 +110,7 @@ namespace WinFormClient
                 textBox_password.Enabled = true;
                 button_login.Enabled = true;
                 button_register.Enabled = true;
-                
+
                 IsActivatedConnect = true;
                 button_isConnect.Text = "Disconnect";
                 setStatusLabelUI("Connected Chat Server");
@@ -183,7 +183,7 @@ namespace WinFormClient
 
             if (e.Index == -1)
                 return;
-            
+
             switch (chatDrawIndexFlags[e.Index])
             {
                 case ChatDrawingType.RESPONSE_CHAT:
@@ -390,6 +390,160 @@ namespace WinFormClient
         private void setStatusLabelUI(string status)
         {
             label_Status.Text = "Status : " + status;
+        }
+
+        private void button_chat_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnEnther_Click(sender, e);
+            }
+        }
+
+        private void btnEnther_Click(object sender, EventArgs e)
+        {
+            if (textBox_chat.Text == "")
+            {
+                MessageBox.Show("Please insert chat text", "Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBox_chat.Focus();
+            }
+        }
+
+        // 키 입력 제한
+        private void textBox_ID_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsLetter(e.KeyChar) || Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox_password_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsLetter(e.KeyChar) || Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox_chat_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsLetter(e.KeyChar) || Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox_IP_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            int iPos = 0;               // IP 구역의 현재 위치
+            int iDelimitNumber = 0;     // IP 구역의 갯수
+
+            int iLength = textBox_IP.Text.Length;
+            int iIndex = textBox_IP.Text.LastIndexOf(".");
+
+            int iIndex2 = -1;
+            while (true)
+            {
+                iIndex2 = textBox_IP.Text.IndexOf(".", iIndex2 + 1);
+                if (iIndex2 == -1)
+                    break;
+
+                ++iDelimitNumber;
+            }
+
+            // 숫자키와 백스페이스, '.' 만 입력 가능
+            if ((e.KeyChar < 48 || e.KeyChar > 57) &&
+            e.KeyChar != 8 && e.KeyChar != '.')
+            {
+                //MessageBox.Show("숫자만 입력 가능합니다", "오류");
+                e.Handled = true;
+                return;
+            }
+
+            if (e.KeyChar != 8)
+            {
+                if (e.KeyChar != '.')
+                {
+                    if (iIndex > 0)
+                        iPos = iLength - iIndex;
+                    else
+                        iPos = iLength + 1;
+
+                    if (iPos == 3)
+                    {
+                        // 255 이상 체크
+                        string strTmp = textBox_IP.Text.Substring(iIndex + 1) + e.KeyChar;
+                        if (Int32.Parse(strTmp) > 255)
+                        {
+                            MessageBox.Show("255를 넘길수 없습니다.", "오류");
+                            e.Handled = true;
+                            return;
+                        }
+                        else
+                        {
+                            // 3자리가 넘어가면 자동으로 .을 찍어준다
+                            if (iDelimitNumber < 3)
+                            {
+                                textBox_IP.AppendText(e.KeyChar.ToString());
+                                textBox_IP.AppendText(".");
+                                iDelimitNumber++;
+                                e.Handled = true;
+                                return;
+                            }
+                        }
+                    }
+
+                    // IP 마지막 4자리째는 무조건 무시
+                    if (iPos == 4)
+                    {
+                        e.Handled = true;
+                        return;
+                    }
+                }
+                else
+                {
+                    // 아이피가 3구역 이상 쓰였으면, 이후 키는 무시한다
+                    if (iDelimitNumber + 1 > 3)
+                    {
+                        MessageBox.Show("IP 주소가 정확하지 않습니다.", "오류");
+                        e.Handled = true;
+                        return;
+                    }
+                    else
+                    {
+                        // 연속으로 .을 찍었으면 오류
+                        if (textBox_IP.Text.EndsWith("."))
+                        {
+                            MessageBox.Show("IP 주소가 정확하지 않습니다.", "오류");
+                            e.Handled = true;
+                            return;
+                        }
+                        else
+                            iDelimitNumber++;
+                    }
+                }
+            }
+        }
+
+        private void textBox_port_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            {
+                e.Handled = true;
+            }
+            else
+            {
+                if (Char.IsNumber(e.KeyChar))
+                {
+                    string portText = textBox_port.Text + e.KeyChar.ToString();
+
+                    if (Int32.Parse(portText) > UInt16.MaxValue)
+                    {
+                        e.Handled = true;
+                    }
+                }   
+            }
         }
     }
 }
