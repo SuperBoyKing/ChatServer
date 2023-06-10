@@ -8,8 +8,12 @@ namespace WinFormClient
     public enum PacketID : ushort
     {
         NONE,
+
         CONNECT_REQUEST,
         CONNECT_RESPONSE,
+
+        ROOM_LIST_REQUEST,
+        ROOM_LIST_RESPONSE,
 
         REGISTER_REQUEST,
         REGISTER_RESPONSE,
@@ -45,6 +49,18 @@ namespace WinFormClient
         public int size;
         public int packetCount;
         public PacketID id;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CS_CONNECT_REQUEST
+    {
+
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SC_CONNECT_RESPONSE
+    {
+        public bool result;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

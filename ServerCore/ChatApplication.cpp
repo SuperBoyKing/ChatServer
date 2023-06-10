@@ -28,6 +28,7 @@ ChatServer::~ChatServer()
 bool ChatServer::Start()
 {
 	m_clientListener = make_shared<ClientListener>(shared_from_this());
+
 	if (m_clientListener == nullptr)
 	{
 		PRINT_ERROR("Create Listener Error");
@@ -90,7 +91,13 @@ bool ChatClient::Start()
 	return true;
 }
 
-void ChatClient::SendConnect()
+bool ChatClient::SendConnect()
+{
+	CS_CONNECT_REQUEST packet;
+	return SendPacket(packet);
+}
+
+void ChatClient::SendRoomList()
 {
 	CS_ROOM_LIST_REQUEST packet;
 	SendPacket<CS_ROOM_LIST_REQUEST>(packet);

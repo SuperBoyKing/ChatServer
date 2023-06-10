@@ -29,7 +29,10 @@ namespace WinFormClient
         static extern void Disconnect();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void SendConnectPacket();
+        static extern bool SendConnect();
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendRoomListPacket();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRegisterAccount([MarshalAs(UnmanagedType.LPStr)] string id, int idSize, [MarshalAs(UnmanagedType.LPStr)] string pwd, int pwdSize);
@@ -99,39 +102,19 @@ namespace WinFormClient
         {
             if (!IsActivatedConnect)
             {
+                SetStatusLabelUI("Connecting to Chat Server...");
                 ChatClientStart(textBox_IP.Text, Int16.Parse(textBox_port.Text));
 
-                // Connect Disable
-                textBox_IP.Enabled = false;
-                textBox_port.Enabled = false;
-
-                // Login Setup
-                textBox_ID.Enabled = true;
-                textBox_password.Enabled = true;
-                button_login.Enabled = true;
-                button_register.Enabled = true;
-
-                IsActivatedConnect = true;
-                button_isConnect.Text = "Disconnect";
-                setStatusLabelUI("Connected Chat Server");
+                if(!SendConnect())
+                {
+                    Disconnect();
+                    SetStatusLabelUI("Server session not connected.");
+                }
             }
             else
             {
                 Disconnect();
-
-                // Connect Setup
-                textBox_IP.Enabled = true;
-                textBox_port.Enabled = true;
-
-                // Login Disable
-                textBox_ID.Enabled = false;
-                textBox_password.Enabled = false;
-                button_login.Enabled = false;
-                button_register.Enabled = false;
-
-                IsActivatedConnect = false;
-                button_isConnect.Text = "Connect";
-                setStatusLabelUI("DisConnected");
+                SetDisconnectionUI();
             }
         }
 
@@ -159,8 +142,7 @@ namespace WinFormClient
 
         private void Button_chat_Click(object sender, EventArgs e)
         {
-            string chatMsg = textBox_chat.Text;
-            SendChatPacket(chatMsg, chatMsg.Length);
+            SendChatPacket(textBox_chat.Text, textBox_chat.Text.Length);
             button_chat.Enabled = false;
         }
 
@@ -267,6 +249,40 @@ namespace WinFormClient
             ProcessPacket();
         }
 
+        void SetConnectionUI()
+        {
+            // Connect Disable
+            textBox_IP.Enabled = false;
+            textBox_port.Enabled = false;
+
+            // Login Setup
+            textBox_ID.Enabled = true;
+            textBox_password.Enabled = true;
+            button_login.Enabled = true;
+            button_register.Enabled = true;
+
+            IsActivatedConnect = true;
+            button_isConnect.Text = "Disconnect";
+            SetStatusLabelUI("Connected Chat Server");
+        }
+
+        void SetDisconnectionUI()
+        {
+            // Connect Setup
+            textBox_IP.Enabled = true;
+            textBox_port.Enabled = true;
+
+            // Login Disable
+            textBox_ID.Enabled = false;
+            textBox_password.Enabled = false;
+            button_login.Enabled = false;
+            button_register.Enabled = false;
+
+            IsActivatedConnect = false;
+            button_isConnect.Text = "Connect";
+            SetStatusLabelUI("DisConnected");
+        }
+
         void AddRoomListUI(Room room)
         {
             roomManager.roomDictionary.Add(room.number, room);
@@ -300,6 +316,9 @@ namespace WinFormClient
             button_RoomLeave.Enabled = true;
             listView_room.Enabled = false;
 
+            // 로그인/로그아웃 비활성화
+            button_login.Enabled = false;
+
             // title, number 입력
             textBox_roomTitle.Text = listView_room.SelectedItems[0].SubItems[1].Text;
             textBox_roomNumber.Text = listView_room.SelectedItems[0].SubItems[0].Text;
@@ -307,10 +326,24 @@ namespace WinFormClient
 
         void DisableRoomUI()
         {
+            // Chat UI 비활성화
+            button_chat.Enabled = false;
+            textBox_chat.Enabled = false;
+            listBox_chat.Enabled = false;
+            listBox_user.Enabled = false;
+
+            // Leave 버튼 비활성화
+            button_RoomLeave.Enabled = false;
+            listView_room.Enabled = true;
+
+            // Room Clear
             listBox_chat.Items.Clear();
             listBox_user.Items.Clear();
             textBox_roomTitle.Clear();
             textBox_roomNumber.Clear();
+
+            // 로그인/로그아웃 활성화
+            button_login.Enabled = true;
 
             button_RoomLeave.Enabled = false;
             listView_room.Enabled = true;
@@ -376,6 +409,7 @@ namespace WinFormClient
             listView_room.Items.Clear();
             button_RoomCreate.Enabled = false;
             button_RoomEnter.Enabled = false;
+            roomManager.roomDictionary.Clear();
 
             IsActivatedLogin = false;
             button_isConnect.Enabled = true;
@@ -387,17 +421,9 @@ namespace WinFormClient
             e.Cancel = true;
         }
 
-        private void setStatusLabelUI(string status)
+        private void SetStatusLabelUI(string status)
         {
             label_Status.Text = "Status : " + status;
-        }
-
-        private void button_chat_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                btnEnther_Click(sender, e);
-            }
         }
 
         private void btnEnther_Click(object sender, EventArgs e)
@@ -406,6 +432,11 @@ namespace WinFormClient
             {
                 MessageBox.Show("Please insert chat text", "Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textBox_chat.Focus();
+            }
+            else
+            {
+                SendChatPacket(textBox_chat.Text, textBox_chat.Text.Length);
+                button_chat.Enabled = false;
             }
         }
 
@@ -426,11 +457,11 @@ namespace WinFormClient
             }
         }
 
-        private void textBox_chat_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBox_chat_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!(Char.IsLetter(e.KeyChar) || Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            if (e.KeyCode == Keys.Enter)
             {
-                e.Handled = true;
+                btnEnther_Click(sender, e);
             }
         }
 
@@ -456,7 +487,6 @@ namespace WinFormClient
             if ((e.KeyChar < 48 || e.KeyChar > 57) &&
             e.KeyChar != 8 && e.KeyChar != '.')
             {
-                //MessageBox.Show("숫자만 입력 가능합니다", "오류");
                 e.Handled = true;
                 return;
             }
@@ -528,7 +558,7 @@ namespace WinFormClient
 
         private void textBox_port_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != 8)
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != 8) 
             {
                 e.Handled = true;
             }

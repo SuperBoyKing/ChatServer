@@ -6,6 +6,7 @@ unique_ptr<ClientPacketHandler> GClientPacketHandler = make_unique<ClientPacketH
 ClientPacketHandler::ClientPacketHandler()
 {
 	m_uMapProcessPacket[PacketID::CONNECT_REQUEST] = &ClientPacketHandler::ProcessConnect;
+	m_uMapProcessPacket[PacketID::ROOM_LIST_REQUEST] = &ClientPacketHandler::ProcessRoomList;
 	m_uMapProcessPacket[PacketID::LOGIN_REQUEST] = &ClientPacketHandler::ProcessLogin;
 	m_uMapProcessPacket[PacketID::LOGIN_RESPONSE] = &ClientPacketHandler::ProcessLoginReq;
 	m_uMapProcessPacket[PacketID::LOGOUT_REQUEST] = &ClientPacketHandler::ProcessLogout;
@@ -35,10 +36,19 @@ void ClientPacketHandler::HandlePacket(shared_ptr<ChatSession> session, char* pa
 
 void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* packetData, int size)
 {
+	CS_CONNECT_REQUEST* recvPacket = reinterpret_cast<CS_CONNECT_REQUEST*>(packetData);
+	SC_CONNECT_RESPONSE sendPacket;
+	sendPacket.result = true;
+
+	SendProcessedPacket(session, &sendPacket);
+}
+
+void ClientPacketHandler::ProcessRoomList(shared_ptr<ChatSession> session, char* packetData, int size)
+{
 	PACKET_HEADER packetHeader;
 	packetHeader.packetCount = GRoomManager->GetOpenRoomCount();
 	packetHeader.size += sizeof(SC_ROOM_LIST_MULTIPLE) * packetHeader.packetCount;
-	packetHeader.id = PacketID::CONNECT_RESPONSE;
+	packetHeader.id = PacketID::ROOM_LIST_RESPONSE;
 
 	void* basePacketAddress = ::malloc(packetHeader.size);
 	unique_ptr<SC_ROOM_LIST_MULTIPLE[]> roomInfos = make_unique<SC_ROOM_LIST_MULTIPLE[]>(packetHeader.packetCount);
@@ -71,12 +81,9 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 	UINT32 length = 0;
 
 	// 해당 유저가 이미 로그인 되었나 여부
-	if (session->GetSessionState() == SessionState::NONE 
-		&& false == GClientSessionManager->SearchConnectionUser(recvPacket->userID))
+	if (session->GetSessionState() == SessionState::NONE)
 	{
-		session->SetSessionState(SessionState::LOGIN);
 		session->SetUserID(recvPacket->userID);
-		GClientSessionManager->AddUser(recvPacket->userID);
 
 		DB_LOGIN_REQUEST dbReqEvent;
 		dbReqEvent.packet = *recvPacket;
@@ -94,6 +101,15 @@ void ClientPacketHandler::ProcessLogin(shared_ptr<ChatSession> session, char* pa
 void ClientPacketHandler::ProcessLoginReq(shared_ptr<ChatSession> session, char* packetData, int size)
 {
 	SC_LOGIN_RESPONSE* recvPacket = reinterpret_cast<SC_LOGIN_RESPONSE*>(packetData);
+	if (recvPacket->result == true)
+	{
+		session->SetSessionState(SessionState::LOGIN);
+	}
+	else
+	{
+		session->SetUserID("");
+		session->SetSessionState(SessionState::NONE);
+	}
 	SendProcessedPacket(session, recvPacket);
 }
 
@@ -102,13 +118,11 @@ void ClientPacketHandler::ProcessLogout(shared_ptr<ChatSession> session, char* p
 	CS_LOGOUT_REQUEST* recvPacket = reinterpret_cast<CS_LOGOUT_REQUEST*>(packetData);
 	SC_LOGOUT_RESPONSE sendPacket;
 	
-	if (session->GetSessionState() == SessionState::LOGIN &&
-		GClientSessionManager->SearchConnectionUser(recvPacket->userID))
+	if (session->GetSessionState() == SessionState::LOGIN)
 	{
 		sendPacket.result = true;
 		session->SetUserID("");
 		session->SetSessionState(SessionState::NONE);
-		GClientSessionManager->RemoveConnectionUser(recvPacket->userID);
 	}
 
 	SendProcessedPacket(session, &sendPacket);
@@ -152,7 +166,6 @@ void ClientPacketHandler::ProcessRoomOpen(shared_ptr<ChatSession> session, char*
 	SC_ROOM_OPEN_RESPONSE sendPacket;
 	sendPacket.result = isOpenSuccess;
 	sendPacket.roomNumber = roomNumber;
-	session->SetRoomNumber(roomNumber);
 	SendProcessedPacket(session, &sendPacket);
 
 	if (isOpenSuccess)
@@ -243,13 +256,16 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 		{
 			sendPacket.result = true;
 			session->SetSessionState(SessionState::LOGIN);
+			session->SetRoomNumber(0);
 		}
 		else
 		{
 			sendPacket.result = false;
 		}
 	}
-	SendProcessedPacket(session, &sendPacket);
+
+	if (size != 0)	// size가 0이라면 강제 종료된 세션이므로 응답메시지를 송신하지 않는다.
+		SendProcessedPacket(session, &sendPacket);
 
 	if (sendPacket.result)
 	{
@@ -258,7 +274,10 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 			SC_ROOM_CLOSE closePacket;
 			closePacket.roomNumber = enteredRoom->GetRoomNumber();
 			GRoomManager->CloseRoom(enteredRoom->GetRoomNumber());
-			SendProcessedPacket(shared_ptr<ChatSession>(), &closePacket, true); // 자기 자신을 포함한 모든 유저에게 패킷 전송
+			if (size != 0)
+				SendProcessedPacket(shared_ptr<ChatSession>(), &closePacket, true); // 자기 자신을 포함한 모든 유저에게 패킷 전송
+			else
+				SendProcessedPacket(session, &closePacket, true); // 자기 자신을 제외한 모든 유저에게 패킷 전송
 		}
 		else
 		{

@@ -19,5 +19,12 @@ void ClientSession::OnConnect()
 
 void ClientSession::OnDisconnect()
 {
-	GClientSessionManager->Remove(static_pointer_cast<ChatSession>(shared_from_this()));
+	shared_ptr<ChatSession> session = static_pointer_cast<ChatSession>(shared_from_this());
+	if (session->GetSessionState() == SessionState::ROOM) // 클라이언트의 비정상 종료
+	{
+		CS_ROOM_LEAVE_REQUEST roomPacketData;
+		roomPacketData.roomNumber = session->GetRoomNumber();
+		GClientPacketHandler->ProcessRoomLeave(session, reinterpret_cast<char*>(&roomPacketData), 0);
+	}
+	GClientSessionManager->Remove(session);
 }

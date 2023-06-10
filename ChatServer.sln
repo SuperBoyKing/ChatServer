@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCore", "ServerCore\Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormClient", "WinFormClient\WinFormClient.csproj", "{D186F659-5B69-4F00-AE1D-CDE36842DDAD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DummyClient", "DummyClient\DummyClient.vcxproj", "{F62BADCE-AEB8-4452-BEDC-9309A4550002}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,16 @@ Global
 		{D186F659-5B69-4F00-AE1D-CDE36842DDAD}.Release|x64.Build.0 = Release|Any CPU
 		{D186F659-5B69-4F00-AE1D-CDE36842DDAD}.Release|x86.ActiveCfg = Release|Any CPU
 		{D186F659-5B69-4F00-AE1D-CDE36842DDAD}.Release|x86.Build.0 = Release|Any CPU
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Debug|x64.ActiveCfg = Debug|x64
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Debug|x64.Build.0 = Debug|x64
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Debug|x86.ActiveCfg = Debug|Win32
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Debug|x86.Build.0 = Debug|Win32
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Release|Any CPU.ActiveCfg = Release|Win32
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Release|x64.ActiveCfg = Release|x64
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Release|x64.Build.0 = Release|x64
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Release|x86.ActiveCfg = Release|Win32
+		{F62BADCE-AEB8-4452-BEDC-9309A4550002}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

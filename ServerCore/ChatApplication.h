@@ -61,7 +61,9 @@ public:
 	bool Start() override;
 
 	// Packet 송신 함수 (Client -> Server)
-	void SendConnect();
+	bool SendConnect();
+
+	void SendRoomList();
 
 	void SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize);
 
@@ -81,11 +83,11 @@ public:
 
 private:
 	template<typename PacketType>
-	void SendPacket(PacketType& packet)
+	bool SendPacket(PacketType& packet)
 	{
 		shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
 		sendBuf->CopyData((char*)&packet, packet.size);
-		m_session->Send(sendBuf);
+		return m_session->Send(sendBuf);
 	}
 
 private:

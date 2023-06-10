@@ -12,6 +12,7 @@ ChatSession::ChatSession()
 	, m_chatApp(shared_ptr<ChatApplication>(nullptr))
 	, m_userID{}
 	, m_roomNumber(0)
+	, m_sessionState(SessionState::NONE)
 {
 	if (m_socket == INVALID_SOCKET)
 		PRINT_WSA_ERROR("Create Socket Error");
@@ -78,6 +79,8 @@ bool ChatSession::Connect()
 
 void ChatSession::Disconnect()
 {
+	OnDisconnect();
+
 	if (m_isConnected.exchange(false) == false)
 		return;
 
@@ -86,7 +89,7 @@ void ChatSession::Disconnect()
 	RegisterDisconnect();
 }
 
-void ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
+bool ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
 {
 	const ULONGLONG startTimeOutTick = ::GetTickCount64();
 	while (true) // ConnectEx를 통한 비동기 소켓이 Connection 될 때 까지 대기
@@ -97,7 +100,7 @@ void ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
 		if (::GetTickCount64() - startTimeOutTick >= CONNECTION_TIME_OUT_TICK)
 		{
 			CRASH("Connection Time Out");
-			return;
+			return false;
 		}
 
 		this_thread::yield();
@@ -114,7 +117,9 @@ void ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
 	}
 	
 	if (registSend == true)
-		RegisterSend();	
+		return RegisterSend();	
+
+	return false;
 }
 
 void ChatSession::ProcessSend(unsigned int numberOfBytes)
@@ -182,9 +187,11 @@ void ChatSession::ProcessDisconnect()
 {
 	m_disconnectOperation.ReleaseOwner();
 
-	OnDisconnect();
-
 	m_isConnected.store(false);
+
+	m_sessionState = SessionState::NONE;
+	
+	::memset(m_userID, 0, sizeof(char) * MAX_USER_ID_LENGTH);
 }
 
 void ChatSession::ProcessDBResponse(DBResOperation* dbOperation, unsigned int numberOfBytes)
@@ -196,10 +203,10 @@ void ChatSession::ProcessDBResponse(DBResOperation* dbOperation, unsigned int nu
 	delete dbOperation;
 }
 
-void ChatSession::RegisterSend()
+bool ChatSession::RegisterSend()
 {
 	if (IsConnected() == false)
-		return;
+		return false;
 
 	DWORD bytesTransfered = 0;
 	DWORD flags = 0;
@@ -242,8 +249,11 @@ void ChatSession::RegisterSend()
 			m_sendOperation.ReleaseOwner();
 			m_sendOperation.sendBuffers.clear();
 			m_isRegisteredSend.store(false);
+			return false;
 		}
 	}
+
+	return true;
 }
 
 void ChatSession::RegisterRecv()

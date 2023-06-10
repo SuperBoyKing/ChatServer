@@ -115,7 +115,6 @@ void DBManager::CallPQCS()
 	{
 		DBResOperation* DBOpertaion = new DBResOperation();
 		{
-			// Memory Pool È°¿ë
 			lock_guard<mutex> lock(m_mutex);
 			DBOpertaion->Init();
 			DBOpertaion->SetOwner(dbResEvent.session);

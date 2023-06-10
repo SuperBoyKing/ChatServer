@@ -4,8 +4,12 @@
 enum class PacketID : unsigned __int8
 {
 	NONE,
+
 	CONNECT_REQUEST,
 	CONNECT_RESPONSE,
+
+	ROOM_LIST_REQUEST,
+	ROOM_LIST_RESPONSE,
 
 	REGISTER_REQUEST,
 	REGISTER_RESPONSE,
@@ -42,13 +46,35 @@ struct PACKET_HEADER
 	PacketID		id = PacketID::NONE;
 };
 
+struct CS_CONNECT_REQUEST : public PACKET_HEADER
+{
+	CS_CONNECT_REQUEST()
+	{
+		size = sizeof(CS_CONNECT_REQUEST);
+		packetCount = 1;
+		id = PacketID::CONNECT_REQUEST;
+	}
+};
+
+struct SC_CONNECT_RESPONSE : public PACKET_HEADER
+{
+	bool result = false;
+
+	SC_CONNECT_RESPONSE()
+	{
+		size = sizeof(SC_CONNECT_RESPONSE);
+		packetCount = 1;
+		id = PacketID::CONNECT_RESPONSE;
+	}
+};
+
 struct CS_ROOM_LIST_REQUEST : public PACKET_HEADER
 {
 	CS_ROOM_LIST_REQUEST()
 	{
 		size = sizeof(CS_ROOM_LIST_REQUEST);
 		packetCount = 1;
-		id = PacketID::CONNECT_REQUEST;
+		id = PacketID::ROOM_LIST_REQUEST;
 	}
 };
 

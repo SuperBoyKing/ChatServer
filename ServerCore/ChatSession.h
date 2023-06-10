@@ -27,7 +27,7 @@ public:
 
 	bool		Connect();
 	void		Disconnect();
-	void		Send(shared_ptr<SendBuffer> sendbuffer);
+	bool		Send(shared_ptr<SendBuffer> sendbuffer);
 		
 	inline void		SetApp(weak_ptr<ChatApplication> chatApp)		{ m_chatApp = chatApp; }
 
@@ -53,7 +53,7 @@ public:
 	void		ProcessDBResponse(DBResOperation* dbOperation, unsigned int numberOfBytes);
 
 	// Operation µî·Ï
-	void		RegisterSend();
+	bool		RegisterSend();
 	void		RegisterRecv();
 	bool		RegisterConnect();
 	void		RegisterDisconnect();

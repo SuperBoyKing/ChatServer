@@ -156,6 +156,7 @@ namespace WinFormClient
             this.textBox_password.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.textBox_password.Location = new System.Drawing.Point(42, 79);
             this.textBox_password.Name = "textBox_password";
+            this.textBox_password.PasswordChar = '*';
             this.textBox_password.Size = new System.Drawing.Size(132, 23);
             this.textBox_password.TabIndex = 9;
             this.textBox_password.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_password_KeyPress);
@@ -205,7 +206,6 @@ namespace WinFormClient
             this.button_chat.Text = "chat";
             this.button_chat.UseVisualStyleBackColor = true;
             this.button_chat.Click += new System.EventHandler(this.Button_chat_Click);
-            this.button_chat.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button_chat_KeyDown);
             // 
             // textBox_chat
             // 
@@ -217,7 +217,7 @@ namespace WinFormClient
             this.textBox_chat.Name = "textBox_chat";
             this.textBox_chat.Size = new System.Drawing.Size(276, 23);
             this.textBox_chat.TabIndex = 9;
-            this.textBox_chat.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_chat_KeyPress);
+            this.textBox_chat.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_chat_KeyDown);
             // 
             // listBox_chat
             // 

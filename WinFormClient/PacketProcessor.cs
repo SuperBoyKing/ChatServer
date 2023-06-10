@@ -9,7 +9,7 @@ namespace WinFormClient
     public partial class MainForm
     {
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern bool GetConnectPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStruct, SizeParamIndex = 1)]
+        static extern bool GetRoomListPacket([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStruct, SizeParamIndex = 1)]
         ref SC_ROOM_LIST_MULTIPLE[] packetData, int size);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -55,6 +55,7 @@ namespace WinFormClient
         void InitProcessPacket()
         {
             PacketFuncDictionary.Add(PacketID.CONNECT_RESPONSE, ProcessConnectResponse);
+            PacketFuncDictionary.Add(PacketID.ROOM_LIST_RESPONSE, ProcessRoomListResponse);
             PacketFuncDictionary.Add(PacketID.REGISTER_RESPONSE, ProcessRegisterResponse);
             PacketFuncDictionary.Add(PacketID.LOGIN_RESPONSE, ProcessLoginResponse);
             PacketFuncDictionary.Add(PacketID.LOGOUT_RESPONSE, ProcessLogoutResponse);
@@ -83,18 +84,38 @@ namespace WinFormClient
                 {
                     PacketFuncDictionary[packetHeader.id](packetHeader);
                 }
-                else
-                { 
-                    // unknown packet ID
+                else // unknown packet ID
+                {
+                    byte[] data = new byte[packetHeader.size];
+                    GetPacket(data, packetHeader.size);
+                    MessageBox.Show("Unknown Packet ID.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
 
         void ProcessConnectResponse(PACKET_HEADER packetHeader)
         {
+            SC_CONNECT_RESPONSE conResPacket;
+            conResPacket.result = false;
+
+            byte[] data = StructToByte(conResPacket);
+
+            if (GetPacket(data, packetHeader.size))
+            {
+                conResPacket = ByteToStruct<SC_CONNECT_RESPONSE>(data);
+                if (conResPacket.result == true)
+                {
+                    SetConnectionUI();
+                }
+            }
+    
+        }
+
+        void ProcessRoomListResponse(PACKET_HEADER packetHeader)
+        {
             SC_ROOM_LIST_MULTIPLE[] conResPacket = new SC_ROOM_LIST_MULTIPLE[packetHeader.packetCount];
 
-            if (GetConnectPacket(ref conResPacket, packetHeader.packetCount))
+            if (GetRoomListPacket(ref conResPacket, packetHeader.packetCount))
             {
                 for (int i = 0; i < packetHeader.packetCount; ++i)
                 {
@@ -138,7 +159,7 @@ namespace WinFormClient
                 if (loginResPacket.result)
                 {
                     SetLoginStateUI();
-                    SendConnectPacket();
+                    SendRoomListPacket();
                 }
                 else
                 {

@@ -28,6 +28,7 @@ bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 	return false;
 }
 
+
 extern "C"
 {
 	bool isLoop;
@@ -53,7 +54,7 @@ extern "C"
 		chatClient->SetAddress(ip, port);
 
 		ASSERT_CRASH(chatClient->Start());
-
+		
 		for (int i = 0; i < numberOfProcessor; ++i)
 		{
 			GThreadManager->Launch([=]() {
@@ -72,9 +73,14 @@ extern "C"
 		GThreadManager->Join();
 	}
 
-	EXPORT void SendConnectPacket()
+	EXPORT bool SendConnect()
 	{
-		chatClient->SendConnect();
+		return chatClient->SendConnect();
+	}
+
+	EXPORT void SendRoomListPacket()
+	{
+		chatClient->SendRoomList();
 	}
 
 	EXPORT void SendRegisterAccount(char* id, const int idSize, char* pwd, const int pwdSize)
@@ -139,7 +145,7 @@ extern "C"
 		return false;
 	}
 
-	EXPORT bool GetConnectPacket(SC_ROOM_LIST_MULTIPLE** packetData, int count)
+	EXPORT bool GetRoomListPacket(SC_ROOM_LIST_MULTIPLE** packetData, int count)
 	{
 		return GetNumberOfPacket(packetData, count);
 	}
