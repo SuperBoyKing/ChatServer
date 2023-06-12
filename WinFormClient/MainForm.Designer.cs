@@ -227,6 +227,7 @@ namespace WinFormClient
             this.listBox_chat.ItemHeight = 15;
             this.listBox_chat.Location = new System.Drawing.Point(197, 60);
             this.listBox_chat.Name = "listBox_chat";
+            this.listBox_chat.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.listBox_chat.Size = new System.Drawing.Size(363, 349);
             this.listBox_chat.TabIndex = 10;
             this.listBox_chat.TabStop = false;
@@ -240,6 +241,7 @@ namespace WinFormClient
             this.listBox_user.ItemHeight = 15;
             this.listBox_user.Location = new System.Drawing.Point(6, 60);
             this.listBox_user.Name = "listBox_user";
+            this.listBox_user.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.listBox_user.Size = new System.Drawing.Size(185, 379);
             this.listBox_user.TabIndex = 11;
             this.listBox_user.TabStop = false;

@@ -60,7 +60,7 @@ public:
 
 	// Operation ¿Á¡§¿«
 protected:
-	virtual void		OnSend(unsigned int len) {};
+	virtual void		OnSend(BYTE* sendData) {};
 	virtual void		OnRecv(char* buffer, unsigned int len) {};
 	virtual void		OnConnect() {};
 	virtual void		OnDisconnect() {};

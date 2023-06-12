@@ -2,9 +2,34 @@
 #include "ClientSession.h"
 #include "ClientPacketHandler.h"
 
-void ClientSession::OnSend(unsigned int len)
+ClientSession::ClientSession()
 {
-	cout << "Server Send Complete : " << len << endl;
+	m_uMapPacketIDToString[PacketID::CONNECT_RESPONSE] = "Connect Response";
+	m_uMapPacketIDToString[PacketID::ROOM_LIST_RESPONSE] = "Room List Response";
+	m_uMapPacketIDToString[PacketID::LOGIN_RESPONSE] = "Login Response";
+	m_uMapPacketIDToString[PacketID::LOGOUT_RESPONSE] = "Logout Response";
+	m_uMapPacketIDToString[PacketID::REGISTER_RESPONSE] = "Registe rResponse";
+	m_uMapPacketIDToString[PacketID::CHAT_RESPONSE] = "Chat Response";
+	m_uMapPacketIDToString[PacketID::CHAT_NOTIFY] = "Chat Notify";
+	m_uMapPacketIDToString[PacketID::ROOM_OPEN_RESPONSE] = "Room Open Response";
+	m_uMapPacketIDToString[PacketID::ROOM_OPEN_NOTIFY] = "Room Open Notify";
+	m_uMapPacketIDToString[PacketID::ROOM_ENTER_RESPONSE] = "Room Enter Response";
+	m_uMapPacketIDToString[PacketID::ROOM_ENTER_USER_NOTIFY] = "Room Enter User Notify";
+	m_uMapPacketIDToString[PacketID::ROOM_USER_LIST_NOTIFY] = "Room User Lost Notify";
+	m_uMapPacketIDToString[PacketID::ROOM_LEAVE_RESPONSE] = "Room Leave Response";
+	m_uMapPacketIDToString[PacketID::ROOM_LEAVE_USER_NOTIFY] = "Room Leave User Notify";
+	m_uMapPacketIDToString[PacketID::ROOM_CLOSE] = "Room Close";
+}
+
+ClientSession::~ClientSession()
+{
+	m_uMapPacketIDToString.clear();
+}
+
+void ClientSession::OnSend(BYTE* sendData)
+{
+	PACKET_HEADER* packetData = reinterpret_cast<PACKET_HEADER*>(sendData);
+	cout << "Send Packet: "  << m_uMapPacketIDToString[packetData->id] << ", Client Socket ID : " << GetSock() << endl;
 }
 
 void ClientSession::OnRecv(char* buffer, unsigned int len)

@@ -107,6 +107,13 @@ namespace WinFormClient
                 {
                     SetConnectionUI();
                 }
+                else
+                {
+                    Disconnect();
+                    DisableRoomUI();
+                    DisableLoginStateUI();
+                    SetDisconnectionUI();
+                }
             }
     
         }

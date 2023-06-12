@@ -133,8 +133,6 @@ void ChatSession::ProcessSend(unsigned int numberOfBytes)
 		return;
 	}
 
-	OnSend(numberOfBytes);
-
 	lock_guard<recursive_mutex> lock(m_mutex);
 	if (m_sendQueue.empty())
 		m_isRegisteredSend.store(false);
@@ -192,6 +190,13 @@ void ChatSession::ProcessDisconnect()
 	m_sessionState = SessionState::NONE;
 	
 	::memset(m_userID, 0, sizeof(char) * MAX_USER_ID_LENGTH);
+
+	if (CHAT_SESSION_TYPE == SessionType::CLIENT)
+	{
+		SC_CONNECT_RESPONSE sendPacket;
+		sendPacket.result = false; // ¼­¹ö·Î ºÎÅÍ ¿¬°á ²÷¾îÁü
+		OnRecv(reinterpret_cast<char*>(&sendPacket), sizeof(SC_CONNECT_RESPONSE));
+	}
 }
 
 void ChatSession::ProcessDBResponse(DBResOperation* dbOperation, unsigned int numberOfBytes)
@@ -238,6 +243,7 @@ bool ChatSession::RegisterSend()
 	{
 		wsaBufs[i].buf = reinterpret_cast<CHAR*>(m_sendOperation.sendBuffers[i]->GetBuffer());
 		wsaBufs[i].len = static_cast<ULONG>(m_sendOperation.sendBuffers[i]->GetWriteSize());
+		OnSend(m_sendOperation.sendBuffers[i]->GetBuffer());
 	}
 
 	if (SOCKET_ERROR == ::WSASend(m_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesTransfered, flags, &m_sendOperation, NULL))

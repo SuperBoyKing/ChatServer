@@ -24,11 +24,7 @@ int main()
 
 	ASSERT_CRASH(chatServer->Start());
 
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	int numberOfProcessor = sysinfo.dwNumberOfProcessors;
-
-	for (int i = 0; i < numberOfProcessor; ++i)
+	for (int i = 0; i < GNumberOfProcessor; ++i)
 	{
 		GThreadManager->Launch([=]() {
 			while (true)

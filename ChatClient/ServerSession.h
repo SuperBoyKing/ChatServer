@@ -5,7 +5,7 @@ public:
 	ServerSession() = default;
 	~ServerSession() = default;
 
-	void	OnSend(unsigned int len) override;
+	void	OnSend(BYTE* packetHeader) override;
 	void	OnRecv(char* buffer, unsigned int len) override;
 	void	OnConnect() override;
 	void	OnDisconnect() override;

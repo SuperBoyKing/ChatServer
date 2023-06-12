@@ -5,15 +5,20 @@ unique_ptr<DBManager> GDBManager = make_unique<DBManager>();
 
 void DBManager::Run(string ip, UINT16 port, int threadCount)
 {
-	if (m_conn.connect(ip, port))
+	while (true)
 	{
-		std::cout << "Database connection success!" << endl;
-		m_isEventLoop = true;
-		m_isPQCSLoop = true;
-	}
-	else
-	{
-		std::cout << "Database connection error : " << m_conn.getErrorStr() << endl;
+		if (m_conn.connect(ip, port))
+		{
+			std::cout << "Database connection success!" << endl;
+			m_isEventLoop = true;
+			m_isPQCSLoop = true;
+			break;
+		}
+		else
+		{
+			std::cout << "Database connection error : " << m_conn.getErrorStr() << endl;
+		}
+		this_thread::sleep_for(1500ms);
 	}
 
 	for (int i = 0; i < threadCount; ++i)

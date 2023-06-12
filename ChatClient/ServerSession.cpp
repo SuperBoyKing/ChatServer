@@ -3,9 +3,9 @@
 
 queue<vector<char>> GRecvPacketQueue;
 
-void ServerSession::OnSend(unsigned int len)
+void ServerSession::OnSend(BYTE* packetHeader)
 {
-	cout << "Client Send complete : " << len << endl;
+	cout << "Client Send complete : " << endl;
 }
 
 void ServerSession::OnRecv(char* buffer, unsigned int len)

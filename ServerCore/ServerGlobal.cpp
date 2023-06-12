@@ -5,12 +5,17 @@
 #include "IOCPHandler.h"
 
 ThreadManager*	GThreadManager	= nullptr;
+int				GNumberOfProcessor = 0;
 
 class ServerGlobal
 {
 public:
 	ServerGlobal()
 	{
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo(&sysinfo);
+		GNumberOfProcessor = sysinfo.dwNumberOfProcessors;
+
 		GThreadManager = new ThreadManager();
 		SocketAssistant::Init();
 	}

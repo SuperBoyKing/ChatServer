@@ -236,7 +236,6 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		::memcpy(static_cast<char*>(basePacketAddress) + PACKET_HEADER_SIZE, userIDs.get(), sizeof(SC_USER_LIST_NOTIFY_MULTIPLE) * packetHeader.packetCount);
 		SendProcessedPacket(session, reinterpret_cast<PACKET_HEADER*>(basePacketAddress));
 
-
 		// 기존 방에 접속해있던 클라이언트들에게 신규 접속한 UserID 전송
 		SC_ROOM_ENTER_USER_NOTIFY enterUserPacket;
 		::memcpy(enterUserPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
@@ -256,7 +255,6 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 		{
 			sendPacket.result = true;
 			session->SetSessionState(SessionState::LOGIN);
-			session->SetRoomNumber(0);
 		}
 		else
 		{
@@ -273,11 +271,12 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 		{
 			SC_ROOM_CLOSE closePacket;
 			closePacket.roomNumber = enteredRoom->GetRoomNumber();
-			GRoomManager->CloseRoom(enteredRoom->GetRoomNumber());
+			GRoomManager->CloseRoom(closePacket.roomNumber);
+
 			if (size != 0)
 				SendProcessedPacket(shared_ptr<ChatSession>(), &closePacket, true); // 자기 자신을 포함한 모든 유저에게 패킷 전송
 			else
-				SendProcessedPacket(session, &closePacket, true); // 자기 자신을 제외한 모든 유저에게 패킷 전송
+				SendProcessedPacket(session, &closePacket, true); // size가 0이라면 강제 종료된 세션이므로 자신을 제외한 모든 유저에게 패킷 전송
 		}
 		else
 		{
@@ -285,5 +284,7 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 			memcpy(multicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()));
 			SendUserNotifyPacket(session, &multicastPacket);
 		}
+		
+		session->SetRoomNumber(0); // Leave가 성공 한 경우, 모든 패킷 전송이 완료 된 후 세션에 방 번호를 초기화한다.
 	}
 }

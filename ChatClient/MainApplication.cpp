@@ -32,21 +32,11 @@ bool GetNumberOfPacket(PacketType** packetData, int packetCount)
 extern "C"
 {
 	bool isLoop;
-	int numberOfProcessor;
-	shared_ptr<ChatClient> chatClient;
 	function<shared_ptr<ServerSession>(void)> serverSession = make_shared<ServerSession>;
-	
-	EXPORT void ChatInit()
-	{
-		SYSTEM_INFO sysinfo;
-		GetSystemInfo(&sysinfo);
-		numberOfProcessor = sysinfo.dwNumberOfProcessors;
-
-		chatClient = make_shared<ChatClient>(
-			make_shared<ServerAddress>(),
-			make_shared<IOCPHandler>(),
-			serverSession);
-	}
+	shared_ptr<ChatClient> chatClient = make_shared<ChatClient>(
+		make_shared<ServerAddress>(),
+		make_shared<IOCPHandler>(),
+		serverSession);
 
 	EXPORT void ChatClientStart(WCHAR* ip, __int16 port)
 	{
@@ -55,7 +45,7 @@ extern "C"
 
 		ASSERT_CRASH(chatClient->Start());
 		
-		for (int i = 0; i < numberOfProcessor; ++i)
+		for (int i = 0; i < GNumberOfProcessor; ++i)
 		{
 			GThreadManager->Launch([=]() {
 				while (isLoop)
@@ -69,7 +59,7 @@ extern "C"
 	EXPORT void Disconnect()
 	{
 		isLoop = false;
-		chatClient->Disconnect(numberOfProcessor);
+		chatClient->Disconnect(GNumberOfProcessor);
 		GThreadManager->Join();
 	}
 

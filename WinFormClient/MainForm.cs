@@ -20,9 +20,6 @@ namespace WinFormClient
     public partial class MainForm : Form
     {
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void ChatInit();
-
-        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void ChatClientStart([MarshalAs(UnmanagedType.LPWStr)] String ip, [MarshalAs(UnmanagedType.I2)] short port);
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -74,7 +71,6 @@ namespace WinFormClient
         public MainForm()
         {
             InitializeComponent();
-            ChatInit();
         }
 
         public void mainForm_Load(object sender, EventArgs e)
