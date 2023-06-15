@@ -25,7 +25,3 @@ void ServerSession::OnDisconnect()
 {
 	cout << "Disconnected Server" << endl;
 }
-
-void ServerSession::GetPacketData()
-{
-}

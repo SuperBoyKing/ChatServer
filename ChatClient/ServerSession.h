@@ -10,8 +10,6 @@ public:
 	void	OnConnect() override;
 	void	OnDisconnect() override;
 
-	void	GetPacketData();
-
 private:
 	recursive_mutex	m_mutex;
 	vector<char>	m_buffer;

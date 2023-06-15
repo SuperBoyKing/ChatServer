@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "ServerSession.h"
-#include <ObjBase.h>
 
 mutex m;
 
