@@ -112,7 +112,7 @@ namespace WinFormClient
                     Disconnect();
                     DisableRoomUI();
                     DisableLoginStateUI();
-                    SetDisconnectionUI();
+                    DisableConnectionUI();
                 }
             }
     
@@ -190,7 +190,6 @@ namespace WinFormClient
                     DisableLoginStateUI();
                 }
             }
-
         }
 
         void ProcessChatResponse(PACKET_HEADER packetHeader) 
@@ -282,7 +281,7 @@ namespace WinFormClient
                 }
                 else
                 {
-                    MessageBox.Show("Chat Room is full.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Can not enter the room.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             
@@ -313,7 +312,8 @@ namespace WinFormClient
             {
                 for (int i = 0; i < packetHeader.packetCount; ++i)
                 {
-                    AddUserListUI(roomUserListPacket[i].userID);
+                    if (roomUserListPacket[i].userID != userID)
+                        AddUserListUI(roomUserListPacket[i].userID);
                 }
             }
         }

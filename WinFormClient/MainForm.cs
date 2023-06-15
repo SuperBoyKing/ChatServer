@@ -67,6 +67,7 @@ namespace WinFormClient
         // flag
         bool IsActivatedLogin = false;
         bool IsActivatedConnect = false;
+        bool IsActiveEnterdRoom = false;
 
         public MainForm()
         {
@@ -110,7 +111,7 @@ namespace WinFormClient
             else
             {
                 Disconnect();
-                SetDisconnectionUI();
+                DisableConnectionUI();
             }
         }
 
@@ -237,7 +238,7 @@ namespace WinFormClient
 
         void BackGroundRecvProcess(object sender, EventArgs e)
         {
-            if (listView_room.Items.Count != 0)
+            if (listView_room.Items.Count != 0 && !IsActiveEnterdRoom)
                 button_RoomEnter.Enabled = true;
             else
                 button_RoomEnter.Enabled = false;
@@ -262,7 +263,7 @@ namespace WinFormClient
             SetStatusLabelUI("Connected Chat Server");
         }
 
-        void SetDisconnectionUI()
+        void DisableConnectionUI()
         {
             // Connect Setup
             textBox_IP.Enabled = true;
@@ -310,6 +311,8 @@ namespace WinFormClient
 
             // Leave 버튼 활성화
             button_RoomLeave.Enabled = true;
+            IsActiveEnterdRoom = true;
+            button_RoomEnter.Enabled = false;
             listView_room.Enabled = false;
 
             // 로그인/로그아웃 비활성화
@@ -330,6 +333,8 @@ namespace WinFormClient
 
             // Leave 버튼 비활성화
             button_RoomLeave.Enabled = false;
+            IsActiveEnterdRoom = false;
+            button_RoomEnter.Enabled = true;
             listView_room.Enabled = true;
 
             // Room Clear
