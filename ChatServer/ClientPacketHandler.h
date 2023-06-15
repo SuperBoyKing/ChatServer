@@ -38,28 +38,11 @@ public:
 		}
 	}
 
-	template <typename PacketType>
-	void SendUserNotifyPacket(shared_ptr<ChatSession> session, PacketType* packet)
-	{
-		shared_ptr<SendBuffer> sendBuffer = make_shared<SendBuffer>(packet->size);
-		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);
-		int roomNumber = session->GetRoomNumber();
-		shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(roomNumber);
-
-		if (enteredRoom != shared_ptr<Room>())
-		{
-			for (auto& user : enteredRoom->GetUserList())
-			{
-				if (session.get() != user.get())
-					GClientSessionManager->SendToSession(sendBuffer, user);
-			}
-		}
-	}
-
 	using ProcessPacket = function<void(ClientPacketHandler&, shared_ptr<ChatSession>, char*, int)>;
 
 private:
 	unordered_map<PacketID, ProcessPacket> m_uMapProcessPacket;
+	recursive_mutex mutex;
 };
 
 extern unique_ptr<ClientPacketHandler> GClientPacketHandler;
