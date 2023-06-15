@@ -12,7 +12,23 @@ public:
 
 	bool			Leave(shared_ptr<ChatSession> userSession);
 
-	void			reset();
+	template <typename PacketType>
+	void SendUserNotifyPacket(shared_ptr<ChatSession> userSession, PacketType* packet)
+	{
+		shared_ptr<SendBuffer> sendBuffer = make_shared<SendBuffer>(packet->size);
+		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);
+		
+		lock_guard<recursive_mutex> lock(m_mutex);
+		for (auto& user : m_userList)
+		{
+			if (userSession.get() != user.get())
+				GClientSessionManager->SendToSession(sendBuffer, user);
+		}
+	}
+
+	void MakeUserListPacket(OUT void* basePacketHeaderAddress, IN int packetCount);
+
+	void				reset();
 
 	inline int			GetRoomNumber() const			{ return m_roomNumber; }
 
@@ -20,15 +36,14 @@ public:
 
 	inline int			GetMaxUserCount() const			{ return m_maxUserCount; }
 
-	inline int			GetCurrentUserCount() const		{ return m_currentUserCount; }
+	inline long long	GetCurrentUserCount() const		{ return m_userList.size(); }
 
-	inline list<shared_ptr<ChatSession>>& GetUserList() { return m_userList; }
+	//inline list<shared_ptr<ChatSession>>& GetUserList() { return m_userList; }
 
 private:
 	int					m_roomNumber;
-	char				m_title[50 + 1];
+	char				m_title[MAX_ROOM_TITLE_LENGTH + 1];
 	int					m_maxUserCount;
-	atomic<int>			m_currentUserCount;
 	recursive_mutex		m_mutex;
 
 	list<shared_ptr<ChatSession>> m_userList;
