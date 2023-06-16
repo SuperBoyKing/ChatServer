@@ -74,9 +74,15 @@ void DBManager::ProcesssDBEvent()
 	auto dbEvent = TakeOutRequestEvent();
 	if (dbEvent.session != nullptr && dbEvent.packet.id == PacketID::LOGIN_REQUEST)
 	{
+		bool isGet = false;
 		SC_LOGIN_RESPONSE resPacket;
 		std::string value;
-		if (m_conn.get(dbEvent.packet.userID, value))
+		{
+			lock_guard<mutex> lock(m_getMutex);
+			isGet = m_conn.get(dbEvent.packet.userID, value);
+		}
+
+		if (isGet)
 		{
 			if (value.compare(dbEvent.packet.userPW) == 0)
 			{
@@ -120,7 +126,7 @@ void DBManager::CallPQCS()
 	{
 		DBResOperation* DBOpertaion = new DBResOperation();
 		{
-			lock_guard<mutex> lock(m_mutex);
+			//lock_guard<mutex> lock(m_mutex);
 			DBOpertaion->Init();
 			DBOpertaion->SetOwner(dbResEvent.session);
 			DBOpertaion->sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
@@ -158,6 +164,7 @@ DB_LOGIN_RESPONSE DBManager::TakeOutResponseEvent()
 bool DBManager::Search(string userID)
 {
 	std::string value;
+	lock_guard<mutex> lock(m_getMutex);
 	if (m_conn.get(userID, value))
 	{
 		return true;

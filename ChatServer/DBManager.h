@@ -47,7 +47,7 @@ private:
 	bool m_isPQCSLoop;
 	mutex m_requestMutex;
 	mutex m_responseMutex;
-	mutex m_mutex;
+	mutex m_getMutex;
 	ThreadManager m_DBThreadManager;
 	ThreadManager m_PQCSThreadManager;
 	DBResOperation m_dbEventOperation;
