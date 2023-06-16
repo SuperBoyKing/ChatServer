@@ -44,7 +44,7 @@ extern "C"
 
 		ASSERT_CRASH(chatClient->Start());
 		
-		for (int i = 0; i < GNumberOfProcessor; ++i)
+		for (int i = 0; i < GNumberOfProcessor * 2; ++i)
 		{
 			GThreadManager->Launch([=]() {
 				while (isLoop)
@@ -58,7 +58,7 @@ extern "C"
 	EXPORT void Disconnect()
 	{
 		isLoop = false;
-		chatClient->Disconnect(GNumberOfProcessor);
+		chatClient->Disconnect(GNumberOfProcessor * 2);
 		GThreadManager->Join();
 	}
 

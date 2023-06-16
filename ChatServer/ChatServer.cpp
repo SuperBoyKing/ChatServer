@@ -24,7 +24,7 @@ int main()
 
 	ASSERT_CRASH(chatServer->Start());
 
-	for (int i = 0; i < GNumberOfProcessor; ++i)
+	for (int i = 0; i < GNumberOfProcessor * 2; ++i)
 	{
 		GThreadManager->Launch([=]() {
 			while (true)
