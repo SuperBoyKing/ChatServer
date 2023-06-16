@@ -282,10 +282,13 @@ namespace WinFormClient
 
         void AddRoomListUI(Room room)
         {
-            roomManager.roomDictionary.Add(room.number, room);
-            ListViewItem newItem = new ListViewItem(new string[] { room.number.ToString(), room.title, room.maxUserCount.ToString() });
-            listView_room.Items.Add(newItem);
-            listView_room.Items[0].Selected = true;
+            if (!roomManager.roomDictionary.ContainsKey(room.number))
+            {
+                roomManager.roomDictionary.Add(room.number, room);
+                ListViewItem newItem = new ListViewItem(new string[] { room.number.ToString(), room.title, room.maxUserCount.ToString() });
+                listView_room.Items.Add(newItem);
+                listView_room.Items[0].Selected = true;
+            }
         }
 
         void RemoveRoomListUI(int key)
