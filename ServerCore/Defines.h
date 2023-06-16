@@ -9,7 +9,7 @@
 #define MAX_USER_PW_LENGTH			32		// 최대 PW 길이
 #define MAX_CHAT_LENGTH				256		// 최대 chat 길이
 #define MAX_RECV_BUFFER_SIZE		4096
-#define MAX_SEND_BUFFER_SIZE		32768
+#define MAX_SEND_BUFFER_SIZE		65565
 #define PACKET_HEADER_SIZE		sizeof(PACKET_HEADER)
 #define	EXPORT					__declspec(dllexport)
 
