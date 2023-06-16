@@ -10,10 +10,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MainApplication.cpp">
+    <ClCompile Include="DummyClient.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="ServerSession.cpp">
+    <ClCompile Include="DummySession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="..\ChatServer\pch.cpp">
@@ -21,7 +21,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ServerSession.h">
+    <ClInclude Include="DummySession.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="..\ChatServer\pch.h">

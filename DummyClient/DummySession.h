@@ -1,11 +1,11 @@
 #pragma once
-class ServerSession : public ChatSession
+class DummySession : public ChatSession
 {
 public:
-	ServerSession() = default;
-	~ServerSession() = default;
+	DummySession() = default;
+	~DummySession() = default;
 
-	void	OnSend(unsigned int len) override;
+	void	OnSend(BYTE* len) override;
 	void	OnRecv(char* buffer, unsigned int len) override;
 	void	OnConnect() override;
 	void	OnDisconnect() override;
