@@ -27,7 +27,7 @@ public:
 
 	bool		Connect();
 	void		Disconnect();
-	bool		Send(shared_ptr<SendBuffer> sendbuffer);
+	bool		Send(shared_ptr<SendBuffer>& sendbuffer);
 		
 	inline void		SetApp(weak_ptr<ChatApplication> chatApp)		{ m_chatApp = chatApp; }
 

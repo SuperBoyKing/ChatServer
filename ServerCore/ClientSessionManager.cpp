@@ -48,8 +48,9 @@ shared_ptr<ChatSession> ClientSessionManager::Search(SOCKET key)
 }
 
 
-void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> exceptSession)
+void ClientSessionManager::Broadcast(shared_ptr<SendBuffer>& sendBuffer, shared_ptr<ChatSession> exceptSession)
 {
+	lock_guard<recursive_mutex> lock(m_mutex);
 	for (auto &clients : m_uMapSessions)
 	{
 		if (exceptSession.get() != clients.second.get())
@@ -57,12 +58,11 @@ void ClientSessionManager::Broadcast(shared_ptr<SendBuffer> sendBuffer, shared_p
 	}
 }
 
-bool ClientSessionManager::SendToSession(shared_ptr<SendBuffer> sendBuffer, shared_ptr<ChatSession> session)
+bool ClientSessionManager::SendToSession(shared_ptr<SendBuffer>& sendBuffer, shared_ptr<ChatSession>& session)
 {
 	if (session.get() != nullptr)
 	{
-		session->Send(sendBuffer);
-		return true;
+		return session->Send(sendBuffer);
 	}
 
 	return false;

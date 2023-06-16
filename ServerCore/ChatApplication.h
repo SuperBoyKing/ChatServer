@@ -65,31 +65,31 @@ public:
 
 	void SendRoomList();
 
-	void SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize);
+	void SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID = 0);
 
-	void SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize);
+	void SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID = 0);
 
 	void SendLogout(const char* id, const int idSize);
 
-	void SendChat(const char* str, const int size);
+	void SendChat(const char* str, const int size , const int sessionID = 0);
 
-	void SendRoomOpen(char* title, int titleSize, int userCount);
+	void SendRoomOpen(const char* title, const int titleSize, const int userCount);
 
-	void SendRoomEnter(int number);
+	void SendRoomEnter(const int number, const int sessionID = 0);
 
-	void SendRoomLeave(int number);
+	void SendRoomLeave(const int number, const int sessionID = 0);
 
-	void Disconnect(int numberOfThreads = 1);
+	void Disconnect(int numberOfThreads = 1, int sessionID = 0);
 
 private:
 	template<typename PacketType>
-	bool SendPacket(PacketType& packet)
+	bool SendPacket(PacketType& packet, int sessionID = 0)
 	{
 		shared_ptr<SendBuffer> sendBuf = make_shared<SendBuffer>(packet.size);
 		sendBuf->CopyData((char*)&packet, packet.size);
-		return m_session->Send(sendBuf);
+		return m_vSessions[sessionID]->Send(sendBuf);
 	}
 
 private:
-	shared_ptr<ChatSession> m_session;
+	vector<shared_ptr<ChatSession>> m_vSessions;
 };

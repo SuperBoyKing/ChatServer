@@ -52,7 +52,7 @@ bool ChatServer::Start()
 ChatClient::ChatClient(shared_ptr<ServerAddress> serverAddress, shared_ptr<IOCPHandler> iocpHandler, SessionFactory session, int maxSessionCount)
 	: ChatApplication(SessionType::CLIENT, serverAddress, iocpHandler, session, maxSessionCount)
 {
-
+	m_vSessions.reserve(maxSessionCount);
 }
 
 ChatClient::~ChatClient()
@@ -69,22 +69,22 @@ bool ChatClient::Start()
 {
 	for (int i = 0; i < m_maxSessionCount; ++i)
 	{
-		m_session = m_sessionFactory();
-		m_session->SetApp(shared_from_this());
+		m_vSessions.push_back(m_sessionFactory());
+		m_vSessions[i]->SetApp(shared_from_this());
 
-		if (m_session == nullptr)
+		if (m_vSessions[i] == nullptr)
 		{
 			PRINT_ERROR("Create Session Error");
 			return false;
 		}
 
-		if (GetIOCPHandler()->BindIOCompletionPort(m_session) == false)
+		if (GetIOCPHandler()->BindIOCompletionPort(m_vSessions[i]) == false)
 		{
 			PRINT_ERROR("IOCP Bind Error");
 			return false;
 		}
 
-		if (m_session->Connect() == false)
+		if (m_vSessions[i]->Connect() == false)
 			return false;
 	}
 
@@ -103,24 +103,24 @@ void ChatClient::SendRoomList()
 	SendPacket<CS_ROOM_LIST_REQUEST>(packet);
 }
 
-void ChatClient::SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize)
+void ChatClient::SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID)
 {
 	CS_RESGISTER_REQUEST packet;
 	::memcpy(packet.userID, id, sizeof(char) * idSize);
 	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
 	packet.size = sizeof(CS_RESGISTER_REQUEST);
 
-	SendPacket<CS_RESGISTER_REQUEST>(packet);
+	SendPacket<CS_RESGISTER_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize)
+void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID)
 {
 	CS_LOGIN_REQUEST packet;
 	::memcpy(packet.userID, id, sizeof(char) * idSize);
 	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
 	packet.size = sizeof(CS_LOGIN_REQUEST);
 
-	SendPacket<CS_LOGIN_REQUEST>(packet);
+	SendPacket<CS_LOGIN_REQUEST>(packet, sessionID);
 }
 
 void ChatClient::SendLogout(const char* id, const int idSize)
@@ -132,16 +132,16 @@ void ChatClient::SendLogout(const char* id, const int idSize)
 	SendPacket<CS_LOGOUT_REQUEST>(packet);
 }
 
-void ChatClient::SendChat(const char* str, const int size)
+void ChatClient::SendChat(const char* str, const int size, const int sessionID)
 {
 	CS_CHAT_REQUEST packet;
 	::memcpy(packet.message, str, size);
 	packet.size = size + PACKET_HEADER_SIZE;
 
-	SendPacket<CS_CHAT_REQUEST>(packet);
+	SendPacket<CS_CHAT_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendRoomOpen(char* title, int titleSize, int userCount)
+void ChatClient::SendRoomOpen(const char* title, const int titleSize, const int userCount)
 {
 	CS_ROOM_OPEN_REQUEST packet;
 	::memcpy(&packet.roomTitle, title, titleSize);
@@ -150,26 +150,29 @@ void ChatClient::SendRoomOpen(char* title, int titleSize, int userCount)
 	SendPacket<CS_ROOM_OPEN_REQUEST>(packet);
 }
 
-void ChatClient::SendRoomEnter(int number)
+void ChatClient::SendRoomEnter(const int number, const int sessionID)
 {
 	CS_ROOM_ENTER_REQUEST packet;
 	packet.roomNumber = number;
 
-	SendPacket<CS_ROOM_ENTER_REQUEST>(packet);
+	SendPacket<CS_ROOM_ENTER_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendRoomLeave(int number)
+void ChatClient::SendRoomLeave(const int number, const int sessionID)
 {
 	CS_ROOM_LEAVE_REQUEST packet;
 	packet.roomNumber = number;
 
-	SendPacket<CS_ROOM_LEAVE_REQUEST>(packet);
+	SendPacket<CS_ROOM_LEAVE_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::Disconnect(int numberOfThreads)
+void ChatClient::Disconnect(int numberOfThreads, int sessionID)
 {
-	HANDLE sock = (HANDLE)m_session->GetSock();
-	m_session->Disconnect();
+	for (int i = 0; i < m_maxSessionCount; ++i)
+	{
+		m_vSessions[i]->Disconnect();
+	}
+	m_vSessions.clear();
 	
 	//GQCS 반환을 위한 PQCS 처리
 	for (int i = 0; i < numberOfThreads; ++i)

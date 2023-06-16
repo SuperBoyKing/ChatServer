@@ -89,22 +89,10 @@ void ChatSession::Disconnect()
 	RegisterDisconnect();
 }
 
-bool ChatSession::Send(shared_ptr<SendBuffer> sendbuffer)
+bool ChatSession::Send(shared_ptr<SendBuffer>& sendbuffer)
 {
-	const ULONGLONG startTimeOutTick = ::GetTickCount64();
-	while (true) // ConnectEx를 통한 비동기 소켓이 Connection 될 때 까지 대기
-	{
-		if (IsConnected())
-			break;
-
-		if (::GetTickCount64() - startTimeOutTick >= CONNECTION_TIME_OUT_TICK)
-		{
-			CRASH("Connection Time Out");
-			return false;
-		}
-
-		this_thread::yield();
-	}
+	if (IsConnected() == false)
+		return false;
 
 	bool registSend = false;
 
@@ -191,12 +179,12 @@ void ChatSession::ProcessDisconnect()
 	
 	::memset(m_userID, 0, sizeof(char) * MAX_USER_ID_LENGTH);
 
-	if (CHAT_SESSION_TYPE == SessionType::CLIENT)
-	{
-		SC_CONNECT_RESPONSE sendPacket;
-		sendPacket.result = false; // 서버로 부터 연결 끊어짐
-		OnRecv(reinterpret_cast<char*>(&sendPacket), sizeof(SC_CONNECT_RESPONSE));
-	}
+	//if (CHAT_SESSION_TYPE == SessionType::CLIENT)  // 서버로 부터 연결 끊어짐
+	//{
+	//	SC_CONNECT_RESPONSE sendPacket;
+	//	sendPacket.result = false;
+	//	OnRecv(reinterpret_cast<char*>(&sendPacket), sizeof(SC_CONNECT_RESPONSE));
+	//}
 }
 
 void ChatSession::ProcessDBResponse(DBResOperation* dbOperation, unsigned int numberOfBytes)
@@ -213,6 +201,9 @@ bool ChatSession::RegisterSend()
 	if (IsConnected() == false)
 		return false;
 
+	m_sendOperation.Init();
+	m_sendOperation.SetOwner(shared_from_this());
+
 	DWORD bytesTransfered = 0;
 	DWORD flags = 0;
 
@@ -220,14 +211,11 @@ bool ChatSession::RegisterSend()
 	{
 		lock_guard<recursive_mutex> lock(m_mutex);
 
-		m_sendOperation.Init();
-		m_sendOperation.SetOwner(shared_from_this());
-
 		int	writeSize = 0;
 		while (m_sendQueue.empty() == false)
 		{
 			shared_ptr<SendBuffer> sendBuffer = m_sendQueue.front();
-			writeSize = sendBuffer->GetWriteSize();
+			writeSize += sendBuffer->GetWriteSize();
 			ASSERT_CRASH(writeSize < MAX_SEND_BUFFER_SIZE);
 
 			m_sendQueue.pop();
@@ -237,13 +225,15 @@ bool ChatSession::RegisterSend()
 
 	// Scattered-gathered I/O (vecterd I/O)
 	vector<WSABUF> wsaBufs;
-	wsaBufs.resize(m_sendOperation.sendBuffers.size());
+	wsaBufs.reserve(m_sendOperation.sendBuffers.size());
 
-	for (int i = 0; i < m_sendOperation.sendBuffers.size(); ++i)
+	for (auto sendBuffer : m_sendOperation.sendBuffers)
 	{
-		wsaBufs[i].buf = reinterpret_cast<CHAR*>(m_sendOperation.sendBuffers[i]->GetBuffer());
-		wsaBufs[i].len = static_cast<ULONG>(m_sendOperation.sendBuffers[i]->GetWriteSize());
-		OnSend(m_sendOperation.sendBuffers[i]->GetBuffer());
+		WSABUF wsaBuf;
+		wsaBuf.buf = reinterpret_cast<CHAR*>(sendBuffer->GetBuffer());
+		wsaBuf.len = static_cast<ULONG>(sendBuffer->GetWriteSize());
+		wsaBufs.push_back(wsaBuf);
+		OnSend(sendBuffer->GetBuffer());
 	}
 
 	if (SOCKET_ERROR == ::WSASend(m_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesTransfered, flags, &m_sendOperation, NULL))
@@ -251,7 +241,8 @@ bool ChatSession::RegisterSend()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			PRINT_WSA_ERROR("Handle Error");
+			PRINT_WSA_ERROR("Send Handle Error");
+			Disconnect();
 			m_sendOperation.ReleaseOwner();
 			m_sendOperation.sendBuffers.clear();
 			m_isRegisteredSend.store(false);
@@ -282,7 +273,8 @@ void ChatSession::RegisterRecv()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			PRINT_WSA_ERROR("Handle Error");
+			PRINT_WSA_ERROR("Recv Handle Error");
+			Disconnect();
 			m_recvOperation.ReleaseOwner();
 		}
 	}
