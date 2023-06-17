@@ -31,8 +31,7 @@ bool RoomManager::OpenRoom(const char* roomTitle, const size_t titleSize, const 
 	bool bResult = false;
 	shared_ptr<Room> room = nullptr;
 
-	mutex m;
-	lock_guard<mutex> lock(m); 
+	lock_guard<mutex> lock(m_mutex);
 	
 	int poolIndexCycle = m_roomPoolIndex - 1;
 

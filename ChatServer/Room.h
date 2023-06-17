@@ -38,8 +38,6 @@ public:
 
 	inline long long	GetCurrentUserCount() const		{ return m_userList.size(); }
 
-	//inline list<shared_ptr<ChatSession>>& GetUserList() { return m_userList; }
-
 private:
 	int					m_roomNumber;
 	char				m_title[MAX_ROOM_TITLE_LENGTH + 1];

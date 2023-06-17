@@ -18,7 +18,7 @@ void DBManager::Run(string ip, UINT16 port, int threadCount)
 		{
 			std::cout << "Database connection error : " << m_conn.getErrorStr() << endl;
 		}
-		this_thread::sleep_for(1500ms);
+		this_thread::sleep_for(1500ms); // Connection ´ë±â
 	}
 
 	for (int i = 0; i < threadCount; ++i)
@@ -125,13 +125,10 @@ void DBManager::CallPQCS()
 	if (dbResEvent.session.get() != nullptr)
 	{
 		DBResOperation* DBOpertaion = new DBResOperation();
-		{
-			//lock_guard<mutex> lock(m_mutex);
-			DBOpertaion->Init();
-			DBOpertaion->SetOwner(dbResEvent.session);
-			DBOpertaion->sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
-			DBOpertaion->sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), dbResEvent.packet.size);
-		}
+		DBOpertaion->Init();
+		DBOpertaion->SetOwner(dbResEvent.session);
+		DBOpertaion->sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
+		DBOpertaion->sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), dbResEvent.packet.size);
 
 		if (false == ::PostQueuedCompletionStatus(m_iocpHandle, dbResEvent.packet.size, 0, DBOpertaion))
 		{

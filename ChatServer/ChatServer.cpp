@@ -5,7 +5,7 @@
 int main()
 {
 	GDBManager->Run("127.0.0.1", 6379);
-	// Test Code
+	// Account insert
 	GDBManager->insert("0311pjs", "1234");
 	GDBManager->insert("Lilly", "1234");
 	GDBManager->insert("Minsu", "1234");

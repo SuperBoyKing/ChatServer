@@ -30,6 +30,7 @@ private:
 	atomic<int>					m_currentOpenRoomCount;
 	atomic<int>					m_roomPoolIndex;
 	vector<shared_ptr<Room>>	m_roomObjectPool;
+	mutex m_mutex;
 };
 
 extern unique_ptr<RoomManager> GRoomManager;
