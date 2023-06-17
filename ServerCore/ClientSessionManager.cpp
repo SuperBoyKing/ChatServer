@@ -60,7 +60,7 @@ void ClientSessionManager::Broadcast(shared_ptr<SendBuffer>& sendBuffer, shared_
 
 bool ClientSessionManager::SendToSession(shared_ptr<SendBuffer>& sendBuffer, shared_ptr<ChatSession>& session)
 {
-	if (session.get() != nullptr)
+	if (session != nullptr)
 	{
 		return session->Send(sendBuffer);
 	}

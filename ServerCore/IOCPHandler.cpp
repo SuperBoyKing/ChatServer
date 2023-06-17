@@ -25,7 +25,8 @@ void IOCPHandler::CallGQCS()
 	IOCPOperation* iocpOperation = nullptr;
 	ChatSession* clientSession = nullptr;
 
-	if (::GetQueuedCompletionStatus(m_iocpHandle, &bytesTransferred, (PULONG_PTR)&clientSession, reinterpret_cast<LPOVERLAPPED*>(&iocpOperation), INFINITE))
+	if (::GetQueuedCompletionStatus(m_iocpHandle, &bytesTransferred, (PULONG_PTR)&clientSession, 
+		reinterpret_cast<LPOVERLAPPED*>(&iocpOperation), INFINITE))
 	{
 		if (iocpOperation != nullptr)	// PQCS로 인한 종료가 아니라면 Operation 처리
 		{

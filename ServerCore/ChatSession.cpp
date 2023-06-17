@@ -97,7 +97,7 @@ bool ChatSession::Send(shared_ptr<SendBuffer>& sendbuffer)
 	bool registSend = false;
 
 	{
-		lock_guard<recursive_mutex> lock(m_mutex);
+		lock_guard<recursive_mutex> lock(m_sendQueueMutex);
 		m_sendQueue.push(sendbuffer);
 
 		if (m_isRegisteredSend.exchange(true) == false)
@@ -121,7 +121,7 @@ void ChatSession::ProcessSend(unsigned int numberOfBytes)
 		return;
 	}
 
-	lock_guard<recursive_mutex> lock(m_mutex);
+	lock_guard<recursive_mutex> lock(m_sendQueueMutex);
 	if (m_sendQueue.empty())
 		m_isRegisteredSend.store(false);
 	else
@@ -209,7 +209,7 @@ bool ChatSession::RegisterSend()
 
 	// SendQueue에 있는 버퍼공유포인터를 SendOperation의 vector로 복사
 	{
-		lock_guard<recursive_mutex> lock(m_mutex);
+		lock_guard<recursive_mutex> lock(m_sendQueueMutex);
 
 		int	writeSize = 0;
 		while (m_sendQueue.empty() == false)
@@ -236,7 +236,8 @@ bool ChatSession::RegisterSend()
 		OnSend(sendBuffer->GetBuffer());
 	}
 
-	if (SOCKET_ERROR == ::WSASend(m_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesTransfered, flags, &m_sendOperation, NULL))
+	if (SOCKET_ERROR == ::WSASend(m_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()),
+		&bytesTransfered, flags, &m_sendOperation, NULL))
 	{
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)

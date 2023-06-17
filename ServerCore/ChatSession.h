@@ -31,7 +31,7 @@ public:
 		
 	inline void		SetApp(weak_ptr<ChatApplication> chatApp)		{ m_chatApp = chatApp; }
 
-	inline void		SetUserID(const char* userID, int size = 33)	{ ::memcpy(m_userID, userID, 33); }
+	inline void		SetUserID(const char* userID, int size = 33)	{ ::memcpy(m_userID, userID, size); }
 
 	inline void		SetRoomNumber(const int roomNumber)				{ m_roomNumber = roomNumber; }
 
@@ -84,7 +84,7 @@ private:
 	// ChatSession ¸â¹ö
 private:
 	SOCKET				m_socket;
-	recursive_mutex		m_mutex;
+	recursive_mutex		m_sendQueueMutex;
 	char				m_userID[32 + 1];
 	int					m_roomNumber;
 	SessionState		m_sessionState;

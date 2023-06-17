@@ -37,7 +37,7 @@ public:
 };
 
 
-
+// SendOperation
 class SendOperation : public IOCPOperation
 {
 public:
@@ -47,24 +47,28 @@ public:
 	vector<shared_ptr<SendBuffer>> sendBuffers;
 };
 
+// RecvOperation
 class RecvOperation : public IOCPOperation
 {
 public:
 	RecvOperation() : IOCPOperation(OperationType::RECV) {}
 };
 
+// ConnectOperation
 class ConnectOperation : public IOCPOperation
 {
 public:
 	ConnectOperation() : IOCPOperation(OperationType::CONNECT) {}
 };
 
+// DisconnectOperation
 class DisconnectOperation : public IOCPOperation
 {
 public:
 	DisconnectOperation() : IOCPOperation(OperationType::DISCONNECT) {}
 };
 
+// AcceptOperation
 class AcceptOperation : public IOCPOperation
 {
 public:
@@ -77,6 +81,7 @@ private:
 	shared_ptr<ChatSession> m_acceptedClientSession = nullptr;
 };
 
+// DBOperation
 class DBResOperation : public IOCPOperation
 {
 public:

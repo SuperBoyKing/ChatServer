@@ -2,7 +2,8 @@
 #include "pch.h"
 #include "IOCPOperation.h"
 
-IOCPOperation::IOCPOperation(OperationType ioOperaiton) : m_operationType(ioOperaiton)
+IOCPOperation::IOCPOperation(OperationType ioOperaiton) 
+	: m_operationType(ioOperaiton)
 {
 	Init();
 }
