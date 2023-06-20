@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "DummySession.h"
 
-queue<vector<char>> GRecvPacketQueue;
+queue<int> GRecvRoomNumberQueue;
+mutex queueMutex;
 
 void DummySession::OnSend(BYTE* packet)
 {
@@ -14,10 +15,12 @@ void DummySession::OnSend(BYTE* packet)
 
 void DummySession::OnRecv(char* buffer, unsigned int len)
 {
-	m_buffer.resize(len);
-	::memcpy(&m_buffer[0], buffer, len);
-	lock_guard<recursive_mutex> lock(m_mutex);
-	GRecvPacketQueue.push(m_buffer);
+	SC_ROOM_OPEN_RESPONSE* recvPacket = reinterpret_cast<SC_ROOM_OPEN_RESPONSE*>(buffer);
+	if (recvPacket->id == PacketID::ROOM_OPEN_RESPONSE)
+	{
+		lock_guard<mutex> lock(queueMutex);
+		GRecvRoomNumberQueue.push(recvPacket->roomNumber);
+	}
 }
 
 void DummySession::OnConnect()
@@ -28,8 +31,4 @@ void DummySession::OnConnect()
 void DummySession::OnDisconnect()
 {
 	GClientSessionManager->Remove(static_pointer_cast<ChatSession>(shared_from_this()));
-}
-
-void DummySession::GetPacketData()
-{
 }
