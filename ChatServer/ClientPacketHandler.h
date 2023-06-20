@@ -13,6 +13,7 @@ public:
 
 	// 패킷 처리 함수 //
 	void ProcessConnect(shared_ptr<ChatSession> session, char* packetData, int size);
+	void ProcessDisconnect(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessRoomList(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessLogin(shared_ptr<ChatSession> session, char* packetData, int size);
 	void ProcessLoginReq(shared_ptr<ChatSession> session, char* packetData, int size);

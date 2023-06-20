@@ -63,21 +63,23 @@ public:
 	// Packet 송신 함수 (Client -> Server)
 	bool SendConnect();
 
-	void SendRoomList();
+	bool SendDisconnect();
 
-	void SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID = 0);
+	bool SendRoomList();
 
-	void SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID = 0);
+	bool SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID = 0);
 
-	void SendLogout(const char* id, const int idSize);
+	bool SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID = 0);
 
-	void SendChat(const char* str, const int size , const int sessionID = 0);
+	bool SendLogout(const char* id, const int idSize);
 
-	void SendRoomOpen(const char* title, const int titleSize, const int userCount);
+	bool SendChat(const char* str, const int size , const int sessionID = 0);
 
-	void SendRoomEnter(const int number, const int sessionID = 0);
+	bool SendRoomOpen(const char* title, const int titleSize, const int userCount, const int sessionID = 0);
 
-	void SendRoomLeave(const int number, const int sessionID = 0);
+	bool SendRoomEnter(const int number, const int sessionID = 0);
+
+	bool SendRoomLeave(const int number, const int sessionID = 0);
 
 	void Disconnect(int numberOfThreads = 1, int sessionID = 0);
 

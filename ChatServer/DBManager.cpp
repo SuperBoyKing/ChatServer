@@ -128,9 +128,11 @@ void DBManager::CallPQCS()
 		DBOpertaion->Init();
 		DBOpertaion->SetOwner(dbResEvent.session);
 		DBOpertaion->sendBuffer = make_shared<SendBuffer>(dbResEvent.packet.size);
-		DBOpertaion->sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), dbResEvent.packet.size);
+		DBOpertaion->sendBuffer->CopyData(reinterpret_cast<void*>(&dbResEvent.packet), 
+			dbResEvent.packet.size);
 
-		if (false == ::PostQueuedCompletionStatus(m_iocpHandle, dbResEvent.packet.size, 0, DBOpertaion))
+		if (false == ::PostQueuedCompletionStatus(m_iocpHandle, dbResEvent.packet.size,
+			0, DBOpertaion))
 		{
 			PRINT_WSA_ERROR("PostQueuedCompletionStatus Error");
 		}

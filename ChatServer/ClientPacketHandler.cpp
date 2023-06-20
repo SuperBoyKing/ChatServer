@@ -6,6 +6,7 @@ unique_ptr<ClientPacketHandler> GClientPacketHandler = make_unique<ClientPacketH
 ClientPacketHandler::ClientPacketHandler()
 {
 	m_uMapProcessPacket[PacketID::CONNECT_REQUEST] = &ClientPacketHandler::ProcessConnect;
+	m_uMapProcessPacket[PacketID::DISCONNECT_REQUEST] = &ClientPacketHandler::ProcessDisconnect;
 	m_uMapProcessPacket[PacketID::ROOM_LIST_REQUEST] = &ClientPacketHandler::ProcessRoomList;
 	m_uMapProcessPacket[PacketID::LOGIN_REQUEST] = &ClientPacketHandler::ProcessLogin;
 	m_uMapProcessPacket[PacketID::LOGIN_RESPONSE] = &ClientPacketHandler::ProcessLoginReq;
@@ -42,6 +43,17 @@ void ClientPacketHandler::ProcessConnect(shared_ptr<ChatSession> session, char* 
 
 	SendProcessedPacket(session, &sendPacket);
 }
+
+void ClientPacketHandler::ProcessDisconnect(shared_ptr<ChatSession> session, char* packetData, int size)
+{
+	if (session->GetSessionState() == SessionState::ROOM)
+	{
+		shared_ptr<Room> enteredRoom = GRoomManager->SearchRoom(session->GetRoomNumber());
+		SC_ROOM_LEAVE_USER_NOTIFY multicastPacket;
+		memcpy(multicastPacket.userID, session->GetUserID(), strlen(session->GetUserID()) + 1);
+		enteredRoom->SendUserNotifyPacket(session, &multicastPacket);
+	}
+}	
 
 void ClientPacketHandler::ProcessRoomList(shared_ptr<ChatSession> session, char* packetData, int size)
 {
@@ -206,7 +218,6 @@ void ClientPacketHandler::ProcessRoomEnter(shared_ptr<ChatSession> session, char
 		if (session->GetSessionState() == SessionState::LOGIN && enteredRoom->Enter(session))
 		{
 			sendPacket.result = true;
-			sendPacket.currentUserCount = enteredRoom->GetCurrentUserCount();
 			session->SetRoomNumber(enteredRoom->GetRoomNumber());
 			session->SetSessionState(SessionState::ROOM);
 		}
@@ -252,7 +263,7 @@ void ClientPacketHandler::ProcessRoomLeave(shared_ptr<ChatSession> session, char
 		{
 			sendPacket.result = true;
 			session->SetSessionState(SessionState::LOGIN);
-			session->SetRoomNumber(0); // Leave가 성공 한 경우, 해당 세션이 가지고 있는 방 번호를 초기화한다.
+			session->SetRoomNumber(0); // Leave가 성공한 경우, 해당 세션이 가지고 있는 방 번호를 초기화한다.
 		}
 		else
 		{

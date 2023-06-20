@@ -8,6 +8,8 @@ enum class PacketID : unsigned __int8
 	CONNECT_REQUEST,
 	CONNECT_RESPONSE,
 
+	DISCONNECT_REQUEST,
+
 	ROOM_LIST_REQUEST,
 	ROOM_LIST_RESPONSE,
 
@@ -53,6 +55,16 @@ struct CS_CONNECT_REQUEST : public PACKET_HEADER
 		size = sizeof(CS_CONNECT_REQUEST);
 		packetCount = 1;
 		id = PacketID::CONNECT_REQUEST;
+	}
+};
+
+struct CS_DISCONNECT_REQEUST : public PACKET_HEADER
+{
+	CS_DISCONNECT_REQEUST()
+	{
+		size = sizeof(CS_DISCONNECT_REQEUST);
+		packetCount = 1;
+		id = PacketID::DISCONNECT_REQUEST;
 	}
 };
 
@@ -245,7 +257,6 @@ struct CS_ROOM_ENTER_REQUEST : public PACKET_HEADER
 
 struct SC_ROOM_ENTER_RESPONSE : public PACKET_HEADER
 {
-	int currentUserCount = 0;
 	bool result = false;
 
 	SC_ROOM_ENTER_RESPONSE()

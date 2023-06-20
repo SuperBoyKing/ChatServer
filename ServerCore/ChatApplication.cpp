@@ -97,73 +97,79 @@ bool ChatClient::SendConnect()
 	return SendPacket(packet);
 }
 
-void ChatClient::SendRoomList()
+bool ChatClient::SendDisconnect()
 {
-	CS_ROOM_LIST_REQUEST packet;
-	SendPacket<CS_ROOM_LIST_REQUEST>(packet);
+	CS_DISCONNECT_REQEUST packet;
+	return SendPacket(packet);
 }
 
-void ChatClient::SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID)
+bool ChatClient::SendRoomList()
+{
+	CS_ROOM_LIST_REQUEST packet;
+	return SendPacket<CS_ROOM_LIST_REQUEST>(packet);
+}
+
+bool ChatClient::SendRegister(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID)
 {
 	CS_RESGISTER_REQUEST packet;
 	::memcpy(packet.userID, id, sizeof(char) * idSize);
 	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
 	packet.size = sizeof(CS_RESGISTER_REQUEST);
 
-	SendPacket<CS_RESGISTER_REQUEST>(packet, sessionID);
+	return SendPacket<CS_RESGISTER_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID)
+bool ChatClient::SendLogin(const char* id, const int idSize, const char* pwd, const int pwdSize, const int sessionID)
 {
 	CS_LOGIN_REQUEST packet;
 	::memcpy(packet.userID, id, sizeof(char) * idSize);
 	::memcpy(packet.userPW, pwd, sizeof(char) * pwdSize);
 	packet.size = sizeof(CS_LOGIN_REQUEST);
 
-	SendPacket<CS_LOGIN_REQUEST>(packet, sessionID);
+	return SendPacket<CS_LOGIN_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendLogout(const char* id, const int idSize)
+bool ChatClient::SendLogout(const char* id, const int idSize)
 {
 	CS_LOGOUT_REQUEST packet;
 	memcpy(packet.userID, id, idSize);
 	packet.size = sizeof(CS_LOGOUT_REQUEST);
 
-	SendPacket<CS_LOGOUT_REQUEST>(packet);
+	return SendPacket<CS_LOGOUT_REQUEST>(packet);
 }
 
-void ChatClient::SendChat(const char* str, const int size, const int sessionID)
+bool ChatClient::SendChat(const char* str, const int size, const int sessionID)
 {
 	CS_CHAT_REQUEST packet;
 	::memcpy(packet.message, str, size);
 	packet.size = size + PACKET_HEADER_SIZE;
 
-	SendPacket<CS_CHAT_REQUEST>(packet, sessionID);
+	return SendPacket<CS_CHAT_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendRoomOpen(const char* title, const int titleSize, const int userCount)
+bool ChatClient::SendRoomOpen(const char* title, const int titleSize, const int userCount, const int sessionID)
 {
 	CS_ROOM_OPEN_REQUEST packet;
 	::memcpy(&packet.roomTitle, title, titleSize);
 	packet.userCount = userCount;
 
-	SendPacket<CS_ROOM_OPEN_REQUEST>(packet);
+	return SendPacket<CS_ROOM_OPEN_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendRoomEnter(const int number, const int sessionID)
+bool ChatClient::SendRoomEnter(const int number, const int sessionID)
 {
 	CS_ROOM_ENTER_REQUEST packet;
 	packet.roomNumber = number;
 
-	SendPacket<CS_ROOM_ENTER_REQUEST>(packet, sessionID);
+	return SendPacket<CS_ROOM_ENTER_REQUEST>(packet, sessionID);
 }
 
-void ChatClient::SendRoomLeave(const int number, const int sessionID)
+bool ChatClient::SendRoomLeave(const int number, const int sessionID)
 {
 	CS_ROOM_LEAVE_REQUEST packet;
 	packet.roomNumber = number;
 
-	SendPacket<CS_ROOM_LEAVE_REQUEST>(packet, sessionID);
+	return SendPacket<CS_ROOM_LEAVE_REQUEST>(packet, sessionID);
 }
 
 void ChatClient::Disconnect(int numberOfThreads, int sessionID)

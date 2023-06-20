@@ -18,8 +18,8 @@ public:
 		shared_ptr<SendBuffer> sendBuffer = make_shared<SendBuffer>(packet->size);
 		sendBuffer->CopyData(reinterpret_cast<void*>(packet), packet->size);
 		
-		lock_guard<recursive_mutex> lock(m_mutex);
-		for (auto& user : m_userList)
+		lock_guard<mutex> lock(m_mutex);
+		for (auto user : m_userList)
 		{
 			if (userSession.get() != user.get())
 				GClientSessionManager->SendToSession(sendBuffer, user);
@@ -42,7 +42,7 @@ private:
 	int					m_roomNumber;
 	char				m_title[MAX_ROOM_TITLE_LENGTH + 1];
 	int					m_maxUserCount;
-	recursive_mutex		m_mutex;
+	mutex				m_mutex;
 
 	list<shared_ptr<ChatSession>> m_userList;
 };

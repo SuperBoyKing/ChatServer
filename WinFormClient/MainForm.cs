@@ -29,6 +29,9 @@ namespace WinFormClient
         static extern bool SendConnect();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendDisconnect();
+
+        [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendRoomListPacket();
 
         [DllImport("ChatClient.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -92,6 +95,7 @@ namespace WinFormClient
 
         private void mainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            SendDisconnect();
             roomManager.roomDictionary.Clear();
         }
 

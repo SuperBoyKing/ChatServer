@@ -243,7 +243,6 @@ bool ChatSession::RegisterSend()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			PRINT_WSA_ERROR("Send Handle Error");
-			Disconnect();
 			m_sendOperation.ReleaseOwner();
 			m_sendOperation.sendBuffers.clear();
 			m_isRegisteredSend.store(false);
@@ -275,7 +274,6 @@ void ChatSession::RegisterRecv()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			PRINT_WSA_ERROR("Recv Handle Error");
-			Disconnect();
 			m_recvOperation.ReleaseOwner();
 		}
 	}

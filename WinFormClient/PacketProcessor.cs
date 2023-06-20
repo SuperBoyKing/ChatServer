@@ -267,7 +267,6 @@ namespace WinFormClient
         {
             SC_ROOM_ENTER_RESPONSE roomEnterPacket;
             roomEnterPacket.result = false;
-            roomEnterPacket.currentUserCount = 0;
 
             byte[] data = StructToByte(roomEnterPacket);
 
@@ -348,7 +347,8 @@ namespace WinFormClient
             if (GetPacket(data, packetHeader.size))
             {
                 roomLeaveNotify = ByteToStruct<SC_ROOM_LEAVE_USER_NOTIFY>(data);
-                RemoveUserListUI(roomLeaveNotify.userID);
+                if (roomLeaveNotify.userID != userID)
+                    RemoveUserListUI(roomLeaveNotify.userID);
             }
         }
 

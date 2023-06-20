@@ -86,7 +86,7 @@ private:
 	SOCKET				m_socket;
 	recursive_mutex		m_sendQueueMutex;
 	char				m_userID[32 + 1];
-	int					m_roomNumber;
-	SessionState		m_sessionState;
+	int					m_roomNumber;		// 현재 입장한 방 번호
+	SessionState		m_sessionState;		// 세션 상태 ex) 로그인, 방 입장
 };
 

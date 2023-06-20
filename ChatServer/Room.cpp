@@ -20,7 +20,7 @@ void Room::Init(const char* roomTitle, const size_t titleSize, const int maxUser
 
 bool Room::Enter(shared_ptr<ChatSession> userSession)
 {
-	lock_guard<recursive_mutex> lock(m_mutex);
+	lock_guard<mutex> lock(m_mutex);
 	m_userList.push_back(userSession);
 
 	return true;
@@ -28,7 +28,7 @@ bool Room::Enter(shared_ptr<ChatSession> userSession)
 
 bool Room::Leave(shared_ptr<ChatSession> userSession)
 {
-	lock_guard<recursive_mutex> lock(m_mutex);
+	lock_guard<mutex> lock(m_mutex);
 	auto itr = find(m_userList.begin(), m_userList.end(), userSession);
 	if (itr != m_userList.end())
 	{
@@ -44,7 +44,7 @@ void Room::MakeUserListPacket(OUT void* basePacketHeaderAddress, IN int packetCo
 	LONGLONG i = 0;
 
 	{
-		lock_guard<recursive_mutex> lock(m_mutex);
+		lock_guard<mutex> lock(m_mutex);
 		for (auto& user : m_userList)
 		{
 			::memcpy(static_cast<char*>(basePacketHeaderAddress) + PACKET_HEADER_SIZE + ((MAX_USER_ID_LENGTH + 1) * i),

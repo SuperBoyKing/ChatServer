@@ -67,6 +67,11 @@ extern "C"
 		return chatClient->SendConnect();
 	}
 
+	EXPORT void SendDisconnect()
+	{
+		chatClient->SendDisconnect();
+	}
+
 	EXPORT void SendRoomListPacket()
 	{
 		chatClient->SendRoomList();

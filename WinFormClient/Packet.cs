@@ -12,6 +12,8 @@ namespace WinFormClient
         CONNECT_REQUEST,
         CONNECT_RESPONSE,
 
+        DISCONNECT_REQUEST,
+
         ROOM_LIST_REQUEST,
         ROOM_LIST_RESPONSE,
 
@@ -56,6 +58,12 @@ namespace WinFormClient
     {
 
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CS_DISCONNECT_REQEUST
+    {
+
+    };
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_CONNECT_RESPONSE
@@ -162,7 +170,6 @@ namespace WinFormClient
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SC_ROOM_ENTER_RESPONSE
     {
-        public int currentUserCount;
         public bool result;
     }
 
