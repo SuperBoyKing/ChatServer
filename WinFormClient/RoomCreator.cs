@@ -56,6 +56,18 @@ namespace WinFormClient
             {
                 e.Handled = true;
             }
+            else
+            {
+                if (Char.IsNumber(e.KeyChar))
+                {
+                    string userCountText = textBox_userCount.Text + e.KeyChar.ToString();
+
+                    if (Int32.Parse(userCountText) > 100)
+                    {
+                        e.Handled = true;
+                    }
+                }
+            }
         }
     }
 }
